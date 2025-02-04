@@ -44,7 +44,9 @@
                                 <tr>
                                     <th>IP Address</th>
                                     <th>Status</th>
-                                    <th>ID Barang</th>
+                                    <th>Jenis Barang</th>
+                                    <th>Model</th>
+                                    <th>Tipe/Merk</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -57,7 +59,9 @@
                                             {{ $ip->status }}
                                         </span>
                                     </td>
-                                    <td>{{ $ip->id_barang ?: '-' }}</td>
+                                    <td>{{ $ip->barang()->exists() ? $ip->barang->jenis_barang : '-' }}</td>
+                                    <td>{{ $ip->barang()->exists() ? $ip->barang->model : '-' }}</td>
+                                    <td>{{ $ip->barang()->exists() ? $ip->barang->tipe_merk : '-' }}</td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-warning edit-ip" 
                                                 data-bs-toggle="modal" data-bs-target="#editIpModal{{ $ip->id_ip }}">
