@@ -36,8 +36,8 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
 
     // KOMPUTER
     Route::get('/komputer/{tab?}', [KomputerController::class, 'index'])->name('komputer.index');
-    Route::get('/komputer/create', [KomputerController::class, 'create'])->name('komputer.create');
-    Route::post('/komputer/store', [KomputerController::class, 'store'])->name('komputer.store');
+    Route::get('/komputer/barang/create', [KomputerController::class, 'create'])->name('komputer.create');
+    Route::post('/komputer/barang/store', [KomputerController::class, 'store'])->name('komputer.store');
     Route::get('/komputer/{id}/edit', [KomputerController::class, 'edit'])->name('komputer.edit');
     Route::put('/komputer/{id}/update', [KomputerController::class, 'update'])->name('komputer.update');
     Route::delete('/komputer/{id}/destroy', [KomputerController::class, 'destroy'])->name('komputer.destroy');
