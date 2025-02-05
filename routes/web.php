@@ -28,13 +28,14 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
     Route::post('/ip-address/store-single', [IpAddressController::class, 'storeSingle'])->name('ip-address.store-single');
     Route::put('ip-address/update-range', [IpAddressController::class, 'updateRange'])->name('ip-address.update-range');
     Route::delete('ip-address/destroy-range', [IpAddressController::class, 'destroyRange'])->name('ip-address.destroy-range');
-    Route::post('ip-address/update-status/{id}', [IpAddressController::class, 'updateIpStatus'])->name('ip-address.update-status');
-    Route::get('ip-address/{baseIp}/detail', [IpAddressController::class, 'showDetail'])->name('ip-address.detail');
+    Route::put('ip-address/update-status/{id}', [IpAddressController::class, 'updateIpStatus'])->name('ip-address.update-status');
+    Route::put('/ip-address/update-host/{id}', [IpAddressController::class, 'updateHost'])->name('ip-address.update-host');
+    Route::get('ip-address/{idIpHost}/detail', [IpAddressController::class, 'showDetail'])->name('ip-address.detail');
 
     // DATA BARANG
 
     // KOMPUTER
-    Route::get('/komputer', [KomputerController::class, 'index'])->name('komputer.index');
+    Route::get('/komputer/{tab?}', [KomputerController::class, 'index'])->name('komputer.index');
     Route::get('/komputer/create', [KomputerController::class, 'create'])->name('komputer.create');
     Route::post('/komputer/store', [KomputerController::class, 'store'])->name('komputer.store');
     Route::get('/komputer/{id}/edit', [KomputerController::class, 'edit'])->name('komputer.edit');
@@ -42,7 +43,6 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
     Route::delete('/komputer/{id}/destroy', [KomputerController::class, 'destroy'])->name('komputer.destroy');
     Route::post('/komputer/{id}/aktivasi', [KomputerController::class, 'aktivasi'])->name('komputer.aktivasi');
     Route::put('/komputer/{id}/musnah', [KomputerController::class, 'backupToMusnah'])->name('komputer.musnah');
-    Route::get('/komputer/{tab?}', [KomputerController::class, 'index'])->name('komputer.index');
     Route::put('/komputer/{id}/tobackup', [KomputerController::class, 'aktifToBackup'])->name('komputer.tobackup');
     Route::put('/komputer/{id}/topemusnahan', [KomputerController::class, 'aktifToMusnah'])->name('komputer.topemusnahan');
     

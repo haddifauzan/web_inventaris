@@ -2,10 +2,10 @@
 <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="{{ route('dashboard.index') }}" class="logo d-flex align-items-center">
         <img src="{{ asset('images/logo.png') }}" alt="">
         <span class="d-none d-lg-block fw-bold" style="color: #333;">RHIS</span>
-        <span class="d-none d-lg-block ms-2" style="font-size: 12px; color: #333;">Rajawali Hiyoto Inventory System</span>
+        <span class="d-none d-lg-block ms-2 m-0 p-0" style="font-size: 12px; color: #333;">Rajawali Hiyoto Inventory System</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->

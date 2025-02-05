@@ -307,7 +307,7 @@ class KomputerController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('komputer.index')
+                ->route('komputer.index', ['tab' => 'backup'])
                 ->with('success', 'Komputer berhasil diaktivasi');
         } catch (\Exception $e) {
             DB::rollback();
@@ -321,6 +321,7 @@ class KomputerController extends Controller
     public function backupToMusnah(Request $request, $id)
     {
         $request->validate([
+            'kelayakan' => 'required|numeric|min:0|max:100',
             'keterangan' => 'nullable'
         ]);
 
@@ -333,7 +334,10 @@ class KomputerController extends Controller
             
             // Check if computer has no history
             if ($barang->riwayat()->exists()) {
-                $barang->update(['status' => 'Pemusnahan']);
+                $barang->update([
+                    'status' => 'Pemusnahan',
+                    'kelayakan' => $request->kelayakan,
+                ]);
                 
                 MenuPemusnahan::create([
                     'id_barang' => $id,
@@ -344,7 +348,7 @@ class KomputerController extends Controller
 
                 DB::commit();
                 return redirect()
-                    ->route('komputer.index')
+                    ->route('komputer.index', ['tab' => 'backup'])
                     ->with('success', 'Komputer berhasil dimusnahkan');
             } else {
                 throw new \Exception('Komputer tidak dapat dimusnahkan belum memiliki riwayat penggunaan');
@@ -360,6 +364,7 @@ class KomputerController extends Controller
     public function aktifToBackup(Request $request, $id)
     {
         $request->validate([
+            'kelayakan' => 'required|numeric|min:0|max:100',
             'keterangan' => 'nullable'
         ]);
 
@@ -371,7 +376,10 @@ class KomputerController extends Controller
                 ->firstOrFail();
             
             // Update status barang
-            $barang->update(['status' => 'Backup']);
+            $barang->update([
+                'status' => 'Backup',
+                'kelayakan' => $request->kelayakan,
+            ]);
 
             // Create menu backup entry
             MenuBackup::create([
@@ -417,6 +425,7 @@ class KomputerController extends Controller
     public function aktifToMusnah(Request $request, $id)
     {
         $request->validate([
+            'kelayakan' => 'required|numeric|min:0|max:100',
             'keterangan' => 'nullable'
         ]);
 
@@ -428,7 +437,10 @@ class KomputerController extends Controller
                 ->firstOrFail();
             
             // Update status barang
-            $barang->update(['status' => 'Pemusnahan']);
+            $barang->update([
+                'status' => 'Pemusnahan',
+                'kelayakan' => $request->kelayakan,
+            ]);
 
             // Create menu pemusnahan entry
             MenuPemusnahan::create([

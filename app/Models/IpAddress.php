@@ -13,6 +13,7 @@ class IpAddress extends Model
     protected $fillable = [
         'ip_address', // Alamat IP unik
         'status',     // Status IP (Available/In Use/Blocked)
+        'id_ip_host', // ID IP Host
         'id_barang'   // ID barang yang menggunakan IP ini
     ];
 
@@ -31,4 +32,8 @@ class IpAddress extends Model
         return $this->belongsTo(Barang::class, 'id_barang');
     }
     
+    public function ipHost()
+    {
+        return $this->belongsTo(IpHost::class, 'id_ip_host');
+    }
 }

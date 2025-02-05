@@ -52,12 +52,9 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-primary btn-sm"
-                                data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $komputer->id_barang }}"
-                                title="Aktivasi">
-                            <i class="bi bi-check-circle"></i>
-                            Aktif
-                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $komputer->id_barang }}">
+                            <i class="bi bi-check-circle"></i> Aktif
+                        </button>                        
                         @if($komputer->riwayat()->exists())
                             <button type="button" class="btn btn-danger btn-sm"
                                     data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $komputer->id_barang }}"
@@ -75,16 +72,15 @@
 
 @foreach ( $data as $index => $komputer )
 {{-- Modal Aktivasi --}}
-<div class="modal fade" id="aktivasiModal{{ $komputer->id_barang }}" tabindex="-1">
+<div class="modal fade" id="aktivasiModal{{ $komputer->id_barang }}" tabindex="-1" aria-labelledby="aktivasiModalLabel{{ $komputer->id_barang }}" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Aktivasi Komputer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="aktivasiModalLabel{{ $komputer->id_barang }}">Aktivasi Komputer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="{{ route('komputer.aktivasi', $komputer->id_barang) }}" method="POST">
                 @csrf
-                <input type="hidden" name="id_barang" id="aktivasi_id_barang">
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -99,7 +95,8 @@
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3">
                             <label class="form-label col-form-label-sm">Lokasi</label>
-                            <select class="form-select form-select-sm" name="id_lokasi" required>
+                            <select class="form-select form-select-sm" name="id_lokasi" id="lokasi-select{{ $komputer->id_barang }}" required>
+                                <option value="">Pilih Lokasi</option>
                                 @foreach($lokasi as $lok)
                                     <option value="{{ $lok->id_lokasi }}">{{ $lok->nama_lokasi }}</option>
                                 @endforeach
@@ -117,12 +114,19 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">IP Address</label>
-                            <input type="text" id="ip-search-input" class="form-control form-control-sm form-control form-control-sm-sm mb-1" placeholder="Ketik untuk mencari IP Address">
-                            <select class="form-select form-select-sm" name="ip_address">
-                                @foreach($ipAddresses as $ip)
-                                    <option value="{{ $ip->id_ip }}">{{ $ip->ip_address }}</option>
-                                @endforeach
-                            </select>
+                            <div class="ip-selection-container">
+                                <div class="input-group input-group-sm mb-2">
+                                    <input type="text" id="ip-search-input{{ $komputer->id_barang }}" class="form-control" placeholder="Cari IP Address...">
+                                    <button class="btn btn-secondary" type="button" id="clear-search{{ $komputer->id_barang }}">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                                <div class="ip-list-container">
+                                    <ul id="ip-address-list{{ $komputer->id_barang }}" class="ip-list">
+                                        <li class="no-results">Pilih lokasi terlebih dahulu</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Komputer Name</label>
@@ -137,13 +141,13 @@
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Kelayakan (%)</label>
                             <div class="d-flex align-items-center">
-                                <input type="range" class="form-range form-range-sm me-2 mt-2" name="kelayakan" min="0" max="100" id="kelayakanRange" value="{{ old('kelayakan', $komputer->kelayakan) }}" required style="direction: ltr;">
-                                <span id="kelayakanValue" class="fw-bold">{{ old('kelayakan', $komputer->kelayakan) }}</span>%
+                                <input type="range" class="form-range form-range-sm me-2 mt-2" name="kelayakan" min="0" max="100" id="kelayakanRange{{ $komputer->id_barang }}" value="{{ old('kelayakan', $komputer->kelayakan) }}" required style="direction: ltr;">
+                                <span id="kelayakanValue{{ $komputer->id_barang }}" class="fw-bold">{{ old('kelayakan', $komputer->kelayakan) }}</span>%
                             </div>
                         </div>
                         <script>
-                            document.getElementById('kelayakanRange').addEventListener('input', function() {
-                                document.getElementById('kelayakanValue').textContent = this.value;
+                            document.getElementById('kelayakanRange{{ $komputer->id_barang }}').addEventListener('input', function() {
+                                document.getElementById('kelayakanValue{{ $komputer->id_barang }}').textContent = this.value;
                             });
                         </script>
                     </div>
@@ -175,6 +179,18 @@
                 @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label class="form-label col-form-label-sm">Kelayakan (%)</label>
+                        <div class="d-flex align-items-center">
+                            <input type="range" class="form-range form-range-sm me-2 mt-2" name="kelayakan" min="0" max="100" id="kelayakanMusnahRange{{ $komputer->id_barang }}" value="{{ old('kelayakan', $komputer->kelayakan) }}" required style="direction: ltr;">
+                            <span id="kelayakanMusnahValue{{ $komputer->id_barang }}" class="fw-bold">{{ old('kelayakan', $komputer->kelayakan) }}</span>%
+                        </div>
+                    </div>
+                    <script>
+                        document.getElementById('kelayakanMusnahRange{{ $komputer->id_barang }}').addEventListener('input', function() {
+                            document.getElementById('kelayakanMusnahValue{{ $komputer->id_barang }}').textContent = this.value;
+                        });
+                    </script>
+                    <div class="mb-3">
                         <label class="form-label col-form-label-sm">Keterangan</label>
                         <textarea name="keterangan" class="form-control form-control-sm" placeholder="Masukkan keterangan jika diperlukan"></textarea>
                     </div>
@@ -188,50 +204,177 @@
     </div>
 </div>
 
+<style>
+    .ip-selection-container {
+        position: relative;
+    }
+
+    .ip-list-container {
+        border: 1px solid #ced4da;
+        border-radius: 5px;
+        max-height: 150px; /* Batasi tinggi agar tidak memanjang ke bawah */
+        overflow-y: auto; /* Aktifkan scroll hanya dalam batas ini */
+        background: white;
+        width: 100%;
+    }
+
+    .ip-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .ip-list li {
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .ip-list li:last-child {
+        border-bottom: none;
+    }
+
+    .ip-host-group {
+        font-weight: bold;
+        background-color: #f8f9fa;
+        padding: 5px;
+        color: #495057;
+        cursor: default;
+    }
+
+    .ip-address-option {
+        padding-left: 15px;
+    }
+
+    .no-results {
+        padding: 10px;
+        color: #6c757d;
+        text-align: center;
+        font-style: italic;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    // Get the search input and select element
-    const searchInput = document.getElementById('ip-search-input');
-    const selectElement = document.querySelector('select[name="ip_address"]');
+        const lokasiSelect = document.getElementById('lokasi-select{{ $komputer->id_barang }}');
+        const ipSearchInput = document.getElementById('ip-search-input{{ $komputer->id_barang }}');
+        const ipAddressList = document.getElementById('ip-address-list{{ $komputer->id_barang }}');
+        const clearSearchBtn = document.getElementById('clear-search{{ $komputer->id_barang }}');
 
-    // Add event listener for search input
-    searchInput.addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase().trim();
+        async function loadIpAddresses(lokasiId) {
+            try {
+                const response = await fetch(`/api/lokasi/${lokasiId}/ip-addresses`);
+                const data = await response.json();
+                ipAddressList.innerHTML = '';
 
-        // Loop through all options
-        Array.from(selectElement.options).forEach(option => {
-            const optionText = option.text.toLowerCase();
-            
-            // Show or hide options based on search term
-            if (optionText.includes(searchTerm) || searchTerm === '') {
-                option.style.display = '';
+                if (!data.ipHosts || data.ipHosts.length === 0) {
+                    ipAddressList.innerHTML = '<li class="no-results">Tidak ada IP Address tersedia</li>';
+                    return;
+                }
+
+                data.ipHosts.forEach(ipHost => {
+                    const groupHeader = document.createElement('li');
+                    groupHeader.textContent = ipHost.ip_host;
+                    groupHeader.classList.add('ip-host-group');
+                    ipAddressList.appendChild(groupHeader);
+
+                    if (ipHost.ip_addresses && ipHost.ip_addresses.length > 0) {
+                        ipHost.ip_addresses.forEach(ip => {
+                            if (ip.status === 'Available') {
+                                const listItem = document.createElement('li');
+                                listItem.classList.add('ip-address-option');
+
+                                const radio = document.createElement('input');
+                                radio.type = 'radio';
+                                radio.name = 'ip_address';
+                                radio.value = ip.id_ip;
+                                radio.id = `ip-${ip.id_ip}`;
+
+                                const label = document.createElement('label');
+                                label.setAttribute('for', `ip-${ip.id_ip}`);
+                                label.textContent = ` ${ip.ip_address}`;
+                                label.style.marginLeft = '10px';
+
+                                listItem.appendChild(radio);
+                                listItem.appendChild(label);
+                                ipAddressList.appendChild(listItem);
+                            }
+                        });
+                    } else {
+                        const noIpItem = document.createElement('li');
+                        noIpItem.textContent = '  Tidak ada IP tersedia';
+                        noIpItem.classList.add('ip-address-option');
+                        noIpItem.style.fontStyle = 'italic';
+                        noIpItem.style.color = '#6c757d';
+                        ipAddressList.appendChild(noIpItem);
+                    }
+                });
+
+                filterIpAddresses('');
+            } catch (error) {
+                console.error('Error loading IP addresses:', error);
+                ipAddressList.innerHTML = '<li class="no-results">Error loading IP addresses</li>';
+            }
+        }
+
+        function filterIpAddresses(searchTerm) {
+            let visibleOptions = 0;
+
+            Array.from(ipAddressList.children).forEach(item => {
+                if (item.classList.contains('ip-host-group')) return;
+
+                const matches = item.textContent.toLowerCase().includes(searchTerm.toLowerCase());
+                if (matches) {
+                    item.style.display = 'flex';
+                    visibleOptions++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            const noResults = document.querySelector('.no-results');
+            if (visibleOptions === 0) {
+                if (!noResults) {
+                    const noResultsItem = document.createElement('li');
+                    noResultsItem.textContent = 'Tidak ditemukan IP Address yang sesuai';
+                    noResultsItem.classList.add('no-results');
+                    ipAddressList.appendChild(noResultsItem);
+                }
             } else {
-                option.style.display = 'none';
+                if (noResults) {
+                    noResults.remove();
+                }
+            }
+        }
+
+        lokasiSelect.addEventListener('change', function() {
+            const lokasiId = this.value;
+            ipSearchInput.value = '';
+            if (lokasiId) {
+                loadIpAddresses(lokasiId);
+            } else {
+                ipAddressList.innerHTML = '<li class="no-results">Pilih lokasi terlebih dahulu</li>';
             }
         });
 
-        // Open the select dropdown when typing
-        if (selectElement.multiple) {
-            selectElement.size = Math.min(selectElement.options.length, 10);
-        } else {
-            selectElement.size = Math.min(selectElement.options.length, 10);
-            selectElement.click();
-        }
-    });
+        ipSearchInput.addEventListener('input', function() {
+            filterIpAddresses(this.value.trim());
+        });
 
-    // Close dropdown when an option is selected
-    selectElement.addEventListener('change', function() {
-        if (!selectElement.multiple) {
-            selectElement.size = 1;
-        }
-    });
+        clearSearchBtn.addEventListener('click', function() {
+            ipSearchInput.value = '';
+            filterIpAddresses('');
+            ipSearchInput.focus();
+        });
 
-    // Prevent form submission when pressing enter in search input
-    searchInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-        }
+        ipSearchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
     });
-});
 </script>
 @endforeach
+
+

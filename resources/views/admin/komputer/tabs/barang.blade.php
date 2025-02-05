@@ -30,13 +30,13 @@
                 <td>
                     <button type="button" class="btn btn-sm btn-primary text-white"" 
                             data-bs-toggle="modal" data-bs-target="#serialModal{{ $komputer->id_barang }}">
-                        <i class="bi bi-eye"></i>
+                        <i class="bi bi-eye-fill"></i>
                     </button>
                 </td>
                 <td>
                     <button type="button" class="btn btn-sm btn-primary text-white" 
                             data-bs-toggle="modal" data-bs-target="#spesifikasiModal{{ $komputer->id_barang }}">
-                        <i class="bi bi-eye"></i>
+                        <i class="bi bi-eye-fill"></i>
                     </button>
                 </td>
                 <td>

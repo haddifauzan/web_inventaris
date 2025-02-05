@@ -24,6 +24,9 @@ class MenuAktif extends Model
         'keterangan'    // Keterangan tambahan
     ];
 
+    protected $dates = ['created_at', 'updated_at']; // Add this line to the MenuAktif model to define the dates
+
+
     public function barang()
     {
         return $this->belongsTo(Barang::class, 'id_barang');

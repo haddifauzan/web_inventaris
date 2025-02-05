@@ -58,7 +58,7 @@
           </li>
           <li>
             <a href="{{route('ip-address.index')}}" class="{{ (request()->routeIs('ip-address.index') || request()->routeIs('ip-address.detail') ? 'active' : '') }}">
-              <i class="bi bi-geo" style="font-size: 14px;"></i><span class="ms-1">Ip Address</span>
+              <i class="bi bi-geo" style="font-size: 14px;"></i><span class="ms-1">IP Address</span>
             </a>
           </li>
         </ul>

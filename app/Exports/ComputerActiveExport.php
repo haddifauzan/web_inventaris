@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Concerns\WithDrawings;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 
 class ComputerActiveExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithDrawings, WithCustomStartCell
@@ -55,25 +56,37 @@ class ComputerActiveExport implements FromCollection, WithHeadings, WithMapping,
                 $q->where('jenis_barang', 'Komputer');
             });
 
-        if ($this->periode) {
-            $query->whereYear('tahun_perolehan', Carbon::parse($this->periode)->year)
-                ->whereMonth('tahun_perolehan', Carbon::parse($this->periode)->month);
+        if (!empty($this->periode)) {
+            $carbonPeriode = Carbon::createFromFormat('Y-m', $this->periode);
+            $query->whereHas('menuAktif', function ($q) use ($carbonPeriode) {
+                $q->whereYear('created_at', $carbonPeriode->year);
+                $q->whereMonth('created_at', $carbonPeriode->month);
+            });
         }
 
-        if ($this->lokasi) {
+        if (!empty($this->lokasi)) {
             $query->whereHas('menuAktif', function ($q) {
                 $q->where('id_lokasi', $this->lokasi);
             });
         }
 
-        if ($this->departemen) {
+        if (!empty($this->departemen)) {
             $query->whereHas('menuAktif', function ($q) {
-                $q->where('id_lokasi', $this->departemen);
+                $q->where('id_departemen', $this->departemen);
             });
         }
 
-        return $query->get();
+        $computers = $query->get();
+
+        if ($computers->isEmpty()) {
+            throw ValidationException::withMessages([
+                'error' => 'Tidak ada data yang ditemukan dengan filter yang diberikan.'
+            ]);
+        }
+
+        return $computers;
     }
+
 
     public function headings(): array
     {
@@ -122,7 +135,7 @@ class ComputerActiveExport implements FromCollection, WithHeadings, WithMapping,
         // Add Periode and Hal with borders
         $sheet->mergeCells('N2:O2');
         $sheet->mergeCells('N3:O3');
-        $sheet->setCellValue('N2', 'PERIODE: ' . strtoupper(Carbon::parse($this->periode)->format('M Y')));
+        $sheet->setCellValue('N2', 'PERIODE: ' . (empty($this->periode) ? 'Semua Periode' : strtoupper(Carbon::parse($this->periode)->format('M Y'))));
         $sheet->setCellValue('N3', 'HAL: 1/1');
 
         // Add borders to header section

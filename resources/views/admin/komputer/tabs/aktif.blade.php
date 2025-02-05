@@ -97,6 +97,18 @@
                                     @method('PUT')
                                     <div class="modal-body">
                                         <div class="mb-3">
+                                            <label class="form-label col-form-label-sm">Kelayakan (%)</label>
+                                            <div class="d-flex align-items-center">
+                                                <input type="range" class="form-range form-range-sm me-2 mt-2" name="kelayakan" min="0" max="100" id="kelayakanRange{{ $computer->id_barang }}" value="{{ old('kelayakan', $computer->kelayakan) }}" required style="direction: ltr;">
+                                                <span id="kelayakanValue{{ $computer->id_barang }}" class="fw-bold">{{ old('kelayakan', $computer->kelayakan) }}</span>%
+                                            </div>
+                                        </div>
+                                        <script>
+                                            document.getElementById('kelayakanRange{{ $computer->id_barang }}').addEventListener('input', function() {
+                                                document.getElementById('kelayakanValue{{ $computer->id_barang }}').textContent = this.value;
+                                            });
+                                        </script>
+                                        <div class="mb-3">
                                             <label class="form-label">Keterangan</label>
                                             <textarea name="keterangan" class="form-control" placeholder="Masukkan keterangan jika diperlukan"></textarea>
                                         </div>
@@ -122,6 +134,18 @@
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label col-form-label-sm">Kelayakan (%)</label>
+                                            <div class="d-flex align-items-center">
+                                                <input type="range" class="form-range form-range-sm me-2 mt-2" name="kelayakan" min="0" max="100" id="kelayakanMusnahRange{{ $computer->id_barang }}" value="{{ old('kelayakan', $computer->kelayakan) }}" required style="direction: ltr;">
+                                                <span id="kelayakanMusnahValue{{ $computer->id_barang }}" class="fw-bold">{{ old('kelayakan', $computer->kelayakan) }}</span>%
+                                            </div>
+                                        </div>
+                                        <script>
+                                            document.getElementById('kelayakanMusnahRange{{ $computer->id_barang }}').addEventListener('input', function() {
+                                                document.getElementById('kelayakanMusnahValue{{ $computer->id_barang }}').textContent = this.value;
+                                            });
+                                        </script>
                                         <div class="mb-3">
                                             <label class="form-label">Keterangan</label>
                                             <textarea name="keterangan" class="form-control" placeholder="Masukkan keterangan jika diperlukan"></textarea>

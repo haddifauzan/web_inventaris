@@ -25,4 +25,9 @@ class Lokasi extends Model
     {
         return $this->hasMany(Riwayat::class, 'id_lokasi');
     }
+
+    public function ipHosts()
+    {
+        return $this->hasMany(IpHost::class, 'id_lokasi');
+    }
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_ip');
             $table->string('ip_address')->unique();
             $table->enum('status', ['Available', 'In Use', 'Blocked']);
+            $table->foreignId('id_ip_host')->constrained('tbl_ip_host', 'id_ip_host')->onDelete('cascade');
             $table->foreignId('id_barang')->constrained('tbl_barang', 'id_barang')->onDelete('cascade');
             $table->timestamps();
         });

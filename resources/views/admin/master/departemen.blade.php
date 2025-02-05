@@ -9,7 +9,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h2 class="card-title">Data Departemen</h2>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
                             <i class="bi bi-plus me-2"></i> Tambah Departemen
                         </button>
                     </div>
@@ -37,10 +37,10 @@
                                         <td>{{ $item->deskripsi ?? '-' }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ $item->id_departemen }}">
-                                                <i class="bi bi-pencil text-white"></i>
+                                                <i class="bi bi-pencil-fill text-white"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $item->id_departemen }}">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash-fill"></i>
                                             </button>
                                         </td>
                                     </tr>

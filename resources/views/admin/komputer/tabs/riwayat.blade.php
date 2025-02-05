@@ -69,7 +69,7 @@
                 </td>
                 <td>
                     <button type="button" class="btn btn-info btn-sm text-white d-flex" title="Lihat Riwayat" data-bs-toggle="modal" data-bs-target="#historyModal{{ $barang->id_barang }}">
-                        <i class="bi bi-eye me-1"></i> Lihat
+                        <i class="bi bi-eye-fill me-1"></i> Lihat
                     </button>
                 </td>
             </tr>
@@ -132,10 +132,10 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @if ($barang->riwayat->first()->status === 'Aktif')
-                                        <span class="badge bg-primary">{{ $barang->riwayat->first()->status }}</span>
+                                    @if ($history->status === 'Aktif')
+                                        <span class="badge bg-primary">{{ $history->status }}</span>
                                     @else
-                                        <span class="badge bg-secondary">{{ $barang->riwayat->first()->status }}</span>
+                                        <span class="badge bg-secondary">{{ $history->status }}</span>
                                     @endif
                                 </td>
                                 <td data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $history->keterangan }}">

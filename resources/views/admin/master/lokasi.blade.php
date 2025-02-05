@@ -37,10 +37,10 @@
                                         <td>{{ $item->deskripsi ?? '-' }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ $item->id_lokasi }}">
-                                                <i class="bi bi-pencil text-white"></i>
+                                                <i class="bi bi-pencil-fill text-white"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $item->id_lokasi }}">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash-fill"></i>
                                             </button>
                                         </td>
                                     </tr>
