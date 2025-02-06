@@ -2,12 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TipeBarangController;
 
 Route::get('/lokasi/{lokasi}/ip-addresses', function ($lokasiId) {
     $ipHosts = \App\Models\IpHost::where('id_lokasi', $lokasiId)
         ->with(['ipAddresses' => function($query) {
             $query->where('status', 'Available')
-                  ->orderBy('ip_address');
+                  ->orderByRaw('CAST(SUBSTRING_INDEX(ip_address, ".", -1) AS UNSIGNED)');
         }])
         ->get();
     
@@ -20,3 +21,5 @@ Route::get('/lokasi/{lokasi}/ip-addresses', function ($lokasiId) {
         })
     ]);
 });
+
+Route::get('/tipe-barang/{id}', [TipeBarangController::class, 'getSpesifikasi']);

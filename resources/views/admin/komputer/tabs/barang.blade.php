@@ -123,8 +123,8 @@
                 </div>
                 <div class="modal-body">
                     <ul class="list-unstyled mb-0">
-                        @if($komputer->spesifikasi)
-                            @foreach($komputer->spesifikasi as $key => $value)
+                        @if(is_string($komputer->spesifikasi))
+                            @foreach(json_decode($komputer->spesifikasi, true) as $key => $value)
                                 <li><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</li>
                             @endforeach
                         @else

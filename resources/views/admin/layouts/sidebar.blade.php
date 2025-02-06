@@ -61,6 +61,11 @@
               <i class="bi bi-geo" style="font-size: 14px;"></i><span class="ms-1">IP Address</span>
             </a>
           </li>
+          <li>
+            <a href="{{route('tipe-barang.index')}}" class="{{ (request()->routeIs('tipe-barang.index') ? 'active' : '') }}">
+              <i class="bi bi-tag" style="font-size: 14px;"></i><span class="ms-1">Merk/Tipe Barang</span>
+            </a>
+          </li>
         </ul>
       </li>
     </ul>

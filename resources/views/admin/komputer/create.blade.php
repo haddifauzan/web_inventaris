@@ -28,9 +28,19 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label col-form-label-sm">Tipe/Merk <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm @error('tipe_merk') is-invalid @enderror" 
-                                    name="tipe_merk" value="{{ old('tipe_merk') }}" 
-                                    placeholder="Contoh: Asus, Lenovo, Dell, HP" required>
+                                <select class="form-select form-select-sm @error('tipe_merk') is-invalid @enderror" 
+                                        name="tipe_merk" 
+                                        id="selectTipeMerk" 
+                                        required>
+                                    <option value="">Pilih Tipe/Merk</option>
+                                    @foreach($tipeBarang as $tipe)
+                                        <option value="{{ $tipe->id_tipe_barang }}" 
+                                                {{ old('tipe_merk', $barang->tipe_merk ?? '') == $tipe->tipe_merk ? 'selected' : '' }}
+                                                data-merk="{{ $tipe->tipe_merk }}">
+                                            {{ $tipe->tipe_merk }}
+                                        </option>
+                                    @endforeach
+                                </select>
                                 @error('tipe_merk')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -99,34 +109,35 @@
                                 <div class="ms-2 flex-grow-1">
                                     <hr class="my-0">
                                 </div>
+                                <button type="button" class="btn btn-primary btn-sm ms-2" id="tambahSpesifikasi">
+                                    <i class="bi bi-plus-circle me-1"></i>Tambah Spesifikasi
+                                </button>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label col-form-label-sm">Processor</label>
-                                        <input type="text" class="form-control form-control-sm" name="spesifikasi[processor]" 
-                                            value="{{ old('spesifikasi.processor') }}"
-                                            placeholder="Contoh: Intel Core i5-10400F">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label col-form-label-sm">RAM</label>
-                                        <input type="text" class="form-control form-control-sm" name="spesifikasi[ram]" 
-                                            value="{{ old('spesifikasi.ram') }}"
-                                            placeholder="Contoh: 16GB DDR4">
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label col-form-label-sm">Storage</label>
-                                        <input type="text" class="form-control form-control-sm" name="spesifikasi[storage]" 
-                                            value="{{ old('spesifikasi.storage') }}"
-                                            placeholder="Contoh: 512GB SSD + 1TB HDD">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label col-form-label-sm">GPU (jika ada)</label>
-                                        <input type="text" class="form-control form-control-sm" name="spesifikasi[gpu]" 
-                                            value="{{ old('spesifikasi.gpu') }}"
-                                            placeholder="Contoh: NVIDIA RTX 3060">
+                            <div id="spesifikasiContainer">
+                                <!-- Default spesifikasi fields -->
+                                <div class="spesifikasi-item">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control form-control-sm" 
+                                                       name="spesifikasi_keys[]" 
+                                                       placeholder="Nama Spesifikasi"
+                                                       value="processor">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <input type="text" class="form-control form-control-sm" 
+                                                       name="spesifikasi_values[]" 
+                                                       placeholder="Nilai Spesifikasi"
+                                                       value="{{ old('spesifikasi.processor') }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -173,6 +184,123 @@
 <script>
     document.getElementById('kelayakanRange').addEventListener('input', function() {
         document.getElementById('kelayakanValue').textContent = this.value;
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const spesifikasiContainer = document.getElementById('spesifikasiContainer');
+        const tambahSpesifikasiBtn = document.getElementById('tambahSpesifikasi');
+        const selectTipeMerk = document.getElementById('selectTipeMerk');
+    
+        // Default spesifikasi fields
+        const defaultSpesifikasi = {
+            'Processor': '',
+            'RAM': '',
+            'Storage': ''
+        };
+    
+        // Initialize with default fields
+        populateSpesifikasi(defaultSpesifikasi);
+    
+        tambahSpesifikasiBtn.addEventListener('click', function() {
+            tambahSpesifikasiBaru();
+        });
+    
+        spesifikasiContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('hapus-spesifikasi') || 
+                e.target.parentElement.classList.contains('hapus-spesifikasi')) {
+                const button = e.target.classList.contains('hapus-spesifikasi') ? 
+                              e.target : e.target.parentElement;
+                const spesifikasiItem = button.closest('.spesifikasi-item');
+                if (spesifikasiContainer.children.length > 1) {
+                    spesifikasiItem.remove();
+                } else {
+                    showNotification('Minimal harus ada satu spesifikasi', 'warning');
+                }
+            }
+        });
+    
+        selectTipeMerk.addEventListener('change', function() {
+            const tipeBarangId = this.value;
+            
+            if (!tipeBarangId) {
+                populateSpesifikasi(defaultSpesifikasi);
+                return;
+            }
+            
+            fetch(`/api/tipe-barang/${tipeBarangId}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success && result.data) {
+                        if (confirm('Apakah Anda ingin mengisi otomatis spesifikasi yang tersedia?')) {
+                            const spesifikasi = JSON.parse(result.data);
+                            populateSpesifikasi(spesifikasi);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Gagal memuat spesifikasi', 'error');
+                });
+        });
+    
+        function tambahSpesifikasiBaru(key = '', value = '') {
+            const newItem = document.createElement('div');
+            newItem.className = 'spesifikasi-item';
+            newItem.innerHTML = `
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="mb-3">
+                            <input type="text" class="form-control form-control-sm" 
+                                   name="spesifikasi_keys[]" 
+                                   value="${key}"
+                                   placeholder="Nama Spesifikasi">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <input type="text" class="form-control form-control-sm" 
+                                   name="spesifikasi_values[]" 
+                                   value="${value}"
+                                   placeholder="Nilai Spesifikasi">
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            spesifikasiContainer.appendChild(newItem);
+        }
+    
+        function populateSpesifikasi(spesifikasi) {
+            spesifikasiContainer.innerHTML = '';
+            Object.entries(spesifikasi).forEach(([key, value]) => {
+                tambahSpesifikasiBaru(key, value);
+            });
+        }
+    
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1050';
+            
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
     });
 </script>
 

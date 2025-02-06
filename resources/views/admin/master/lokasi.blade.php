@@ -8,7 +8,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h2 class="card-title">Data Lokasi</h2>
+                        <h2 class="card-title">Table Data Lokasi</h2>
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
                             <i class="bi bi-plus me-2"></i> Tambah Lokasi
                         </button>

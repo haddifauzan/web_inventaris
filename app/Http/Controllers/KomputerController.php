@@ -11,6 +11,7 @@ use App\Models\Riwayat;
 use App\Models\IpAddress;
 use App\Models\Departemen;
 use App\Models\Lokasi;
+use App\Models\TipeBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -79,7 +80,8 @@ class KomputerController extends Controller
             ['url' => '#', 'text' => 'Tambah Komputer'],
         ];
 
-        return view('admin.komputer.create', compact('title', 'breadcrumbs'));
+        $tipeBarang = TipeBarang::where('jenis_barang', 'Komputer')->get();
+        return view('admin.komputer.create', compact('title', 'breadcrumbs', 'tipeBarang'));
     }
 
     public function store(Request $request)
@@ -92,8 +94,9 @@ class KomputerController extends Controller
             'serial.monitor' => 'nullable',
             'operating_system' => 'required',
             'tahun_perolehan' => 'required|date_format:Y-m',
-            'spesifikasi' => 'required|array',
-            'kelayakan' => 'required|numeric|min:0|max:100'
+            'kelayakan' => 'required|numeric|min:0|max:100',
+            'spesifikasi_keys' => 'required|array',
+            'spesifikasi_values' => 'required|array'
         ]);
 
         // Ubah format tahun_perolehan menjadi YYYY-MM-01
@@ -117,14 +120,25 @@ class KomputerController extends Controller
         }
 
         DB::beginTransaction();
+
+        $spesifikasi = [];
+        $keys = $request->spesifikasi_keys ?? [];
+        $values = $request->spesifikasi_values ?? [];
+        
+        foreach ($keys as $index => $key) {
+            if (!empty($key) && isset($values[$index])) {
+                $spesifikasi[$key] = $values[$index];
+            }
+        }
+
         try {
             $barang = Barang::create([
                 'jenis_barang' => 'Komputer',
                 'model' => $request->model,
-                'tipe_merk' => $request->tipe_merk,
+                'tipe_merk' => TipeBarang::findOrFail($request->tipe_merk)->tipe_merk,
                 'serial' => $serialData, // Store as JSON string
                 'operating_system' => $request->operating_system,
-                'spesifikasi' => $request->spesifikasi,
+                'spesifikasi' => json_encode($spesifikasi),
                 'kelayakan' => $request->kelayakan,
                 'tahun_perolehan' => $tahunPerolehan, // Simpan dengan format YYYY-MM-01
                 'status' => 'Backup'
@@ -161,7 +175,9 @@ class KomputerController extends Controller
             ->where('jenis_barang', 'Komputer')
             ->firstOrFail();
 
-        return view('admin.komputer.edit', compact('title', 'breadcrumbs', 'barang'));
+        $tipeBarang = TipeBarang::where('jenis_barang', 'Komputer')->get();
+
+        return view('admin.komputer.edit', compact('title', 'breadcrumbs', 'barang', 'tipeBarang'));
     }
 
     public function update(Request $request, $id)
@@ -175,21 +191,31 @@ class KomputerController extends Controller
             'operating_system' => 'required',
             'kelayakan' => 'required|numeric|min:0|max:100',
             'tahun_perolehan' => 'required|date_format:Y-m',
-            'spesifikasi' => 'required|array'
+            'spesifikasi_keys' => 'required|array',
+            'spesifikasi_values' => 'required|array'
         ]);
 
-        // Format tahun_perolehan menjadi YYYY-MM-01 sebelum disimpan
+        // Format tahun_perolehan menjadi YYYY-MM-01
         $tahunPerolehan = $request->tahun_perolehan . '-01';
-
-        // Prepare serial data for JSON storage
+        
+        // Prepare serial data
         $serialData = json_encode($request->serial);
+        
+        $spesifikasi = [];
+        $keys = $request->spesifikasi_keys ?? [];
+        $values = $request->spesifikasi_values ?? [];
+        
+        foreach ($keys as $index => $key) {
+            if (!empty($key) && isset($values[$index])) {
+                $spesifikasi[$key] = $values[$index];
+            }
+        }
 
-        // Check if either CPU or Monitor serial already exists for other computers
+        // Check existing serials
         $existingSerial = Barang::where('id_barang', '!=', $id)
-            ->where(function ($query) use ($serialData) {
-                $serial = json_decode($serialData, true);
-                $query->whereRaw("JSON_EXTRACT(serial, '$.cpu') = ?", [$serial['cpu']])
-                    ->orWhereRaw("JSON_EXTRACT(serial, '$.monitor') = ?", [$serial['monitor']]);
+            ->where(function ($query) use ($request) {
+                $query->whereRaw("JSON_EXTRACT(serial, '$.cpu') = ?", [$request->serial['cpu']])
+                    ->orWhereRaw("JSON_EXTRACT(serial, '$.monitor') = ?", [$request->serial['monitor']]);
             })->first();
 
         if ($existingSerial) {
@@ -202,15 +228,15 @@ class KomputerController extends Controller
         DB::beginTransaction();
         try {
             $barang = Barang::findOrFail($id);
-
+            
             $barang->update([
                 'model' => $request->model,
-                'tipe_merk' => $request->tipe_merk,
-                'serial' => $serialData, // Store as JSON string
+                'tipe_merk' => TipeBarang::findOrFail($request->tipe_merk)->tipe_merk,
+                'serial' => $serialData,
                 'operating_system' => $request->operating_system,
-                'spesifikasi' => $request->spesifikasi,
+                'spesifikasi' => json_encode($spesifikasi),
                 'kelayakan' => $request->kelayakan,
-                'tahun_perolehan' => $tahunPerolehan, // Simpan dengan format YYYY-MM-01
+                'tahun_perolehan' => $tahunPerolehan,
                 'keterangan' => $request->keterangan
             ]);
 

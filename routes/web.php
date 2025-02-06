@@ -9,6 +9,7 @@ use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\IpAddressController;
 use App\Http\Controllers\KomputerController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\TipeBarangController;
 
 
 Route::get('/', [AuthController::class, 'showLoginForm']);
@@ -22,6 +23,8 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
     // DATA MASTER
     Route::resource('lokasi', LokasiController::class);
     Route::resource('departemen', DepartemenController::class);
+    Route::resource('tipe-barang', TipeBarangController::class);
+
     Route::get('ip-address', [IpAddressController::class, 'index'])->name('ip-address.index');
     Route::get('ip-address/create', [IpAddressController::class, 'create'])->name('ip-address.create');
     Route::post('ip-address/store', [IpAddressController::class, 'store'])->name('ip-address.store');
