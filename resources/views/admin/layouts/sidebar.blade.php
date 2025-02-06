@@ -42,10 +42,10 @@
     
 
       <li class="nav-item">
-        <a class="nav-link {{ (request()->routeIs('lokasi.index') || request()->routeIs('departemen.index') || request()->routeIs('ip-address.index') || request()->routeIs('ip-address.detail') ? '' : 'collapsed') }}" data-bs-target="#data-master-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link {{ (request()->routeIs('lokasi.index') || request()->routeIs('departemen.index') || request()->routeIs('ip-address.index') || request()->routeIs('ip-address.detail') || request()->routeIs('tipe-barang.index') ? '' : 'collapsed') }}" data-bs-target="#data-master-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-database"></i><span>Data Master</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="data-master-nav" class="nav-content collapse {{ (request()->routeIs('lokasi.index') || request()->routeIs('departemen.index') || request()->routeIs('ip-address.index') || request()->routeIs('ip-address.detail') ? 'show' : '') }}" data-bs-parent="#sidebar-nav">
+        <ul id="data-master-nav" class="nav-content collapse {{ (request()->routeIs('lokasi.index') || request()->routeIs('departemen.index') || request()->routeIs('ip-address.index') || request()->routeIs('ip-address.detail') || request()->routeIs('tipe-barang.index') ? 'show' : '') }}" data-bs-parent="#sidebar-nav">
           <li>
             <a href="{{route('lokasi.index')}}" class="{{ (request()->routeIs('lokasi.index') ? 'active' : '') }}">
               <i class="bi bi-geo-alt" style="font-size: 14px;"></i><span class="ms-1">Lokasi</span>
