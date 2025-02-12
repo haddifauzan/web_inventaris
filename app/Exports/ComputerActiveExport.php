@@ -58,9 +58,15 @@ class ComputerActiveExport implements FromCollection, WithHeadings, WithMapping,
 
         if (!empty($this->periode)) {
             $carbonPeriode = Carbon::createFromFormat('Y-m', $this->periode);
-            $query->whereHas('menuAktif', function ($q) use ($carbonPeriode) {
-                $q->whereYear('created_at', $carbonPeriode->year);
-                $q->whereMonth('created_at', $carbonPeriode->month);
+
+            $query->whereHas('riwayat', function ($q) use ($carbonPeriode) {
+                $q->whereYear('waktu_awal', '<=', $carbonPeriode->year)
+                ->whereMonth('waktu_awal', '<=', $carbonPeriode->month)
+                ->where(function ($query) use ($carbonPeriode) {
+                    $query->whereNull('waktu_akhir')  // Jika masih aktif (tidak ada waktu akhir)
+                            ->orWhereYear('waktu_akhir', '>=', $carbonPeriode->year)
+                            ->orWhereMonth('waktu_akhir', '>=', $carbonPeriode->month);
+                });
             });
         }
 
@@ -86,6 +92,7 @@ class ComputerActiveExport implements FromCollection, WithHeadings, WithMapping,
 
         return $computers;
     }
+
 
 
     public function headings(): array

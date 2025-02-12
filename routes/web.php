@@ -10,6 +10,7 @@ use App\Http\Controllers\IpAddressController;
 use App\Http\Controllers\KomputerController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\TipeBarangController;
+use App\Http\Controllers\TabletController;
 
 
 Route::get('/', [AuthController::class, 'showLoginForm']);
@@ -48,9 +49,20 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
     Route::put('/komputer/{id}/musnah', [KomputerController::class, 'backupToMusnah'])->name('komputer.musnah');
     Route::put('/komputer/{id}/tobackup', [KomputerController::class, 'aktifToBackup'])->name('komputer.tobackup');
     Route::put('/komputer/{id}/topemusnahan', [KomputerController::class, 'aktifToMusnah'])->name('komputer.topemusnahan');
-    
     Route::get('/laporan/export-computer-active', [LaporanController::class, 'exportReportComputerActive'])
     ->name('laporan.export-computer-active');
+
+    // TABLET
+    Route::get('/tablet/{tab?}', [TabletController::class, 'index'])->name('tablet.index');
+    Route::get('/tablet/barang/create', [TabletController::class, 'create'])->name('tablet.create');
+    Route::post('/tablet/barang/store', [TabletController::class, 'store'])->name('tablet.store');
+    Route::get('/tablet/{id}/edit', [TabletController::class, 'edit'])->name('tablet.edit');
+    Route::put('/tablet/{id}/update', [TabletController::class, 'update'])->name('tablet.update');
+    Route::delete('/tablet/{id}/destroy', [TabletController::class, 'destroy'])->name('tablet.destroy');
+    Route::post('/tablet/{id}/aktivasi', [TabletController::class, 'aktivasi'])->name('tablet.aktivasi');
+    Route::put('/tablet/{id}/musnah', [TabletController::class, 'backupToMusnah'])->name('tablet.musnah');
+    Route::put('/tablet/{id}/tobackup', [TabletController::class, 'aktifToBackup'])->name('tablet.tobackup');
+
     Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])->name('updateCredential');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

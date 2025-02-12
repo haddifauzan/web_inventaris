@@ -63,13 +63,14 @@ class KomputerController extends Controller
         $ipAddresses = IpAddress::where('status', 'Available')->get();
 
         return view('admin.komputer.index', compact(
-        'title', 
-        'breadcrumbs', 
-        'tab', 
-        'data',
-        'lokasi',
-        'departemen',
-        'ipAddresses'));
+            'title', 
+            'breadcrumbs', 
+            'tab', 
+            'data',
+            'lokasi',
+            'departemen',
+            'ipAddresses'
+        ));
     }
 
     public function create()

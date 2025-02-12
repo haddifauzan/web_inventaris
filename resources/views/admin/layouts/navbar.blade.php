@@ -43,17 +43,17 @@
             </li> 
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="javascript:void(0)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+              <button class="dropdown-item d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                 <i class="bi bi-gear"></i>
                 <span>Pengaturan Akun</span>
-              </a>
+              </button>
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
             <li>
               <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                <i class="bi bi-question-circle"></i>
+                <i class="bi bi-question-circle"></i> 
                 <span>Tentang Aplikasi</span>
               </a>
             </li>

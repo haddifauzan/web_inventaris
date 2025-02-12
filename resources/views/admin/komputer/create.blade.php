@@ -116,28 +116,18 @@
                             <div id="spesifikasiContainer">
                                 <!-- Default spesifikasi fields -->
                                 <div class="spesifikasi-item">
-                                    <div class="row">
-                                        <div class="col-md-5">
-                                            <div class="mb-3">
-                                                <input type="text" class="form-control form-control-sm" 
-                                                       name="spesifikasi_keys[]" 
-                                                       placeholder="Nama Spesifikasi"
-                                                       value="processor">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <input type="text" class="form-control form-control-sm" 
-                                                       name="spesifikasi_values[]" 
-                                                       placeholder="Nilai Spesifikasi"
-                                                       value="{{ old('spesifikasi.processor') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-1">
-                                            <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
+                                    <div class="d-flex gap-2 mb-3">
+                                        <input type="text" class="form-control form-control-sm" 
+                                               name="spesifikasi_keys[]" 
+                                               value="Processor"
+                                               placeholder="Nama Spesifikasi">
+                                        <input type="text" class="form-control form-control-sm" 
+                                               name="spesifikasi_values[]" 
+                                               value="{{old('spesifikasi.processor')}}"
+                                               placeholder="Nilai Spesifikasi">
+                                        <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -249,28 +239,18 @@
             const newItem = document.createElement('div');
             newItem.className = 'spesifikasi-item';
             newItem.innerHTML = `
-                <div class="row">
-                    <div class="col-md-5">
-                        <div class="mb-3">
-                            <input type="text" class="form-control form-control-sm" 
-                                   name="spesifikasi_keys[]" 
-                                   value="${key}"
-                                   placeholder="Nama Spesifikasi">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <input type="text" class="form-control form-control-sm" 
-                                   name="spesifikasi_values[]" 
-                                   value="${value}"
-                                   placeholder="Nilai Spesifikasi">
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
+                <div class="d-flex gap-2 mb-3">
+                    <input type="text" class="form-control form-control-sm" 
+                           name="spesifikasi_keys[]" 
+                           value="${key}"
+                           placeholder="Nama Spesifikasi">
+                    <input type="text" class="form-control form-control-sm" 
+                           name="spesifikasi_values[]" 
+                           value="${value}"
+                           placeholder="Nilai Spesifikasi">
+                    <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             `;
             spesifikasiContainer.appendChild(newItem);

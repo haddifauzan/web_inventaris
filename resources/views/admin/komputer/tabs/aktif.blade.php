@@ -178,7 +178,7 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label for="periode" class="form-label">Periode</label>
-                            <input type="month" class="form-control" id="periode" name="periode">
+                            <input type="month" class="form-control" id="periode" name="periode" value="{{ date('Y-m') }}">
                         </div>
                         
                         <div class="col-md-6">

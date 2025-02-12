@@ -10,7 +10,6 @@
             timerProgressBar: true,
             toast: true,
             position: 'center',
-            width: '30%',
             position: 'top-end',
         });
     @elseif (session('error'))
@@ -24,7 +23,6 @@
             timerProgressBar: true,
             toast: true,
             position: 'center',
-            width: '30%',
             position: 'top-end',
         });
     @elseif (session('throttle'))
@@ -50,7 +48,6 @@
                 timerProgressBar: true,
                 toast: true,
                 position: 'center',
-                width: '30%',
                 position: 'top-end',
             });
         @endif

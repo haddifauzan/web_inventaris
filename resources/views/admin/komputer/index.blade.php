@@ -20,6 +20,21 @@
         align-items: center;
         height: 100px;
     }
+
+    @media (max-width: 576px) {
+        .nav-tabs {
+            display: none;
+        }
+        .tab-dropdown {
+            display: block;
+        }
+    }
+    @media (min-width: 577px) {
+        .tab-dropdown {
+            display: none;
+        }
+    }
+
 </style>
 
 <section class="section">
@@ -28,28 +43,41 @@
             <div class="card p-3">
                 <div class="card-body">
                     <!-- Tabs dengan Route -->
+                    <!-- Tabs untuk Desktop -->
                     <ul class="nav nav-tabs" id="computerTabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'barang' ? 'active' : '' }}" 
-                               href="{{ route('komputer.index', 'barang') }}">Data Barang</a>
+                            href="{{ route('komputer.index', 'barang') }}">Data Barang</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'backup' ? 'active' : '' }}" 
-                               href="{{ route('komputer.index', 'backup') }}">Menu Backup</a>
+                            href="{{ route('komputer.index', 'backup') }}">Menu Backup</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'aktif' ? 'active' : '' }}" 
-                               href="{{ route('komputer.index', 'aktif') }}">Menu Aktif</a>
+                            href="{{ route('komputer.index', 'aktif') }}">Menu Aktif</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'pemusnahan' ? 'active' : '' }}" 
-                               href="{{ route('komputer.index', 'pemusnahan') }}">Menu Pemusnahan</a>
+                            href="{{ route('komputer.index', 'pemusnahan') }}">Menu Pemusnahan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'riwayat' ? 'active' : '' }}" 
-                               href="{{ route('komputer.index', 'riwayat') }}">Riwayat Penggunaan</a>
+                            href="{{ route('komputer.index', 'riwayat') }}">Riwayat Penggunaan</a>
                         </li>
                     </ul>
+
+                    <!-- Dropdown untuk Mobile -->
+                    <div class="tab-dropdown">
+                        <select class="form-select" onchange="location = this.value;">
+                            <option value="{{ route('komputer.index', 'barang') }}" {{ $tab == 'barang' ? 'selected' : '' }}>Data Barang</option>
+                            <option value="{{ route('komputer.index', 'backup') }}" {{ $tab == 'backup' ? 'selected' : '' }}>Menu Backup</option>
+                            <option value="{{ route('komputer.index', 'aktif') }}" {{ $tab == 'aktif' ? 'selected' : '' }}>Menu Aktif</option>
+                            <option value="{{ route('komputer.index', 'pemusnahan') }}" {{ $tab == 'pemusnahan' ? 'selected' : '' }}>Menu Pemusnahan</option>
+                            <option value="{{ route('komputer.index', 'riwayat') }}" {{ $tab == 'riwayat' ? 'selected' : '' }}>Riwayat Penggunaan</option>
+                        </select>
+                    </div>
+                  
 
                     <!-- Loading Spinner -->
                     <div id="loading-spinner">
