@@ -14,64 +14,67 @@ use App\Models\Lokasi;
 use App\Models\TipeBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\BarangKelayakanTracker;
 
 class KomputerController extends Controller
 {
-    public function index($tab = 'barang') // 'backup' sebagai default tab
+    public function index(Request $request, $tab = 'barang')
     {
         $title = 'Management Komputer';
-        $breadcrumbs = [
-            ['url' => route('komputer.index'), 'text' => 'Komputer'],
-        ];
-    
-        // Ambil data sesuai tab yang dipilih
+        $breadcrumbs = [['url' => route('komputer.index'), 'text' => 'Komputer']];
+        $lokasi_id = $request->input('lokasi_id'); // Ambil lokasi dari request
+
         switch ($tab) {
             case 'barang':
-                $data = Barang::where('jenis_barang', 'Komputer')
-                    ->get();
+                $query = Barang::where('jenis_barang', 'Komputer');
                 break;
             case 'backup':
-                $data = Barang::where('jenis_barang', 'Komputer')
-                    ->where('status', 'Backup')
-                    ->get();
+                $query = Barang::where('jenis_barang', 'Komputer')->where('status', 'Backup');
                 break;
             case 'aktif':
-                $data = Barang::where('jenis_barang', 'Komputer')
+                $query = Barang::where('jenis_barang', 'Komputer')
                     ->where('status', 'Aktif')
-                    ->with(['menuAktif', 'ipAddress'])
-                    ->get();
+                    ->with(['menuAktif.departemen', 'menuAktif.lokasi', 'ipAddress']);
+                
+                if ($lokasi_id) {
+                    $query->whereHas('menuAktif', function ($q) use ($lokasi_id) {
+                        $q->where('id_lokasi', $lokasi_id);
+                    });
+                }
+                
+                $query->join('tbl_menu_aktif', 'tbl_barang.id_barang', '=', 'tbl_menu_aktif.id_barang')
+                    ->join('tbl_departemen', 'tbl_menu_aktif.id_departemen', '=', 'tbl_departemen.id_departemen')
+                    ->orderBy('tbl_departemen.nama_departemen', 'asc');
                 break;
             case 'pemusnahan':
-                $data = Barang::where('jenis_barang', 'Komputer')
-                    ->where('status', 'Pemusnahan')
-                    ->get();
+                $query = Barang::where('jenis_barang', 'Komputer')->where('status', 'Pemusnahan')->latest('created_at');
                 break;
             case 'riwayat':
-                $data = Barang::where('jenis_barang', 'Komputer')
+                $query = Barang::where('jenis_barang', 'Komputer')
                     ->whereHas('riwayat')
-                    ->with(['riwayat' => function($query) {
-                        $query->latest('waktu_awal');
-                    }, 'riwayat.lokasi', 'riwayat.departemen'])
-                    ->get();
+                    ->with([
+                        'riwayat' => function ($q) {
+                            $q->orderBy('waktu_awal', 'desc');
+                        },
+                        'riwayat.lokasi',
+                        'riwayat.departemen'
+                    ])
+                    ->orderBy('updated_at', 'desc');
                 break;
             default:
-                return redirect()->route('komputer.index', 'barang'); 
+                return redirect()->route('komputer.index', 'barang');
         }
-    
+
+        $data = $query->get();
         $lokasi = Lokasi::all();
         $departemen = Departemen::all();
         $ipAddresses = IpAddress::where('status', 'Available')->get();
 
         return view('admin.komputer.index', compact(
-            'title', 
-            'breadcrumbs', 
-            'tab', 
-            'data',
-            'lokasi',
-            'departemen',
-            'ipAddresses'
+            'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id'
         ));
     }
+
 
     public function create()
     {
@@ -281,8 +284,7 @@ class KomputerController extends Controller
             'id_departemen' => 'required|exists:tbl_departemen,id_departemen',
             'ip_address' => 'nullable|exists:tbl_ip_address,id_ip',
             'komputer_name' => 'required',
-            'user' => 'required',
-            'kelayakan' => 'required|numeric|min:0|max:100'
+            'user' => 'required'
         ]);
 
         DB::beginTransaction();
@@ -293,9 +295,24 @@ class KomputerController extends Controller
                 ->firstOrFail();
             
             $barang->update([
-                'status' => 'Aktif',
-                'kelayakan' => $request->kelayakan   
+                'status' => 'Aktif', 
             ]);
+
+            // Create or update kelayakan tracker
+            $tracker = BarangKelayakanTracker::firstOrCreate(
+                ['id_barang' => $barang->id_barang],
+                [
+                    'last_update' => now(),
+                    'accumulated_days' => 0
+                ]
+            );
+
+            // If tracker already existed, update last_update but keep accumulated_days
+            if (!$tracker->wasRecentlyCreated) {
+                $tracker->update([
+                    'last_update' => now()
+                ]);
+            }
 
             // Create menu aktif entry
             MenuAktif::create([
@@ -323,7 +340,7 @@ class KomputerController extends Controller
                 'id_lokasi' => $request->id_lokasi,
                 'id_departemen' => $request->id_departemen,
                 'user' => $request->user,
-                'kelayakan' => $request->kelayakan,
+                'kelayakan' => $barang->kelayakan,
                 'waktu_awal' => now(),
                 'status' => 'Aktif',
                 'keterangan' => $request->keterangan
@@ -348,7 +365,6 @@ class KomputerController extends Controller
     public function backupToMusnah(Request $request, $id)
     {
         $request->validate([
-            'kelayakan' => 'required|numeric|min:0|max:100',
             'keterangan' => 'nullable'
         ]);
 
@@ -363,7 +379,6 @@ class KomputerController extends Controller
             if ($barang->riwayat()->exists()) {
                 $barang->update([
                     'status' => 'Pemusnahan',
-                    'kelayakan' => $request->kelayakan,
                 ]);
                 
                 MenuPemusnahan::create([
@@ -391,7 +406,6 @@ class KomputerController extends Controller
     public function aktifToBackup(Request $request, $id)
     {
         $request->validate([
-            'kelayakan' => 'required|numeric|min:0|max:100',
             'keterangan' => 'nullable'
         ]);
 
@@ -405,7 +419,6 @@ class KomputerController extends Controller
             // Update status barang
             $barang->update([
                 'status' => 'Backup',
-                'kelayakan' => $request->kelayakan,
             ]);
 
             // Create menu backup entry
@@ -452,7 +465,6 @@ class KomputerController extends Controller
     public function aktifToMusnah(Request $request, $id)
     {
         $request->validate([
-            'kelayakan' => 'required|numeric|min:0|max:100',
             'keterangan' => 'nullable'
         ]);
 
@@ -466,7 +478,6 @@ class KomputerController extends Controller
             // Update status barang
             $barang->update([
                 'status' => 'Pemusnahan',
-                'kelayakan' => $request->kelayakan,
             ]);
 
             // Create menu pemusnahan entry

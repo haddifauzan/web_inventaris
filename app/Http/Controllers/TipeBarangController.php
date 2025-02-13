@@ -22,7 +22,7 @@ class TipeBarangController extends Controller
     {
         $request->validate([
             'jenis_barang' => 'required|string',
-            'tipe_merk' => 'required|string',
+            'tipe_merk' => 'required|string|unique:tbl_tipe_barang,tipe_merk',
             'spesifikasi' => 'required|string'
         ]);
 
@@ -39,7 +39,7 @@ class TipeBarangController extends Controller
     {
         $request->validate([
             'jenis_barang' => 'required|string',
-            'tipe_merk' => 'required|string',
+            'tipe_merk' => 'required|string|unique:tbl_tipe_barang,tipe_merk,' . $id . ',id_tipe_barang',
             'spesifikasi' => 'required|string'
         ]);
 

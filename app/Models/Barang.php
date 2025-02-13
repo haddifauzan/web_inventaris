@@ -47,4 +47,9 @@ class Barang extends Model
     {
         return $this->hasOne(MenuPemusnahan::class, 'id_barang');
     }
+
+    public function kelayakanTracker()
+    {
+        return $this->hasOne(BarangKelayakanTracker::class, 'id_barang');
+    }
 }

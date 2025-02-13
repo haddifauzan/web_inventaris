@@ -171,6 +171,26 @@
     </div>
 </section>
 
+<!-- Modal Konfirmasi -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Konfirmasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda ingin mengisi otomatis spesifikasi yang tersedia sesuai dengan tipe atau merk yang disediakan?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="confirmYes">Ya, Isi Otomatis</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
     document.getElementById('kelayakanRange').addEventListener('input', function() {
         document.getElementById('kelayakanValue').textContent = this.value;
@@ -223,16 +243,25 @@
                 .then(response => response.json())
                 .then(result => {
                     if (result.success && result.data) {
-                        if (confirm('Apakah Anda ingin mengisi otomatis spesifikasi yang tersedia?')) {
-                            const spesifikasi = JSON.parse(result.data);
+                        // Simpan data spesifikasi ke variabel sementara
+                        const spesifikasi = JSON.parse(result.data);
+
+                        // Tampilkan modal konfirmasi
+                        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                        confirmModal.show();
+
+                        // Jika tombol "Ya, Isi Otomatis" ditekan
+                        document.getElementById('confirmYes').addEventListener('click', function () {
                             populateSpesifikasi(spesifikasi);
-                        }
+                            confirmModal.hide();
+                        });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     showNotification('Gagal memuat spesifikasi', 'error');
                 });
+
         });
     
         function tambahSpesifikasiBaru(key = '', value = '') {

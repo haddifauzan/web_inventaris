@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TipeBarangController;
+use App\Http\Controllers\DepartemenController;
 
 Route::get('/lokasi/{lokasi}/ip-addresses', function ($lokasiId) {
     $ipHosts = \App\Models\IpHost::where('id_lokasi', $lokasiId)
@@ -23,3 +24,4 @@ Route::get('/lokasi/{lokasi}/ip-addresses', function ($lokasiId) {
 });
 
 Route::get('/tipe-barang/{id}', [TipeBarangController::class, 'getSpesifikasi']);
+Route::get('/lokasi/{id}/departments', [DepartemenController::class, 'getDepartmentsByLocation']);

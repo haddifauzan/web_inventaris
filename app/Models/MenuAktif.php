@@ -17,7 +17,6 @@ class MenuAktif extends Model
         'id_ip',   // ID IP address yang digunakan (nullable)
         'komputer_name',// Nama komputer atau device - khusus jenis barang komputer
         'user',         // Nama Pengguna barang
-        'kelayakan',    // Status kelayakan barang dalam persentase
         'node_terpakai',// Jumlah node yang terpakai (nullable) - khusus jenis barang switch
         'node_bagus',   // Jumlah node dalam kondisi bagus (nullable) - khusus jenis barang switch
         'node_rusak',   // Jumlah node rusak (nullable) - khusus jenis barang switch

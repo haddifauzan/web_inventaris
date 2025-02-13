@@ -93,7 +93,7 @@
                         </div>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Lokasi</label>
                             <select class="form-select form-select-sm" name="id_lokasi" id="lokasi-select{{ $komputer->id_barang }}" required>
                                 <option value="">Pilih Lokasi</option>
@@ -104,11 +104,19 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Departemen</label>
-                            <select class="form-select form-select-sm" name="id_departemen" required>
-                                @foreach($departemen as $dept)
-                                    <option value="{{ $dept->id_departemen }}">{{ $dept->nama_departemen }}</option>
-                                @endforeach
+                            <select class="form-select form-select-sm" name="id_departemen" id="departemen-select{{ $komputer->id_barang }}" required>
+                                <option value="">Pilih lokasi terlebih dahulu</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label col-form-label-sm">User</label>
+                            <input type="text" class="form-control form-control-sm" name="user" placeholder="Contoh: John Doe" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label col-form-label-sm">Komputer Name</label>
+                            <input type="text" class="form-control form-control-sm" name="komputer_name" placeholder="Contoh: PC-001" required>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -128,28 +136,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label col-form-label-sm">Komputer Name</label>
-                            <input type="text" class="form-control form-control-sm" name="komputer_name" placeholder="Contoh: PC-001" required>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label col-form-label-sm">User</label>
-                            <input type="text" class="form-control form-control-sm" name="user" placeholder="Contoh: John Doe" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label col-form-label-sm">Kelayakan (%)</label>
-                            <div class="d-flex align-items-center">
-                                <input type="range" class="form-range form-range-sm me-2 mt-2" name="kelayakan" min="0" max="100" id="kelayakanRange{{ $komputer->id_barang }}" value="{{ old('kelayakan', $komputer->kelayakan) }}" required style="direction: ltr;">
-                                <span id="kelayakanValue{{ $komputer->id_barang }}" class="fw-bold">{{ old('kelayakan', $komputer->kelayakan) }}</span>%
-                            </div>
-                        </div>
-                        <script>
-                            document.getElementById('kelayakanRange{{ $komputer->id_barang }}').addEventListener('input', function() {
-                                document.getElementById('kelayakanValue{{ $komputer->id_barang }}').textContent = this.value;
-                            });
-                        </script>
                     </div>
                     <div class="mb-3">
                         <label class="form-label col-form-label-sm">Keterangan</label>
@@ -178,18 +164,6 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label col-form-label-sm">Kelayakan (%)</label>
-                        <div class="d-flex align-items-center">
-                            <input type="range" class="form-range form-range-sm me-2 mt-2" name="kelayakan" min="0" max="100" id="kelayakanMusnahRange{{ $komputer->id_barang }}" value="{{ old('kelayakan', $komputer->kelayakan) }}" required style="direction: ltr;">
-                            <span id="kelayakanMusnahValue{{ $komputer->id_barang }}" class="fw-bold">{{ old('kelayakan', $komputer->kelayakan) }}</span>%
-                        </div>
-                    </div>
-                    <script>
-                        document.getElementById('kelayakanMusnahRange{{ $komputer->id_barang }}').addEventListener('input', function() {
-                            document.getElementById('kelayakanMusnahValue{{ $komputer->id_barang }}').textContent = this.value;
-                        });
-                    </script>
                     <div class="mb-3">
                         <label class="form-label col-form-label-sm">Keterangan</label>
                         <textarea name="keterangan" class="form-control form-control-sm" placeholder="Masukkan keterangan jika diperlukan"></textarea>
@@ -261,6 +235,7 @@
         const ipSearchInput = document.getElementById('ip-search-input{{ $komputer->id_barang }}');
         const ipAddressList = document.getElementById('ip-address-list{{ $komputer->id_barang }}');
         const clearSearchBtn = document.getElementById('clear-search{{ $komputer->id_barang }}');
+        const departemenSelect = document.getElementById('departemen-select{{ $komputer->id_barang }}');
 
         async function loadIpAddresses(lokasiId) {
             try {
@@ -350,8 +325,15 @@
 
         lokasiSelect.addEventListener('change', function() {
             const lokasiId = this.value;
+            
+            // Reset department select
+            departemenSelect.innerHTML = '<option value="">Pilih Departemen</option>';
+            
+            // Reset IP search input
             ipSearchInput.value = '';
+            
             if (lokasiId) {
+                loadDepartments(lokasiId);
                 loadIpAddresses(lokasiId);
             } else {
                 ipAddressList.innerHTML = '<li class="no-results">Pilih lokasi terlebih dahulu</li>';
@@ -373,6 +355,33 @@
                 e.preventDefault();
             }
         });
+
+        async function loadDepartments(lokasiId) {
+            try {
+                const response = await fetch(`/api/lokasi/${lokasiId}/departments`);
+                const data = await response.json();
+                
+                // Clear current options
+                departemenSelect.innerHTML = '<option value="">Pilih Departemen</option>';
+                
+                if (data.departments && data.departments.length > 0) {
+                    data.departments.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept.id_departemen;
+                        option.textContent = dept.nama_departemen;
+                        departemenSelect.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement('option');
+                    option.value = "";
+                    option.textContent = "Tidak ada departemen tersedia";
+                    departemenSelect.appendChild(option);
+                }
+            } catch (error) {
+                console.error('Error loading departments:', error);
+                departemenSelect.innerHTML = '<option value="">Error loading departments</option>';
+            }
+        }
     });
 </script>
 @endforeach

@@ -81,11 +81,18 @@
 <!-- Modal for each item -->
 @foreach($data as $barang)
 <div class="modal fade" id="historyModal{{ $barang->id_barang }}" tabindex="-1" aria-labelledby="historyModalLabel{{ $barang->id_barang }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="historyModalLabel{{ $barang->id_barang }}">
-                    Riwayat {{ $barang->model }} ({{ $barang->tipe_merk }})
+                    Riwayat {{ $barang->model }} ({{ $barang->tipe_merk }}) - <b>Status Barang : </b>
+                    @if ($barang->status === 'Backup')
+                        <span class="badge bg-success">{{ $barang->status}}</span>
+                    @elseif ($barang->status === 'Aktif')
+                        <span class="badge bg-primary">{{ $barang->status}}</span>
+                    @else
+                        <span class="badge bg-danger">{{ $barang->status}}</span>
+                    @endif
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -112,8 +119,8 @@
                                 <td>{{ $history->lokasi->nama_lokasi }}</td>
                                 <td>{{ $history->departemen->nama_departemen }}</td>
                                 <td>{{ $history->user }}</td>
-                                <td>{{ $history->waktu_awal }}</td>
-                                <td>{{ $history->waktu_akhir ?? '-' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($barang->riwayat->first()->waktu_awal)->format('d M Y - H:i') }}</td>
+                                <td>{{ $barang->riwayat->first()->waktu_akhir ? \Carbon\Carbon::parse($barang->riwayat->first()->waktu_akhir)->format('d M Y - H:i') : '-' }}</td>
                                 <td>
                                     <div class="progress" style="height: 12px; width: 100px;">
                                         <div 

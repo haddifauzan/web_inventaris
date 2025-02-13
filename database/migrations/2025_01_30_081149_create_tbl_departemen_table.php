@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_departemen');
             $table->string('nama_departemen');
             $table->text('deskripsi')->nullable();
+            $table->foreignId('id_lokasi')->constrained('tbl_lokasi', 'id_lokasi')->onDelete('cascade');
             $table->timestamps();
         });
     }

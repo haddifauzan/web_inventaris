@@ -195,13 +195,37 @@
     </div>
 </section>
 
+<!-- Modal Konfirmasi Penggantian Spesifikasi -->
+<div class="modal fade" id="replaceSpecModal" tabindex="-1" aria-labelledby="replaceSpecModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="replaceSpecModalLabel">Konfirmasi Penggantian</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda ingin mengganti spesifikasi yang ada dengan spesifikasi dari tipe barang yang dipilih?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="confirmReplaceSpec">Ganti Spesifikasi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // DOM Elements
     const kelayakanRange = document.getElementById('kelayakanRange');
     const spesifikasiContainer = document.getElementById('spesifikasiContainer');
     const tambahSpesifikasiBtn = document.getElementById('tambahSpesifikasi');
     const selectTipeMerk = document.getElementById('selectTipeMerk');
+    const replaceSpecModalEl = document.getElementById('replaceSpecModal');
+    const confirmReplaceSpecBtn = document.getElementById('confirmReplaceSpec');
+    
+    let replaceSpecModal;
 
     // Default specifications
     const defaultSpesifikasi = {
@@ -222,19 +246,19 @@
         const newItem = document.createElement('div');
         newItem.className = 'spesifikasi-item';
         newItem.innerHTML = `
-                <div class="d-flex gap-2 mb-3">
-                    <input type="text" class="form-control form-control-sm" 
-                           name="spesifikasi_keys[]" 
-                           value="${key}"
-                           placeholder="Nama Spesifikasi">
-                    <input type="text" class="form-control form-control-sm" 
-                           name="spesifikasi_values[]" 
-                           value="${value}"
-                           placeholder="Nilai Spesifikasi">
-                    <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </div>
+            <div class="d-flex gap-2 mb-3">
+                <input type="text" class="form-control form-control-sm" 
+                       name="spesifikasi_keys[]" 
+                       value="${key}"
+                       placeholder="Nama Spesifikasi">
+                <input type="text" class="form-control form-control-sm" 
+                       name="spesifikasi_values[]" 
+                       value="${value}"
+                       placeholder="Nilai Spesifikasi">
+                <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
         `;
         spesifikasiContainer.appendChild(newItem);
     }
@@ -243,24 +267,6 @@
     function populateSpesifikasi(spesifikasi) {
         if (!spesifikasiContainer) return;
 
-        // Get current specifications
-        const currentSpecs = Array.from(spesifikasiContainer.querySelectorAll('.spesifikasi-item')).map(item => {
-            const keyInput = item.querySelector('[name="spesifikasi_keys[]"]');
-            const valueInput = item.querySelector('[name="spesifikasi_values[]"]');
-            return {
-                key: keyInput?.value || '',
-                value: valueInput?.value || ''
-            };
-        });
-
-        // If there are current specs and new specs are being loaded
-        if (currentSpecs.length > 0 && Object.keys(spesifikasi).length > 0) {
-            if (!confirm('Apakah Anda ingin mengganti spesifikasi yang ada dengan spesifikasi dari tipe barang yang dipilih?')) {
-                return;
-            }
-        }
-
-        // Clear and populate container
         spesifikasiContainer.innerHTML = '';
         Object.entries(spesifikasi).forEach(([key, value]) => {
             tambahSpesifikasiBaru(key, value);
@@ -319,6 +325,35 @@
                         try {
                             console.log('Spesifikasi:', result.data);
                             const spesifikasi = JSON.parse(result.data);
+
+                            // Cek apakah ada spesifikasi saat ini
+                            const currentSpecs = Array.from(spesifikasiContainer.querySelectorAll('.spesifikasi-item')).map(item => {
+                                const keyInput = item.querySelector('[name="spesifikasi_keys[]"]');
+                                const valueInput = item.querySelector('[name="spesifikasi_values[]"]');
+                                return {
+                                    key: keyInput?.value || '',
+                                    value: valueInput?.value || ''
+                                };
+                            });
+
+                            if (currentSpecs.length > 0 && Object.keys(spesifikasi).length > 0) {
+                                // Pastikan modal hanya diinisialisasi sekali
+                                if (!replaceSpecModal) {
+                                    replaceSpecModal = new bootstrap.Modal(replaceSpecModalEl);
+                                }
+                                replaceSpecModal.show();
+
+                                // Hapus event listener lama sebelum menambahkan yang baru
+                                confirmReplaceSpecBtn.replaceWith(confirmReplaceSpecBtn.cloneNode(true));
+                                document.getElementById('confirmReplaceSpec').addEventListener('click', function () {
+                                    populateSpesifikasi(spesifikasi);
+                                    replaceSpecModal.hide();
+                                });
+
+                                return;
+                            }
+
+                            // Jika tidak ada spesifikasi lama, langsung isi otomatis
                             populateSpesifikasi(spesifikasi);
                         } catch (e) {
                             console.error('Error parsing spesifikasi:', e);
@@ -338,6 +373,7 @@
         populateSpesifikasi(defaultSpesifikasi);
     }
 });
+
 </script>
 
 @endsection

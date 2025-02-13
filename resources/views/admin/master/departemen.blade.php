@@ -25,6 +25,7 @@
                                     <tr>
                                         <th width="5%">No</th>
                                         <th>Nama Departemen</th>
+                                        <th>Lokasi</th>
                                         <th>Deskripsi</th>
                                         <th width="15%">Aksi</th>
                                     </tr>
@@ -34,6 +35,7 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $item->nama_departemen }}</td>
+                                        <td>{{ $item->lokasi->nama_lokasi ?? '-' }}</td>
                                         <td>{{ $item->deskripsi ?? '-' }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal{{ $item->id_departemen }}">
@@ -70,6 +72,15 @@
                             <input type="text" class="form-control" id="nama_departemen" name="nama_departemen" required>
                         </div>
                         <div class="mb-3">
+                            <label for="id_lokasi" class="form-label">Lokasi<span class="text-danger">*</span></label>
+                            <select class="form-select" id="id_lokasi" name="id_lokasi" required>
+                                <option value="">Pilih Lokasi</option>
+                                @foreach($lokasi as $lok)
+                                    <option value="{{ $lok->id_lokasi }}">{{ $lok->nama_lokasi }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="deskripsi" class="form-label">Deskripsi</label>
                             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
                         </div>
@@ -99,6 +110,17 @@
                         <div class="mb-3">
                             <label for="nama_departemen" class="form-label">Nama Departemen<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="nama_departemen" name="nama_departemen" value="{{ $item->nama_departemen }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_lokasi" class="form-label">Lokasi<span class="text-danger">*</span></label>
+                            <select class="form-select" id="id_lokasi" name="id_lokasi" required>
+                                <option value="">Pilih Lokasi</option>
+                                @foreach($lokasi as $lok)
+                                    <option value="{{ $lok->id_lokasi }}" {{ $lok->id_lokasi == $item->id_lokasi ? 'selected' : '' }}>
+                                        {{ $lok->nama_lokasi }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="deskripsi" class="form-label">Deskripsi</label>
