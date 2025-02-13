@@ -96,7 +96,7 @@
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Lokasi</label>
                             <select class="form-select form-select-sm" name="id_lokasi" id="lokasi-select{{ $komputer->id_barang }}" required>
-                                <option value="">Pilih Lokasi</option>
+                                <option value=""><-- Pilih Lokasi --></option>
                                 @foreach($lokasi as $lok)
                                     <option value="{{ $lok->id_lokasi }}">{{ $lok->nama_lokasi }}</option>
                                 @endforeach
@@ -105,7 +105,10 @@
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Departemen</label>
                             <select class="form-select form-select-sm" name="id_departemen" id="departemen-select{{ $komputer->id_barang }}" required>
-                                <option value="">Pilih lokasi terlebih dahulu</option>
+                                <option value=""><-- Pilih Departemen --></option>
+                                @foreach($departemen as $dep)
+                                <option value="{{ $dep->id_departemen }}">{{ $dep->nama_departemen }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -235,7 +238,6 @@
         const ipSearchInput = document.getElementById('ip-search-input{{ $komputer->id_barang }}');
         const ipAddressList = document.getElementById('ip-address-list{{ $komputer->id_barang }}');
         const clearSearchBtn = document.getElementById('clear-search{{ $komputer->id_barang }}');
-        const departemenSelect = document.getElementById('departemen-select{{ $komputer->id_barang }}');
 
         async function loadIpAddresses(lokasiId) {
             try {
@@ -326,14 +328,10 @@
         lokasiSelect.addEventListener('change', function() {
             const lokasiId = this.value;
             
-            // Reset department select
-            departemenSelect.innerHTML = '<option value="">Pilih Departemen</option>';
-            
             // Reset IP search input
             ipSearchInput.value = '';
             
             if (lokasiId) {
-                loadDepartments(lokasiId);
                 loadIpAddresses(lokasiId);
             } else {
                 ipAddressList.innerHTML = '<li class="no-results">Pilih lokasi terlebih dahulu</li>';
@@ -355,33 +353,6 @@
                 e.preventDefault();
             }
         });
-
-        async function loadDepartments(lokasiId) {
-            try {
-                const response = await fetch(`/api/lokasi/${lokasiId}/departments`);
-                const data = await response.json();
-                
-                // Clear current options
-                departemenSelect.innerHTML = '<option value="">Pilih Departemen</option>';
-                
-                if (data.departments && data.departments.length > 0) {
-                    data.departments.forEach(dept => {
-                        const option = document.createElement('option');
-                        option.value = dept.id_departemen;
-                        option.textContent = dept.nama_departemen;
-                        departemenSelect.appendChild(option);
-                    });
-                } else {
-                    const option = document.createElement('option');
-                    option.value = "";
-                    option.textContent = "Tidak ada departemen tersedia";
-                    departemenSelect.appendChild(option);
-                }
-            } catch (error) {
-                console.error('Error loading departments:', error);
-                departemenSelect.innerHTML = '<option value="">Error loading departments</option>';
-            }
-        }
     });
 </script>
 @endforeach

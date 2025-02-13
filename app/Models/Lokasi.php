@@ -30,9 +30,4 @@ class Lokasi extends Model
     {
         return $this->hasMany(IpHost::class, 'id_lokasi');
     }
-
-    public function departemen()
-    {
-        return $this->hasMany(Departemen::class, 'id_lokasi');
-    }
 }

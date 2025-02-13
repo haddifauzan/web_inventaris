@@ -24,4 +24,3 @@ Route::get('/lokasi/{lokasi}/ip-addresses', function ($lokasiId) {
 });
 
 Route::get('/tipe-barang/{id}', [TipeBarangController::class, 'getSpesifikasi']);
-Route::get('/lokasi/{id}/departments', [DepartemenController::class, 'getDepartmentsByLocation']);

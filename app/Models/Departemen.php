@@ -13,7 +13,6 @@ class Departemen extends Model
     protected $fillable = [
         'nama_departemen', // Nama departemen
         'deskripsi',        // Deskripsi departemen
-        'id_lokasi'        // ID lokasi departemen
     ];
 
     public function menuAktif()
@@ -26,8 +25,4 @@ class Departemen extends Model
         return $this->hasMany(Riwayat::class, 'id_departemen');
     }
 
-    public function lokasi()
-    {
-        return $this->belongsTo(Lokasi::class, 'id_lokasi');
-    }
 }

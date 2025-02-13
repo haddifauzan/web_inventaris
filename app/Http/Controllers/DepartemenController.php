@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Departemen;
-use App\Models\Lokasi;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Cache;
@@ -23,10 +22,9 @@ class DepartemenController extends Controller
             ['url' => route('departemen.index'), 'text' => 'Data Departemen']
         ];
 
-        $departemen = Departemen::with('lokasi')->get();
-        $lokasi = Lokasi::all();
+        $departemen = Departemen::all();
 
-        return view('admin.master.departemen', compact('title', 'breadcrumbs', 'departemen', 'lokasi'));
+        return view('admin.master.departemen', compact('title', 'breadcrumbs', 'departemen'));
     }
 
     public function store(Request $request)
@@ -34,7 +32,6 @@ class DepartemenController extends Controller
         $request->validate([
             'nama_departemen' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'id_lokasi' => 'required|exists:tbl_lokasi,id_lokasi'
         ]);
 
         Departemen::create($request->all());
@@ -49,7 +46,6 @@ class DepartemenController extends Controller
         $request->validate([
             'nama_departemen' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'id_lokasi' => 'required|exists:tbl_lokasi,id_lokasi'
         ]);
 
         $departemen = Departemen::findOrFail($id);
@@ -70,9 +66,4 @@ class DepartemenController extends Controller
         return redirect()->route('departemen.index')->with('success', 'Data departemen berhasil dihapus');
     }
 
-    public function getDepartmentsByLocation($locationId)
-    {
-        $departments = Departemen::where('id_lokasi', $locationId)->get();
-        return response()->json(['departments' => $departments]);
-    }
 }
