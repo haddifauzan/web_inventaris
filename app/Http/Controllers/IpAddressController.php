@@ -74,7 +74,7 @@ class IpAddressController extends Controller
         ];
 
         // Get locations with their IP hosts and IP addresses
-        $locations = Lokasi::with(['ipHosts.ipAddresses'])->get();
+        $locations = Lokasi::with(['ipHosts.ipAddresses'])->orderBy('nama_lokasi', 'asc')->get();
         
         // Transform data for view
         $ipRanges = collect();

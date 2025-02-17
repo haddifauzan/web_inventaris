@@ -14,7 +14,7 @@ class TipeBarangController extends Controller
             ['url' => '#', 'text' => 'Data Master'],
             ['url' => route('tipe-barang.index'), 'text' => 'Data Merk Tipe Barang']
         ];
-        $tipeBarang = TipeBarang::all();
+        $tipeBarang = TipeBarang::orderBy('tipe_merk', 'asc')->get();
         return view('admin.master.tipe', compact('title', 'breadcrumbs', 'tipeBarang'));
     }
 

@@ -2,7 +2,7 @@
 <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="{{ route('admin.dashboard') }}" class="logo d-flex align-items-center">
+      <a href="{{ route('user.dashboard') }}" class="logo d-flex align-items-center">
         <img src="{{ asset('images/logo.png') }}" alt="">
         <span class="d-none d-lg-block fw-bold" style="color: #333;">RHIS</span>
         <span class="d-none d-lg-block ms-2 m-0 p-0" style="font-size: 12px; color: #333;">Rajawali Hiyoto Inventory System</span>
@@ -29,7 +29,7 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="{{ asset('images/admin.png') }}" alt="Profile" class="rounded-circle">   
+            <img src="{{ asset('images/user.png') }}" alt="Profile" class="rounded-circle">   
             <span class="d-none d-md-block dropdown-toggle ps-2 mx-2">{{ strtoupper(Auth::user()->username) }}</span>
           </a><!-- End Profile Iamge Icon -->
 

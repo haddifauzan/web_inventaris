@@ -23,7 +23,7 @@ class LokasiController extends Controller
         ];
 
         $lokasi = Cache::rememberForever('lokasi', function () {
-            return Lokasi::all();
+            return Lokasi::orderBy("nama_lokasi", "asc")->get();
         });
 
         return view('admin.master.lokasi', compact('title', 'breadcrumbs', 'lokasi'));

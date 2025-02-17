@@ -181,9 +181,6 @@
                             <a href="{{ route('komputer.index') }}" class="btn btn-secondary btn-sm me-2">
                                 <i class="bi bi-arrow-left me-1"></i>Kembali
                             </a>
-                            <button type="reset" class="btn btn-danger btn-sm me-2">
-                                <i class="bi bi-arrow-repeat me-1"></i>Reset
-                            </button>
                             <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="bi bi-save me-1"></i>Simpan
                             </button>

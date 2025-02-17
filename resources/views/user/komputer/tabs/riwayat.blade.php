@@ -10,7 +10,6 @@
                 <th>Status Barang</th>
                 <th>Waktu Mulai</th>
                 <th>Waktu Selesai</th>
-                <th class="text-start">Kelayakan Terakhir</th>
                 <th>Keterangan Terakhir</th>
                 <th>Detail</th>
             </tr>
@@ -47,25 +46,6 @@
                 </td>
                 <td>{{ \Carbon\Carbon::parse($barang->riwayat->first()->waktu_awal)->format('d M Y - H:i') }}</td>
                 <td>{{ $barang->riwayat->first()->waktu_akhir ? \Carbon\Carbon::parse($barang->riwayat->first()->waktu_akhir)->format('d M Y - H:i') : '-' }}</td>
-                <td><div class="progress" style="height: 12px; width: 100px;">
-                        @php
-                            $lastKelayakan = $barang->riwayat->whereNotNull('kelayakan_akhir')->first()?->kelayakan_akhir ?? 0;
-                        @endphp
-                        <div 
-                            class="progress-bar 
-                                {{ 
-                                    $lastKelayakan >= 75 ? 'bg-success' :
-                                    ($lastKelayakan >= 50 ? 'bg-warning' : 'bg-danger')
-                                }}"
-                            role="progressbar" 
-                            aria-valuenow="{{ $lastKelayakan }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="100"
-                            style="width: {{ $lastKelayakan }}%">
-                            {{ $lastKelayakan ? $lastKelayakan . '%' : '-' }}
-                        </div>
-                    </div>
-                </td>
                 <td data-bs-toggle="tooltip" data-bs-placement="top"
                     title="{{ $barang->riwayat->first()->keterangan }}">
                     {{ Str::limit($barang->riwayat->first()->keterangan ?? '-', 50)  }}
@@ -110,8 +90,6 @@
                                 <th>User</th>
                                 <th>Waktu Mulai</th>
                                 <th>Waktu Selesai</th>
-                                <th class="text-start">Kelayakan Awal</th>
-                                <th class="text-start">Kelayakan Akhir</th>
                                 <th>Status</th>
                                 <th>Keterangan</th>
                             </tr>
@@ -125,40 +103,6 @@
                                 <td>{{ $history->user }}</td>
                                 <td>{{ \Carbon\Carbon::parse($barang->riwayat->first()->waktu_awal)->format('d M Y - H:i') }}</td>
                                 <td>{{ $barang->riwayat->first()->waktu_akhir ? \Carbon\Carbon::parse($barang->riwayat->first()->waktu_akhir)->format('d M Y - H:i') : '-' }}</td>
-                                <td>
-                                    <div class="progress" style="height: 12px; width: 100px;">
-                                        <div 
-                                            class="progress-bar 
-                                                {{ 
-                                                    $history->kelayakan_awal >= 75 ? 'bg-success' :
-                                                    ($history->kelayakan_awal >= 50 ? 'bg-warning' : 'bg-danger')
-                                                }}"
-                                            role="progressbar" 
-                                            aria-valuenow="{{ $history->kelayakan_awal ?? 0 }}" 
-                                            aria-valuemin="0" 
-                                            aria-valuemax="100"
-                                            style="width: {{ $history->kelayakan_awal ?? 0 }}%">
-                                            {{ $history->kelayakan_awal ?? '-' }}%
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="progress" style="height: 12px; width: 100px;">
-                                        <div 
-                                            class="progress-bar 
-                                                {{ 
-                                                    $history->kelayakan_akhir >= 75 ? 'bg-success' :
-                                                    ($history->kelayakan_akhir >= 50 ? 'bg-warning' : 'bg-danger')
-                                                }}"
-                                            role="progressbar" 
-                                            aria-valuenow="{{ $history->kelayakan_akhir ?? 0 }}" 
-                                            aria-valuemin="0" 
-                                            aria-valuemax="100"
-                                            style="width: {{ $history->kelayakan_akhir ?? 0 }}%">
-                                            {{ $history->kelayakan_akhir ?? '-' }}%
-                                        </div>
-                                    </div>
-                                </td>
                                 <td>
                                     @if ($history->status === 'Aktif')
                                         <span class="badge bg-primary">{{ $history->status }}</span>

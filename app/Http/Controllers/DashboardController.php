@@ -13,9 +13,15 @@ class DashboardController extends Controller
         $breadcrumbs = [
             [
                 'text' => 'Dashboard',
-                'url' => route('dashboard.index'),
+                'url' => auth()->user()->role === 'admin' ? 
+                    route('admin.dashboard') : 
+                    route('user.dashboard'),
             ],
         ];
-        return view('admin.index', compact('title', 'breadcrumbs'));
+        if (auth()->user()->role === 'admin') {
+            return view('admin.index', compact('title', 'breadcrumbs'));
+        } else {
+            return view('user.index', compact('title', 'breadcrumbs'));
+        }
     }
 }

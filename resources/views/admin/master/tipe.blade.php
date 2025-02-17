@@ -14,6 +14,15 @@
                         </button>
                     </div>
                     <div class="card-body">
+                        <div class="my-3 ms-3 w-25">
+                            <label for="filterJenisBarang" class="form-label">Filter Jenis Barang</label>
+                            <select class="form-select" id="filterJenisBarang">
+                                <option value="">Semua Jenis Barang</option>
+                                <option value="Komputer">Komputer</option>
+                                <option value="Tablet">Tablet</option>
+                                <option value="Switch">Switch</option>
+                            </select>
+                        </div>
                         <div class="table-responsive">
                             <div id="loading-container" class="d-flex justify-content-center align-items-center" style="height: 200px;">
                                 <div class="spinner-border text-primary" role="status">
@@ -304,5 +313,47 @@
                 this.submit();
             });
         });
+    </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const filterSelect = document.getElementById('filterJenisBarang');
+        let datatable;
+    
+        // Initialize DataTable with filter functionality
+        setTimeout(() => {
+            const loadingContainer = document.getElementById('loading-container');
+            const table = document.getElementById('table-tipe-barang');
+            
+            loadingContainer.classList.add('d-none');
+            table.classList.remove('d-none');
+            
+            // Initialize DataTable
+            datatable = new DataTable("#table-tipe-barang");
+            
+            // Add filter event listener
+            filterSelect.addEventListener('change', function() {
+                const selectedValue = this.value;
+                
+                // Custom filtering function
+                DataTable.ext.search.push(function(settings, data, dataIndex) {
+                    // If no filter is selected, show all rows
+                    if (!selectedValue) return true;
+                    
+                    // Get the jenis_barang value from the row (assuming it's in the second column)
+                    const jenisBarang = data[1].toLowerCase();
+                    
+                    // Check if the row contains the badge with selected value
+                    return jenisBarang.includes(selectedValue.toLowerCase());
+                });
+                
+                // Reapply the filter
+                datatable.draw();
+                
+                // Remove the custom filtering function
+                DataTable.ext.search.pop();
+            });
+        }, 100);
+    });
     </script>
 @endsection

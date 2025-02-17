@@ -5,14 +5,14 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class EnsureAdmin
+class EnsureUser
 {
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->role === 'admin') {
+        if (Auth::check() && Auth::user()->role === 'user') {
             return $next($request);
         }
         
-        return redirect()->route('login')->with('error', 'Unauthorized access. Admin privileges required.');
+        return redirect()->route('login')->with('error', 'Unauthorized access. User privileges required.');
     }
 }

@@ -14,8 +14,9 @@ class Riwayat extends Model
         'id_barang',    // ID barang yang memiliki riwayat
         'id_lokasi',    // ID lokasi barang digunakan
         'id_departemen', // ID departemen barang digunakan
-        'user',
-        'kelayakan',
+        'user', // User yang menggunakan barang
+        'kelayakan_awal', // Kelayakan awal barang
+        'kelayakan_akhir', // Kelayakan akhir barang (nullable)
         'waktu_awal',   // Waktu mulai penggunaan barang
         'waktu_akhir',  // Waktu akhir penggunaan barang (nullable)
         'status',       // Status barang dalam riwayat (Aktif/Selesai)

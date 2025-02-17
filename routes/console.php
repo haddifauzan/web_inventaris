@@ -9,5 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 
-Schedule::command('barang:update-kelayakan')->dailyAt('10:47')->timezone('Asia/Jakarta')->withoutOverlapping();
+Schedule::command('barang:update-kelayakan')->dailyAt('10:07')->timezone('Asia/Jakarta')->withoutOverlapping();
 

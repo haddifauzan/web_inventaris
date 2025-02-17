@@ -8,8 +8,15 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="card-title">Detail IP Address - {{ $ipHost->ip_host }}</h2>
-                        <p class="text-muted mb-0">Lokasi: {{ $ipHost->lokasi->nama_lokasi }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="card-title">Detail IP Address - {{ $ipHost->ip_host }}</h2>
+                                <p class="text-muted mb-0">Lokasi: {{ $ipHost->lokasi->nama_lokasi }}</p>
+                            </div>
+                            <a href="{{ route('ip-address.index') }}" class="btn btn-secondary btn-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Kembali
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

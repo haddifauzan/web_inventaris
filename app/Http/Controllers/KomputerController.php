@@ -26,10 +26,10 @@ class KomputerController extends Controller
 
         switch ($tab) {
             case 'barang':
-                $query = Barang::where('jenis_barang', 'Komputer');
+                $query = Barang::where('jenis_barang', 'Komputer')->latest('created_at');
                 break;
             case 'backup':
-                $query = Barang::where('jenis_barang', 'Komputer')->where('status', 'Backup');
+                $query = Barang::where('jenis_barang', 'Komputer')->where('status', 'Backup')->latest('created_at');
                 break;
             case 'aktif':
                 $query = Barang::where('jenis_barang', 'Komputer')
@@ -70,7 +70,8 @@ class KomputerController extends Controller
         $departemen = Departemen::all();
         $ipAddresses = IpAddress::where('status', 'Available')->get();
 
-        return view('admin.komputer.index', compact(
+        $viewPath = auth()->user()->role === 'admin' ? 'admin.komputer.index' : 'user.komputer.index';
+        return view($viewPath, compact(
             'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id'
         ));
     }
@@ -199,6 +200,11 @@ class KomputerController extends Controller
             'spesifikasi_values' => 'required|array'
         ]);
 
+        // Check if barang exists and not in Pemusnahan status
+        $barang = Barang::where('id_barang', $id)
+            ->where('status', '!=', 'Pemusnahan')
+            ->firstOrFail();
+
         // Format tahun_perolehan menjadi YYYY-MM-01
         $tahunPerolehan = $request->tahun_perolehan . '-01';
         
@@ -231,8 +237,6 @@ class KomputerController extends Controller
 
         DB::beginTransaction();
         try {
-            $barang = Barang::findOrFail($id);
-            
             $barang->update([
                 'model' => $request->model,
                 'tipe_merk' => TipeBarang::findOrFail($request->tipe_merk)->tipe_merk,
@@ -340,7 +344,7 @@ class KomputerController extends Controller
                 'id_lokasi' => $request->id_lokasi,
                 'id_departemen' => $request->id_departemen,
                 'user' => $request->user,
-                'kelayakan' => $barang->kelayakan,
+                'kelayakan_awal' => $barang->kelayakan,
                 'waktu_awal' => now(),
                 'status' => 'Aktif',
                 'keterangan' => $request->keterangan
@@ -432,6 +436,7 @@ class KomputerController extends Controller
                 ->whereNull('waktu_akhir')
                 ->update([
                     'waktu_akhir' => now(),
+                    'kelayakan_akhir' => $barang->kelayakan,
                     'status' => 'Selesai'
                 ]);
 
@@ -491,6 +496,7 @@ class KomputerController extends Controller
                 ->whereNull('waktu_akhir')
                 ->update([
                     'waktu_akhir' => now(),
+                    'kelayakan_akhir' => $barang->kelayakan,
                     'status' => 'Selesai'
                 ]);
 

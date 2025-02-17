@@ -21,17 +21,16 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard.index');
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+            return redirect()->route('user.dashboard');
         }
         return view('login');
     }
 
-    /**
-     * Handle user login.
-     */
     public function login(Request $request)
     {
-        // Validasi input login
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
@@ -41,28 +40,29 @@ class AuthController extends Controller
 
         if ($this->hasTooManyLoginAttempts($request)) {
             $seconds = $this->rateLimiter->availableIn($this->throttleKey($request));
-            return back()->with('throttle', $seconds );
+            return back()->with('throttle', $seconds);
         }
 
-        // Coba login
         if (Auth::attempt($request->only('username', 'password'), $remember)) {
             $request->session()->regenerate();
+            
             if ($remember) {
                 $cookie = $this->setRememberMeCookie(Auth::user());
                 cookie()->queue($cookie);
             }
-            return redirect()->route('dashboard.index')->with('success', 'Login berhasil');
+
+            // Redirect based on role
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Login berhasil');
+            }
+            return redirect()->route('user.dashboard')->with('success', 'Login berhasil');
         }
 
-        // Jika login gagal, tingkatkan percobaan login
         $this->incrementLoginAttempts($request);
         $attemptsLeft = max(0, $this->maxAttempts() - $this->rateLimiter->attempts($this->throttleKey($request)));
         return back()->with('error', 'Username atau Password salah! Percobaan login tersisa ' . $attemptsLeft . ' kali.');
     }
 
-    /**
-     * Handle user logout.
-     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -71,9 +71,6 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Logout berhasil');
     }
 
-    /**
-     * Update username and password.
-     */
     public function updateCredentials(Request $request, $id)
     {
         $request->validate([
@@ -82,6 +79,12 @@ class AuthController extends Controller
         ]);
 
         $user = User::findOrFail($id);
+        
+        // User can only update their own credentials
+        if (Auth::id() !== $user->id_user) {
+            return back()->with('error', 'Unauthorized action');
+        }
+
         $user->username = $request->username;
         $user->password = Hash::make($request->password);
         $user->save();
@@ -89,9 +92,6 @@ class AuthController extends Controller
         return back()->with('success', 'Kredensial berhasil diperbarui');
     }
 
-    /**
-     * Reset username and password to default using kode_reset.
-     */
     public function resetCredential(Request $request)
     {
         $request->validate([
@@ -104,49 +104,56 @@ class AuthController extends Controller
             return back()->with('error', 'Kode reset tidak valid');
         }
 
-        $user->username = 'admin';
-        $user->password = Hash::make('admin123');
+        if ($user->role === 'admin') {
+            $user->username = 'admin';
+            $user->password = Hash::make('admin123');
+        } else {
+            $user->username = 'user';
+            $user->password = Hash::make('user123');
+        }
+        
         $user->save();
+
+        $credentials = $user->role === 'admin' 
+            ? 'username: admin, password: admin123' 
+            : 'username: user, password: user123';
+
+        return back()->with('success', 'Kredensial berhasil direset ke default. ' . $credentials);
 
         return back()->with('success', 'Kredensial berhasil direset ke default. \n username: admin, password: admin123');
     }
 
-    // Check if the user has too many login attempts
+    // Helper methods remain the same...
     protected function hasTooManyLoginAttempts(Request $request)
     {
         return $this->rateLimiter->tooManyAttempts($this->throttleKey($request), $this->maxAttempts());
     }
 
-    // Get the maximum number of login attempts
     protected function maxAttempts()
     {
-        return 5; 
+        return 5;
     }
 
-    // Get the number of minutes to throttle the login attempts
     protected function decayMinutes()
     {
-        return 1; // Set the throttle time to 1 minute
+        return 1;
     }
 
-    // Create a unique key for the throttle
     protected function throttleKey(Request $request)
     {
         return Str::lower($request->input('username')) . '|' . $request->ip();
     }
 
-    // Increment the number of login attempts
     protected function incrementLoginAttempts(Request $request)
     {
-        $this->rateLimiter->hit($this->throttleKey($request), $this->decayMinutes() * 60); // Store attempts for 1 minute
+        $this->rateLimiter->hit($this->throttleKey($request), $this->decayMinutes() * 60);
     }
 
-    // Set a custom "remember me" cookie
     protected function setRememberMeCookie($user)
     {
         $token = Str::random(60);
         $user->remember_token = $token;
         $user->save();
-        return cookie('remember_me', $token, 60 * 60 * 24 * 30); // Cookie valid for 30 days
+        return cookie('remember_me', $token, 60 * 60 * 24 * 30);
     }
 }

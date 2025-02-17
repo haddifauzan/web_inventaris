@@ -22,7 +22,7 @@ class DepartemenController extends Controller
             ['url' => route('departemen.index'), 'text' => 'Data Departemen']
         ];
 
-        $departemen = Departemen::all();
+        $departemen = Departemen::orderBy('nama_departemen', 'asc')->get();
 
         return view('admin.master.departemen', compact('title', 'breadcrumbs', 'departemen'));
     }

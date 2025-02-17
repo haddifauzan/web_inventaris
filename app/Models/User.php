@@ -34,6 +34,7 @@ class User extends Authenticatable
         'username',
         'password',
         'kode_reset',
+        'role', // ('admin', 'user')
     ];
 
     /**
