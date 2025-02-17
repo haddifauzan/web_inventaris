@@ -38,8 +38,14 @@ class AuthController extends Controller
                 'password' => 'required|string',
             ]);
 
+            // Cek jika sudah terlalu banyak percobaan
             if ($this->hasTooManyLoginAttempts($request)) {
                 $seconds = $this->rateLimiter->availableIn($this->throttleKey($request));
+                // Memastikan tampilan waktu selalu 60 detik ketika baru diblokir
+                $seconds = ($this->rateLimiter->attempts($this->throttleKey($request)) == self::MAX_ATTEMPTS) 
+                    ? self::DECAY_MINUTES * 60 
+                    : $seconds;
+                    
                 return back()
                     ->withInput($request->except('password'))
                     ->with('throttle', $seconds);
@@ -54,6 +60,7 @@ class AuthController extends Controller
                     $this->setRememberMeCookie(Auth::user());
                 }
 
+                // Clear rate limiter jika login berhasil
                 $this->rateLimiter->clear($this->throttleKey($request));
                 
                 return redirect()
@@ -61,8 +68,12 @@ class AuthController extends Controller
                     ->with('success', 'Login berhasil');
             }
 
+            // Increment attempts setelah login gagal
             $this->incrementLoginAttempts($request);
-            $attemptsLeft = max(0, self::MAX_ATTEMPTS - $this->rateLimiter->attempts($this->throttleKey($request)));
+            
+            // Hitung attempts yang tersisa
+            $attemptsLeft = self::MAX_ATTEMPTS - $this->rateLimiter->attempts($this->throttleKey($request));
+            $attemptsLeft = max(1, $attemptsLeft + 1);
             
             return back()
                 ->withInput($request->except('password'))
@@ -163,11 +174,13 @@ class AuthController extends Controller
 
     protected function throttleKey(Request $request)
     {
-        return Str::lower($request->input('username')) . '|' . $request->ip();
+        // Hanya menggunakan IP address untuk throttling
+        return 'login|' . $request->ip();
     }
 
     protected function incrementLoginAttempts(Request $request)
     {
+        // Reset decay time ke 60 detik setiap kali hit
         $this->rateLimiter->hit(
             $this->throttleKey($request), 
             self::DECAY_MINUTES * 60
