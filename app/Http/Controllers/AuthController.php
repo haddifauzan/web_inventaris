@@ -25,9 +25,12 @@ class AuthController extends Controller
 
     public function showLoginForm()
     {
-        return Auth::check() 
-            ? redirect()->route('dashboard.index')
-            : view('login');
+        if (Auth::check()) {
+            return Auth::user()->role === 'admin'
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('user.dashboard');
+        }
+        return view('login');
     }
 
     public function login(Request $request)
@@ -63,9 +66,11 @@ class AuthController extends Controller
                 // Clear rate limiter jika login berhasil
                 $this->rateLimiter->clear($this->throttleKey($request));
                 
-                return redirect()
-                    ->intended(route('dashboard.index'))
-                    ->with('success', 'Login berhasil');
+                // Redirect berdasarkan peran user
+                if (Auth::user()->role === 'admin') {
+                    return redirect()->route('admin.dashboard')->with('success', 'Login berhasil');
+                }
+                return redirect()->route('user.dashboard')->with('success', 'Login berhasil');
             }
 
             // Increment attempts setelah login gagal
