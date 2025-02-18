@@ -41,7 +41,6 @@ class AuthController extends Controller
                 'password' => 'required|string',
             ]);
 
-            // Cek jika sudah terlalu banyak percobaan
             if ($this->hasTooManyLoginAttempts($request)) {
                 $seconds = $this->rateLimiter->availableIn($this->throttleKey($request));
                 // Memastikan tampilan waktu selalu 60 detik ketika baru diblokir

@@ -526,4 +526,53 @@ class KomputerController extends Controller
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    public function getDestroyedByYear($year)
+    {
+        $computers = Barang::where('jenis_barang', 'Komputer')
+            ->whereHas('menuPemusnahan', function($query) use ($year) {
+                $query->whereYear('created_at', $year);
+            })
+            ->with('menuPemusnahan')
+            ->get();
+
+        return response()->json($computers);
+    }
+
+    public function destroyMultiple(Request $request)
+    {
+        try {
+            $computerIds = $request->computers;
+            
+            // Validate that all IDs belong to computers
+            $validComputers = Barang::where('jenis_barang', 'Komputer')
+                ->whereIn('id_barang', $computerIds)
+                ->count();
+                
+            if ($validComputers !== count($computerIds)) {
+                throw new \Exception('Invalid computer IDs detected');
+            }
+            
+            // Begin transaction
+            DB::beginTransaction();
+            
+            // Delete related menuPemusnahan records
+            MenuPemusnahan::whereIn('id_barang', $computerIds)->delete();
+            
+            // Delete computers
+            Barang::whereIn('id_barang', $computerIds)->delete();
+            
+            // Commit transaction
+            DB::commit();
+            
+            return redirect()
+                ->route('komputer.index', ['tab' => 'pemusnahan'])
+                ->with('success', 'Data berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
 }

@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             @foreach($data as $barang)
             { id: 'historyDetailTable{{ $barang->id_barang }}' },
             @endforeach
-            { id: 'destroyedTable' }
+            { id: 'destroyedTable' },
         ];
 
         tables.forEach(table => {

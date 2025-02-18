@@ -80,6 +80,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/komputer/{id}/musnah', [KomputerController::class, 'backupToMusnah'])->name('komputer.musnah');
     Route::put('/komputer/{id}/tobackup', [KomputerController::class, 'aktifToBackup'])->name('komputer.tobackup');
     Route::put('/komputer/{id}/topemusnahan', [KomputerController::class, 'aktifToMusnah'])->name('komputer.topemusnahan');
+    Route::get('/komputer/get-destroyed/{year}', [KomputerController::class, 'getDestroyedByYear'])->name('komputer.getDestroyed');
+    Route::post('/komputer/destroy-multiple', [KomputerController::class, 'destroyMultiple'])->name('komputer.destroyMultiple');
     Route::get('/laporan/export-computer-active', [LaporanController::class, 'exportReportComputerActive'])
     ->name('laporan.export-computer-active');
 });
