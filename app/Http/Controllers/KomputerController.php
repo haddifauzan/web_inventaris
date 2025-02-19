@@ -81,7 +81,7 @@ class KomputerController extends Controller
     {
         $title = 'Tambah Komputer';
         $breadcrumbs = [
-            ['url' => route('komputer.index'), 'text' => 'Komputer'],
+            ['url' => route('komputer.index', 'backup'), 'text' => 'Komputer'],
             ['url' => '#', 'text' => 'Tambah Komputer'],
         ];
 
@@ -437,7 +437,7 @@ class KomputerController extends Controller
                 ->update([
                     'waktu_akhir' => now(),
                     'kelayakan_akhir' => $barang->kelayakan,
-                    'status' => 'Selesai'
+                    'status' => 'Non-Aktif'
                 ]);
 
             // Get MenuAktif data for IP cleanup
@@ -497,7 +497,7 @@ class KomputerController extends Controller
                 ->update([
                     'waktu_akhir' => now(),
                     'kelayakan_akhir' => $barang->kelayakan,
-                    'status' => 'Selesai'
+                    'status' => 'Non-Aktif'
                 ]);
 
             // Get MenuAktif data for IP cleanup

@@ -25,8 +25,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])
-        ->name('updateCredential');
     
     // DATA MASTER
     Route::resource('lokasi', LokasiController::class);
@@ -68,13 +66,14 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
 Route::prefix('user')->middleware(['auth', EnsureUser::class])->group(function () {
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
-    Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])
-        ->name('updateCredential');
 });
 
 
 Route::middleware(['auth'])->group(function () {
     // KOMPUTER
+    Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])
+        ->name('updateCredential');
+
     Route::get('/komputer/{tab?}', [KomputerController::class, 'index'])->name('komputer.index');
     Route::post('/komputer/{id}/aktivasi', [KomputerController::class, 'aktivasi'])->name('komputer.aktivasi');
     Route::put('/komputer/{id}/musnah', [KomputerController::class, 'backupToMusnah'])->name('komputer.musnah');

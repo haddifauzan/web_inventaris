@@ -27,7 +27,7 @@
       </li>
       
       <li class="nav-item">
-          <a class="nav-link {{ request()->routeIs('tablet.index') ? '' : 'collapsed' }}" href="{{ route('tablet.index') }}">
+          <a class="nav-link collapsed" href="#">
               <i class="bi bi-tablet" style="font-size: 14px;"></i>
               <span class="ms-1">Tablet</span>
           </a>

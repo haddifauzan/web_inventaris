@@ -1,11 +1,21 @@
-<div class="mb-3">
-    <a href="{{ route('komputer.create') }}" class="btn btn-primary btn-sm ms-2">
-        <i class="bi bi-plus me-1"></i>Tambah Komputer
-    </a>
+<div>
+    <div class="row">
+        <div class="col-md-8"></div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" id="searchSerial" class="form-control" placeholder="Cari Serial CPU/Monitor...">
+                <button class="btn btn-secondary clear-search" type="button" data-target="searchSerial">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
-
 <div class="table-responsive">
-    <table class="table table-sm small table-striped" id="backupTable">
+    <table class="table table-sm small table-striped" id="barangTable">
         <thead>
             <tr>
                 <th>No</th>
@@ -20,6 +30,9 @@
                 <th>Aksi</th>
             </tr>
         </thead>
+        <div id="noDataMessage" class="alert alert-secondary py-2 mx-2 mt-2" style="display: none;">
+            Data tidak ditemukan.
+        </div>
         <tbody>
             @foreach($data as $index => $komputer)
             <tr>
@@ -28,10 +41,15 @@
                 <td>{{ $komputer->tipe_merk }}</td>
                 <td>{{ $komputer->operating_system }}</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-primary text-white"" 
-                            data-bs-toggle="modal" data-bs-target="#serialModal{{ $komputer->id_barang }}">
-                        <i class="bi bi-eye-fill"></i>
-                    </button>
+                    <ul class="list-unstyled mb-0">
+                        @if(json_decode($komputer->serial, true))
+                            @foreach(json_decode($komputer->serial, true) as $key => $value)
+                                <li><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</li>
+                            @endforeach
+                        @else
+                            <li>-</li>
+                        @endif
+                    </ul>
                 </td>
                 <td>
                     <button type="button" class="btn btn-sm btn-primary text-white" 
@@ -73,14 +91,12 @@
                            class="btn btn-warning btn-sm text-white"
                            title="Edit">
                             <i class="bi bi-pencil-fill"></i>
-                            Edit
                         </a>
                         @endif
                         <button type="button" class="btn btn-danger btn-sm"
                                 data-bs-toggle="modal" data-bs-target="#hapusModal{{ $komputer->id_barang }}"
                                 title="Hapus">
                             <i class="bi bi-trash-fill"></i>
-                            Hapus
                         </button>
                     </div>
                 </td>
@@ -90,31 +106,7 @@
     </table>
 </div>
 
-<!-- Modal Serial -->
 @foreach($data as $index => $komputer)
-    <div class="modal fade" id="serialModal{{ $komputer->id_barang }}" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Serial</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <ul class="list-unstyled mb-0">
-                        @if(json_decode($komputer->serial, true))
-                            @foreach(json_decode($komputer->serial, true) as $key => $value)
-                                <li><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</li>
-                            @endforeach
-                        @else
-                            <li>-</li>
-                        @endif
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- End Modal Serial -->
-
     <!-- Modal Spesifikasi -->
     <div class="modal fade" id="spesifikasiModal{{ $komputer->id_barang }}" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-md">
@@ -162,3 +154,60 @@
         </div>
     </div>
 @endforeach
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var table = new DataTable('#barangTable', {
+            searching: false,  // Nonaktifkan search box
+            paging: true,      // Mengaktifkan pagination
+            info: true,        // Menampilkan informasi jumlah data
+            ordering: false     // Mengaktifkan fitur pengurutan
+        });
+
+        // Fungsi pencarian berdasarkan serial CPU atau Monitor
+        document.getElementById('searchSerial').addEventListener('keyup', function() {
+            var searchTerm = this.value.toLowerCase();
+            var rows = document.querySelectorAll('#barangTable tbody tr');
+            var noDataMessage = document.getElementById('noDataMessage');
+            var foundAny = false;
+
+            rows.forEach(function(row) {
+                // Ambil konten dari kolom serial (kolom ke-5)
+                var serialContent = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+                // Cek apakah konten serial mengandung searchTerm
+                var found = serialContent.includes(searchTerm);
+
+                // Tampilkan atau sembunyikan baris berdasarkan hasil pencarian
+                row.style.display = (found || searchTerm === '') ? '' : 'none';
+                if (found) {
+                    foundAny = true; // Set foundAny to true if at least one row is found
+                }
+            });
+
+            // Tampilkan atau sembunyikan pesan "Data tidak ditemukan"
+            noDataMessage.style.display = foundAny ? 'none' : 'block';
+
+            updateRowNumbers();
+        });
+
+        // Fungsi untuk memperbarui nomor urut
+        function updateRowNumbers() {
+            var visibleIndex = 1;
+            document.querySelectorAll('#barangTable tbody tr').forEach(function(row) {
+                if (row.style.display !== 'none') {
+                    row.querySelector('td:first-child').textContent = visibleIndex++;
+                }
+            });
+        }
+
+        // Tombol clear search
+        document.querySelectorAll('.clear-search').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var targetId = this.getAttribute('data-target');
+                var input = document.getElementById(targetId);
+                input.value = '';
+                input.dispatchEvent(new Event('keyup'));
+            });
+        });
+    });
+</script>

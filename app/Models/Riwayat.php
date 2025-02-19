@@ -19,7 +19,7 @@ class Riwayat extends Model
         'kelayakan_akhir', // Kelayakan akhir barang (nullable)
         'waktu_awal',   // Waktu mulai penggunaan barang
         'waktu_akhir',  // Waktu akhir penggunaan barang (nullable)
-        'status',       // Status barang dalam riwayat (Aktif/Selesai)
+        'status',       // Status barang dalam riwayat (Aktif/Non-Aktif)
         'keterangan'    // Keterangan tambahan
     ];
 

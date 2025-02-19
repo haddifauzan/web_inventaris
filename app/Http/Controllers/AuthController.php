@@ -106,32 +106,24 @@ class AuthController extends Controller
 
     public function updateCredentials(Request $request, $id)
     {
-        try {
-            $validated = $request->validate([
-                'username' => 'required|string|max:255|unique:users,username,' . $id,
-                'password' => ['required', 'confirmed', Password::min(8)
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols()
-                ],
-            ]);
+        $validated = $request->validate([
+            'username' => 'required|string|max:255|unique:tbl_user,username,' . $id . ',id_user',
+            'password' => ['required', 'confirmed', Password::min(6)
+            ],
+        ]);
 
-            $user = User::findOrFail($id);
-            
-            if ($user->id !== Auth::id() && !Auth::user()->isAdmin()) {
-                return back()->with('error', 'Unauthorized access');
-            }
-
-            $user->update([
-                'username' => $validated['username'],
-                'password' => Hash::make($validated['password']),
-            ]);
-
-            return back()->with('success', 'Kredensial berhasil diperbarui');
-        } catch (\Exception $e) {
-            Log::error('Update credentials error: ' . $e->getMessage());
-            return back()->with('error', 'Terjadi kesalahan saat memperbarui kredensial.');
+        $user = User::findOrFail($id);
+        
+        if (Auth::user()->role !== 'admin' && Auth::user()->role !== 'user') {
+            return back()->with('error', 'Unauthorized access');
         }
+
+        $user->update([
+            'username' => $validated['username'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('success', 'Kredensial berhasil diperbarui');
     }
 
     public function resetCredential(Request $request)

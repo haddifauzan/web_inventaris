@@ -75,7 +75,7 @@
                             <option value="">Pilih Periode Tahun</option>
                             @php
                                 $currentYear = date('Y');
-                                for($year = $currentYear; $year >= $currentYear - 10; $year--) {
+                                for($year = $currentYear; $year >= $currentYear - 5; $year--) {
                                     echo "<option value='$year'>$year</option>";
                                 }
                             @endphp
