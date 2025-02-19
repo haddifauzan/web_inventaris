@@ -44,6 +44,8 @@ class KomputerController extends Controller
                 
                 $query->join('tbl_menu_aktif', 'tbl_barang.id_barang', '=', 'tbl_menu_aktif.id_barang')
                     ->join('tbl_departemen', 'tbl_menu_aktif.id_departemen', '=', 'tbl_departemen.id_departemen')
+                    ->join('tbl_lokasi', 'tbl_menu_aktif.id_lokasi', '=', 'tbl_lokasi.id_lokasi')
+                    ->orderBy('tbl_lokasi.nama_lokasi', 'asc')
                     ->orderBy('tbl_departemen.nama_departemen', 'asc');
                 break;
             case 'pemusnahan':
@@ -156,7 +158,7 @@ class KomputerController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('komputer.index')
+                ->route('komputer.index', 'backup')
                 ->with('success', 'Komputer berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollback();
@@ -567,19 +569,13 @@ class KomputerController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus',
-                'with' => [
-                    'success' => 'Data komputer berhasil dihapus, silahkan refresh halaman'
-                ]
+                'message' => 'Data berhasil dihapus, silahkan refresh halaman.',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
-                'with' => [
-                    'error' => 'Terjadi kesalahan: ' . $e->getMessage()
-                ]
             ], 500);
         }
     }

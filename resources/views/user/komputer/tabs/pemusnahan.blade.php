@@ -11,7 +11,6 @@
                 <th>Tipe/Merk</th>
                 <th>Serial</th>
                 <th>Tahun Perolehan</th>
-                <th>Kelayakan</th>
                 <th>Keterangan Pemusnahan</th>
                 <th>Waktu Pemusnahan</th>
             </tr>
@@ -31,23 +30,6 @@
                     @endif
                 </td>
                 <td>{{ \Carbon\Carbon::parse($computer->tahun_perolehan)->format('M Y') }}</td>
-                <td>
-                    <div class="progress" style="height: 12px; width: 100px;">
-                        <div 
-                            class="progress-bar 
-                                {{ 
-                                    $computer->kelayakan >= 75 ? 'bg-success' :
-                                    ($computer->kelayakan >= 50 ? 'bg-warning' : 'bg-danger')
-                                }}"
-                            role="progressbar" 
-                            aria-valuenow="{{ $computer->kelayakan ?? 0 }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="100"
-                            style="width: {{ $computer->kelayakan ?? 0 }}%">
-                            {{ $computer->kelayakan ?? '-' }}%
-                        </div>
-                    </div>
-                </td>
                 <td title="{{ $computer->menuPemusnahan->keterangan ?? '-' }}">
                     {{ Str::limit($computer->menuPemusnahan->keterangan ?? '-', 50) }}
                 </td>
@@ -75,7 +57,7 @@
                             <option value="">Pilih Periode Tahun</option>
                             @php
                                 $currentYear = date('Y');
-                                for($year = $currentYear; $year >= $currentYear - 10; $year--) {
+                                for($year = $currentYear; $year >= $currentYear - 5; $year--) {
                                     echo "<option value='$year'>$year</option>";
                                 }
                             @endphp
@@ -240,7 +222,17 @@
                     // Close modals
                     $('#confirmDeleteModal').modal('hide');
                     // Show success message
-                    toastr.success('Data berhasil dihapus');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message,
+                        showCloseButton: true,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: 'top-end'
+                    });
                 }
             });
         });

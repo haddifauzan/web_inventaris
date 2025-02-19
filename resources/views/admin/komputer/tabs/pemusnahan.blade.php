@@ -240,7 +240,17 @@
                     // Close modals
                     $('#confirmDeleteModal').modal('hide');
                     // Show success message
-                    toastr.success('Data berhasil dihapus');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message,
+                        showCloseButton: true,
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        toast: true,
+                        position: 'top-end'
+                    });
                 }
             });
         });

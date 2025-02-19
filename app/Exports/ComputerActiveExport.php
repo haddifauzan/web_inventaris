@@ -52,37 +52,42 @@ class ComputerActiveExport implements FromCollection, WithHeadings, WithMapping,
     public function collection()
     {
         $query = Barang::with(['menuAktif.lokasi', 'menuAktif.departemen', 'menuAktif.ipAddress'])
+            ->join('tbl_menu_aktif', 'tbl_barang.id_barang', '=', 'tbl_menu_aktif.id_barang')
+            ->join('tbl_lokasi', 'tbl_menu_aktif.id_lokasi', '=', 'tbl_lokasi.id_lokasi')
+            ->join('tbl_departemen', 'tbl_menu_aktif.id_departemen', '=', 'tbl_departemen.id_departemen')
             ->whereHas('menuAktif', function ($q) {
-                $q->where('jenis_barang', 'Komputer');
+            $q->where('jenis_barang', 'Komputer');
             });
 
         if (!empty($this->periode)) {
             $carbonPeriode = Carbon::createFromFormat('Y-m', $this->periode);
 
             $query->whereHas('riwayat', function ($q) use ($carbonPeriode) {
-                $q->whereYear('waktu_awal', '<=', $carbonPeriode->year)
-                ->whereMonth('waktu_awal', '<=', $carbonPeriode->month)
-                ->where(function ($query) use ($carbonPeriode) {
-                    $query->whereNull('waktu_akhir')  // Jika masih aktif (tidak ada waktu akhir)
-                            ->orWhereYear('waktu_akhir', '>=', $carbonPeriode->year)
-                            ->orWhereMonth('waktu_akhir', '>=', $carbonPeriode->month);
-                });
+            $q->whereYear('waktu_awal', '<=', $carbonPeriode->year)
+            ->whereMonth('waktu_awal', '<=', $carbonPeriode->month)
+            ->where(function ($query) use ($carbonPeriode) {
+                $query->whereNull('waktu_akhir')  // Jika masih aktif (tidak ada waktu akhir)
+                    ->orWhereYear('waktu_akhir', '>=', $carbonPeriode->year)
+                    ->orWhereMonth('waktu_akhir', '>=', $carbonPeriode->month);
+            });
             });
         }
 
         if (!empty($this->lokasi)) {
             $query->whereHas('menuAktif', function ($q) {
-                $q->where('id_lokasi', $this->lokasi);
+            $q->where('id_lokasi', $this->lokasi);
             });
         }
 
         if (!empty($this->departemen)) {
             $query->whereHas('menuAktif', function ($q) {
-                $q->where('id_departemen', $this->departemen);
+            $q->where('id_departemen', $this->departemen);
             });
         }
 
-        $computers = $query->get();
+        $computers = $query->orderBy('tbl_lokasi.nama_lokasi', 'asc')
+                  ->orderBy('tbl_departemen.nama_departemen', 'asc')
+                  ->get();
 
         if ($computers->isEmpty()) {
             throw ValidationException::withMessages([

@@ -171,7 +171,7 @@
                             <textarea class="form-control form-control-sm @error('keterangan') is-invalid @enderror" 
                                     name="keterangan" 
                                     rows="3"
-                                    placeholder="Tambahkan keterangan jika diperlukan">{{ old('keterangan', $barang->keterangan) }}</textarea>
+                                    placeholder="Tambahkan keterangan jika diperlukan">{{ old('keterangan', $barang->menuBackup->keterangan) }}</textarea>
                             @error('keterangan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

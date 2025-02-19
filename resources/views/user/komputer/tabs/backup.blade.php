@@ -1,3 +1,8 @@
+<div class="mb-3">
+    <a href="{{ route('komputer.create') }}" class="btn btn-primary btn-sm ms-2">
+        <i class="bi bi-plus me-1"></i>Tambah Komputer
+    </a>
+</div>
 <div class="table-responsive">
     <table class="table table-sm small table-striped" id="backupTable">
         <thead>
@@ -29,8 +34,8 @@
                 </td>
                 <td>{{ \Carbon\Carbon::parse($komputer->tahun_perolehan)->format('M Y') }}</td>
                 <td data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="{{ $komputer->keterangan ?? "-" }}">
-                    {{ Str::limit($komputer->keterangan ?? "-", 50) }}
+                    title="{{ $komputer->menuBackup->keterangan ?? "-" }}">
+                    {{ Str::limit($komputer->menuBackup->keterangan ?? "-", 50) }}
                 </td>
                 <td>
                     <div class="btn-group" role="group">

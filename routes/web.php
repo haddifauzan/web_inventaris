@@ -43,13 +43,6 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
 
     // DATA BARANG
 
-    // KOMPUTER
-    Route::get('/komputer/barang/create', [KomputerController::class, 'create'])->name('komputer.create');
-    Route::post('/komputer/barang/store', [KomputerController::class, 'store'])->name('komputer.store');
-    Route::get('/komputer/{id}/edit', [KomputerController::class, 'edit'])->name('komputer.edit');
-    Route::put('/komputer/{id}/update', [KomputerController::class, 'update'])->name('komputer.update');
-    Route::delete('/komputer/{id}/destroy', [KomputerController::class, 'destroy'])->name('komputer.destroy');
-
     // TABLET
     Route::get('/tablet/{tab?}', [TabletController::class, 'index'])->name('tablet.index');
     Route::get('/tablet/barang/create', [TabletController::class, 'create'])->name('tablet.create');
@@ -70,10 +63,17 @@ Route::prefix('user')->middleware(['auth', EnsureUser::class])->group(function (
 
 
 Route::middleware(['auth'])->group(function () {
-    // KOMPUTER
+    
     Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])
         ->name('updateCredential');
 
+            // KOMPUTER
+    Route::get('/komputer/barang/create', [KomputerController::class, 'create'])->name('komputer.create');
+    Route::post('/komputer/barang/store', [KomputerController::class, 'store'])->name('komputer.store');
+    Route::get('/komputer/{id}/edit', [KomputerController::class, 'edit'])->name('komputer.edit');
+    Route::put('/komputer/{id}/update', [KomputerController::class, 'update'])->name('komputer.update');
+    Route::delete('/komputer/{id}/destroy', [KomputerController::class, 'destroy'])->name('komputer.destroy');
+    
     Route::get('/komputer/{tab?}', [KomputerController::class, 'index'])->name('komputer.index');
     Route::post('/komputer/{id}/aktivasi', [KomputerController::class, 'aktivasi'])->name('komputer.aktivasi');
     Route::put('/komputer/{id}/musnah', [KomputerController::class, 'backupToMusnah'])->name('komputer.musnah');

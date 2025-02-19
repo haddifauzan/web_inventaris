@@ -110,8 +110,8 @@
                                         <span class="badge bg-secondary">{{ $history->status }}</span>
                                     @endif
                                 </td>
-                                <td data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $history->keterangan }}">
-                                    {{ Str::limit($history->keterangan, 20) }}
+                                <td data-bs-toggle="tooltip" data-bs-placement="top" title="{{ $history->keterangan ?? '-' }}">
+                                    {{ Str::limit($history->keterangan ?? '-', 20) }}
                                 </td>
                             </tr>
                             @endforeach

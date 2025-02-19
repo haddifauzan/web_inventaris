@@ -52,8 +52,8 @@
                     </div>
                 </td>
                 <td data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="{{ $komputer->keterangan ?? "-" }}">
-                    {{ Str::limit($komputer->keterangan ?? "-", 50) }}
+                    title="{{ $komputer->menuBackup->keterangan ?? "-" }}">
+                    {{ Str::limit($komputer->menuBackup->keterangan ?? "-", 50) }}
                 </td>
                 <td>
                     <div class="btn-group" role="group">
