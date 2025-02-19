@@ -565,14 +565,22 @@ class KomputerController extends Controller
             // Commit transaction
             DB::commit();
             
-            return redirect()
-                ->route('komputer.index', ['tab' => 'pemusnahan'])
-                ->with('success', 'Data berhasil dihapus');
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus',
+                'with' => [
+                    'success' => 'Data komputer berhasil dihapus, silahkan refresh halaman'
+                ]
+            ]);
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()
-                ->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                'with' => [
+                    'error' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ]
+            ], 500);
         }
     }
 }
