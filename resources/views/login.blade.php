@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Login - RHIS</title>
+  <title>Login - RHGIS</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -44,8 +44,8 @@
               <div class="d-flex align-items-center justify-content-between">
                 <p class="d-flex align-items-center justify-content-center mx-auto" style="width: 80%">
                   <img src="images/logo.png" alt="" width="40" height="40">
-                  <span class="d-none d-lg-block fw-bold ms-1 fs-2" style="color: #333;">RHIS</span>
-                  <span class="d-none d-lg-block ms-2" style="font-size: 14px; color: #333;">Rajawali Hiyoto Inventory System</span>
+                  <span class="d-none d-lg-block fw-bold ms-1 fs-2" style="color: #333;">RHGIS</span>
+                  <span class="d-none d-lg-block ms-2" style="font-size: 14px; color: #333;">Rajawali Hiyoto Gagdet Inventory System</span>
                 </p>
               </div><!-- End Logo -->
 
@@ -54,7 +54,7 @@
                 <div class="card-body">
 
                   <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Login RHIS</h5>
+                    <h5 class="card-title text-center pb-0 fs-4">Login RGHIS</h5>
                     <p class="text-center small">Masukkan username dan password untuk login</p>
                   </div>
 
