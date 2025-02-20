@@ -169,9 +169,9 @@
                         <div class="mb-3">
                             <label class="form-label col-form-label-sm">Keterangan</label>
                             <textarea class="form-control form-control-sm @error('keterangan') is-invalid @enderror" 
-                                    name="keterangan" 
-                                    rows="3"
-                                    placeholder="Tambahkan keterangan jika diperlukan">{{ old('keterangan', $barang->menuBackup->keterangan) }}</textarea>
+                            name="keterangan" 
+                            rows="3"
+                            placeholder="Tambahkan keterangan jika diperlukan">{{ old('keterangan', $barang->menuBackup?->keterangan ?? '') }}</textarea>
                             @error('keterangan')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
