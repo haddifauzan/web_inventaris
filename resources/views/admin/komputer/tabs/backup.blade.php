@@ -100,21 +100,44 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Lokasi</label>
-                            <select class="form-select form-select-sm" name="id_lokasi" id="lokasi-select{{ $komputer->id_barang }}" required>
-                                <option value=""><-- Pilih Lokasi --></option>
-                                @foreach($lokasi as $lok)
-                                    <option value="{{ $lok->id_lokasi }}">{{ $lok->nama_lokasi }}</option>
-                                @endforeach
-                            </select>
+                            <div class="select-search-container">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" id="lokasi-search{{ $komputer->id_barang }}" 
+                                           placeholder="Cari dan pilih lokasi..." autocomplete="off">
+                                    <button class="btn btn-secondary" type="button" id="clear-lokasi-search{{ $komputer->id_barang }}">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" name="id_lokasi" id="lokasi-value{{ $komputer->id_barang }}" required>
+                                <div class="select-search-dropdown" id="lokasi-dropdown{{ $komputer->id_barang }}">
+                                    @foreach($lokasi as $lok)
+                                    <div class="select-search-option" data-value="{{ $lok->id_lokasi }}">
+                                        {{ $lok->nama_lokasi }}
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
+                        
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Departemen</label>
-                            <select class="form-select form-select-sm" name="id_departemen" id="departemen-select{{ $komputer->id_barang }}" required>
-                                <option value=""><-- Pilih Departemen --></option>
-                                @foreach($departemen as $dep)
-                                <option value="{{ $dep->id_departemen }}">{{ $dep->nama_departemen }}</option>
-                                @endforeach
-                            </select>
+                            <div class="select-search-container">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" id="departemen-search{{ $komputer->id_barang }}" 
+                                           placeholder="Cari dan pilih departemen..." autocomplete="off">
+                                    <button class="btn btn-secondary" type="button" id="clear-departemen-search{{ $komputer->id_barang }}">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" name="id_departemen" id="departemen-value{{ $komputer->id_barang }}" required>
+                                <div class="select-search-dropdown" id="departemen-dropdown{{ $komputer->id_barang }}">
+                                    @foreach($departemen as $dep)
+                                    <div class="select-search-option" data-value="{{ $dep->id_departemen }}">
+                                        {{ $dep->nama_departemen }}
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -235,131 +258,369 @@
         text-align: center;
         font-style: italic;
     }
+
+    .select-search-container {
+        position: relative;
+    }
+    .select-search-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        display: none;
+    }
+    .select-search-dropdown.show {
+        display: block;
+    }
+    .select-search-option {
+        padding: 0.4rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+    .select-search-option:hover {
+        background-color: #f8f9fa;
+    }
+    .select-search-selected {
+        background-color: #e9ecef;
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const lokasiSelect = document.getElementById('lokasi-select{{ $komputer->id_barang }}');
-        const ipSearchInput = document.getElementById('ip-search-input{{ $komputer->id_barang }}');
-        const ipAddressList = document.getElementById('ip-address-list{{ $komputer->id_barang }}');
-        const clearSearchBtn = document.getElementById('clear-search{{ $komputer->id_barang }}');
+        @foreach($data as $komputer)
+        setupSearchSelect(
+            'lokasi-search{{ $komputer->id_barang }}',
+            'lokasi-dropdown{{ $komputer->id_barang }}',
+            'lokasi-value{{ $komputer->id_barang }}',
+            'clear-lokasi-search{{ $komputer->id_barang }}'
+        );
+        
+        setupSearchSelect(
+            'departemen-search{{ $komputer->id_barang }}',
+            'departemen-dropdown{{ $komputer->id_barang }}',
+            'departemen-value{{ $komputer->id_barang }}',
+            'clear-departemen-search{{ $komputer->id_barang }}'
+        );
+        
+        setupIpAddressHandler('{{ $komputer->id_barang }}');
+        @endforeach
+        
+        // Setup search select functionality
+        function setupSearchSelect(searchId, dropdownId, valueId, clearId) {
+            const searchInput = document.getElementById(searchId);
+            const dropdown = document.getElementById(dropdownId);
+            const valueInput = document.getElementById(valueId);
+            const clearButton = document.getElementById(clearId);
+            const options = dropdown.getElementsByClassName('select-search-option');
 
-        async function loadIpAddresses(lokasiId) {
-            try {
-                const response = await fetch(`/api/lokasi/${lokasiId}/ip-addresses`);
-                const data = await response.json();
-                ipAddressList.innerHTML = '';
-
-                if (!data.ipHosts || data.ipHosts.length === 0) {
-                    ipAddressList.innerHTML = '<li class="no-results">Tidak ada IP Address tersedia</li>';
-                    return;
-                }
-
-                data.ipHosts.forEach(ipHost => {
-                    const groupHeader = document.createElement('li');
-                    groupHeader.textContent = ipHost.ip_host;
-                    groupHeader.classList.add('ip-host-group');
-                    ipAddressList.appendChild(groupHeader);
-
-                    if (ipHost.ip_addresses && ipHost.ip_addresses.length > 0) {
-                        ipHost.ip_addresses.forEach(ip => {
-                            if (ip.status === 'Available') {
-                                const listItem = document.createElement('li');
-                                listItem.classList.add('ip-address-option');
-
-                                const radio = document.createElement('input');
-                                radio.type = 'radio';
-                                radio.name = 'ip_address';
-                                radio.value = ip.id_ip;
-                                radio.id = `ip-${ip.id_ip}`;
-
-                                const label = document.createElement('label');
-                                label.setAttribute('for', `ip-${ip.id_ip}`);
-                                label.textContent = ` ${ip.ip_address}`;
-                                label.style.marginLeft = '10px';
-
-                                listItem.appendChild(radio);
-                                listItem.appendChild(label);
-                                ipAddressList.appendChild(listItem);
-                            }
-                        });
-                    } else {
-                        const noIpItem = document.createElement('li');
-                        noIpItem.textContent = '  Tidak ada IP tersedia';
-                        noIpItem.classList.add('ip-address-option');
-                        noIpItem.style.fontStyle = 'italic';
-                        noIpItem.style.color = '#6c757d';
-                        ipAddressList.appendChild(noIpItem);
-                    }
+            searchInput?.addEventListener('focus', () => dropdown.classList.add('show'));
+            
+            searchInput?.addEventListener('input', () => {
+                const filter = searchInput.value.toLowerCase();
+                let visible = 0;
+                
+                Array.from(options).forEach(option => {
+                    const matches = option.textContent.toLowerCase().includes(filter);
+                    option.style.display = matches ? '' : 'none';
+                    if (matches) visible++;
                 });
-
-                filterIpAddresses('');
-            } catch (error) {
-                console.error('Error loading IP addresses:', error);
-                ipAddressList.innerHTML = '<li class="no-results">Error loading IP addresses</li>';
-            }
-        }
-
-        function filterIpAddresses(searchTerm) {
-            let visibleOptions = 0;
-
-            Array.from(ipAddressList.children).forEach(item => {
-                if (item.classList.contains('ip-host-group')) return;
-
-                const matches = item.textContent.toLowerCase().includes(searchTerm.toLowerCase());
-                if (matches) {
-                    item.style.display = 'flex';
-                    visibleOptions++;
+                
+                // Tampilkan pesan jika tidak ada hasil
+                if (visible === 0) {
+                    // Hapus pesan 'tidak ada data' yang mungkin sudah ada
+                    const existingNoData = dropdown.querySelector('.no-data-message');
+                    if (existingNoData) existingNoData.remove();
+                    
+                    // Tambahkan pesan baru
+                    const noDataMsg = document.createElement('div');
+                    noDataMsg.className = 'select-search-option no-data-message';
+                    noDataMsg.textContent = 'Tidak ada data yang cocok';
+                    noDataMsg.style.fontStyle = 'italic';
+                    noDataMsg.style.color = '#6c757d';
+                    noDataMsg.style.textAlign = 'center';
+                    dropdown.appendChild(noDataMsg);
                 } else {
-                    item.style.display = 'none';
+                    // Hapus pesan 'tidak ada data' jika ada
+                    const existingNoData = dropdown.querySelector('.no-data-message');
+                    if (existingNoData) existingNoData.remove();
+                }
+                
+                dropdown.classList.add('show');
+            });
+
+            // Mencegah input manual dengan bantuan fungsi validasi
+            searchInput?.addEventListener('blur', () => {
+                setTimeout(() => {
+                    if (!valueInput.value) {
+                        searchInput.value = ''; // Kosongkan input jika tidak ada nilai yang dipilih
+                    } else {
+                        // Cari opsi yang nilai ID-nya cocok dengan value yang tersimpan
+                        const selectedOption = Array.from(options).find(opt => opt.dataset.value === valueInput.value);
+                        if (selectedOption) {
+                            // Pastikan teks input sesuai dengan opsi yang dipilih
+                            searchInput.value = selectedOption.textContent.trim();
+                        }
+                    }
+                }, 200); // Berikan sedikit delay agar klik pada opsi bisa diproses
+            });
+
+            Array.from(options).forEach(option => {
+                option.addEventListener('click', () => {
+                    valueInput.value = option.dataset.value;
+                    searchInput.value = option.textContent.trim();
+                    dropdown.classList.remove('show');
+                    
+                    Array.from(options).forEach(opt => opt.classList.remove('select-search-selected'));
+                    option.classList.add('select-search-selected');
+                    
+                    // Hapus pesan 'tidak ada data' jika ada
+                    const existingNoData = dropdown.querySelector('.no-data-message');
+                    if (existingNoData) existingNoData.remove();
+                    
+                    valueInput.dispatchEvent(new Event('change', {bubbles: true}));
+                });
+            });
+
+            clearButton?.addEventListener('click', () => {
+                searchInput.value = '';
+                valueInput.value = '';
+                Array.from(options).forEach(option => {
+                    option.style.display = '';
+                    option.classList.remove('select-search-selected');
+                });
+                
+                // Hapus pesan 'tidak ada data' jika ada
+                const existingNoData = dropdown.querySelector('.no-data-message');
+                if (existingNoData) existingNoData.remove();
+                
+                dropdown.classList.remove('show');
+                valueInput.dispatchEvent(new Event('change', {bubbles: true}));
+            });
+
+            document.addEventListener('click', ({target}) => {
+                if (!searchInput?.contains(target) && 
+                    !dropdown?.contains(target) && 
+                    !clearButton?.contains(target)) {
+                    dropdown?.classList.remove('show');
+                    
+                    // Validasi setelah dropdown ditutup
+                    if (!valueInput.value) {
+                        searchInput.value = ''; // Kosongkan input jika tidak ada nilai yang dipilih
+                    }
                 }
             });
 
-            const noResults = document.querySelector('.no-results');
-            if (visibleOptions === 0) {
-                if (!noResults) {
-                    const noResultsItem = document.createElement('li');
-                    noResultsItem.textContent = 'Tidak ditemukan IP Address yang sesuai';
-                    noResultsItem.classList.add('no-results');
-                    ipAddressList.appendChild(noResultsItem);
-                }
-            } else {
-                if (noResults) {
-                    noResults.remove();
-                }
+            // Tambahkan validasi pada form submit
+            const form = searchInput.closest('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // Pastikan lokasi dan departemen dipilih sebelum form di-submit
+                    const lokasiValue = form.querySelector(`input[name="id_lokasi"]`);
+                    const depValue = form.querySelector(`input[name="id_departemen"]`);
+                    
+                    if (!lokasiValue.value || !depValue.value) {
+                        e.preventDefault();
+                        
+                        if (!lokasiValue.value) {
+                            // Highlight input lokasi
+                            const lokasiInput = form.querySelector(`input[id^="lokasi-search"]`);
+                            if (lokasiInput) {
+                                lokasiInput.classList.add('is-invalid');
+                                // Tambahkan pesan error jika belum ada
+                                if (!lokasiInput.nextElementSibling?.classList.contains('invalid-feedback')) {
+                                    const errorMsg = document.createElement('div');
+                                    errorMsg.className = 'invalid-feedback';
+                                    errorMsg.textContent = 'Silakan pilih lokasi dari daftar';
+                                    lokasiInput.insertAdjacentElement('afterend', errorMsg);
+                                }
+                            }
+                        }
+                        
+                        if (!depValue.value) {
+                            // Highlight input departemen
+                            const depInput = form.querySelector(`input[id^="departemen-search"]`);
+                            if (depInput) {
+                                depInput.classList.add('is-invalid');
+                                // Tambahkan pesan error jika belum ada
+                                if (!depInput.nextElementSibling?.classList.contains('invalid-feedback')) {
+                                    const errorMsg = document.createElement('div');
+                                    errorMsg.className = 'invalid-feedback';
+                                    errorMsg.textContent = 'Silakan pilih departemen dari daftar';
+                                    depInput.insertAdjacentElement('afterend', errorMsg);
+                                }
+                            }
+                        }
+                        
+                        // Tampilkan pesan alert
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Perhatian',
+                            text: 'Silakan pilih lokasi dan departemen dari daftar yang tersedia',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
             }
+
+            // Hapus class is-invalid saat input difokuskan
+            searchInput?.addEventListener('focus', function() {
+                this.classList.remove('is-invalid');
+                const errorMsg = this.nextElementSibling?.classList.contains('invalid-feedback') ? 
+                                this.nextElementSibling : null;
+                if (errorMsg) errorMsg.remove();
+            });
         }
 
-        lokasiSelect.addEventListener('change', function() {
-            const lokasiId = this.value;
-            
-            // Reset IP search input
-            ipSearchInput.value = '';
-            
-            if (lokasiId) {
-                loadIpAddresses(lokasiId);
-            } else {
-                ipAddressList.innerHTML = '<li class="no-results">Pilih lokasi terlebih dahulu</li>';
+        // Setup IP address handling
+        function setupIpAddressHandler(id) {
+            const lokasiValue = document.getElementById(`lokasi-value${id}`);
+            const ipSearch = document.getElementById(`ip-search-input${id}`);
+            const ipList = document.getElementById(`ip-address-list${id}`);
+            const clearSearch = document.getElementById(`clear-search${id}`);
+
+            if (!lokasiValue || !ipSearch || !ipList || !clearSearch) return;
+
+            new MutationObserver(mutations => {
+                mutations.forEach(mutation => {
+                    if (mutation.attributeName === 'value') {
+                        const lokasiId = lokasiValue.value;
+                        lokasiId ? loadIpAddresses(lokasiId) : 
+                                 showNoResults('Pilih lokasi terlebih dahulu');
+                    }
+                });
+            }).observe(lokasiValue, {attributes: true});
+
+            lokasiValue.addEventListener('change', () => {
+                const lokasiId = lokasiValue.value;
+                lokasiId ? loadIpAddresses(lokasiId) : 
+                         showNoResults('Pilih lokasi terlebih dahulu');
+            });
+
+            async function loadIpAddresses(lokasiId) {
+                try {
+                    showNoResults('Memuat data IP...');
+                    const response = await fetch(`/api/lokasi/${lokasiId}/ip-addresses`);
+                    const data = await response.json();
+                    
+                    if (!data.ipHosts?.length) {
+                        showNoResults('Tidak ada IP Address tersedia');
+                        return;
+                    }
+
+                    renderIpAddresses(data.ipHosts);
+                    filterIpAddresses('');
+                } catch (error) {
+                    console.error('Error loading IP addresses:', error);
+                    showNoResults('Error loading IP addresses');
+                }
             }
-        });
 
-        ipSearchInput.addEventListener('input', function() {
-            filterIpAddresses(this.value.trim());
-        });
-
-        clearSearchBtn.addEventListener('click', function() {
-            ipSearchInput.value = '';
-            filterIpAddresses('');
-            ipSearchInput.focus();
-        });
-
-        ipSearchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
+            function showNoResults(message) {
+                ipList.innerHTML = `<li class="no-results">${message}</li>`;
             }
-        });
+
+            function renderIpAddresses(ipHosts) {
+                ipList.innerHTML = '';
+                
+                ipHosts.forEach(host => {
+                    const groupHeader = createGroupHeader(host.ip_host);
+                    ipList.appendChild(groupHeader);
+
+                    const availableIps = host.ip_addresses?.filter(ip => ip.status === 'Available') || [];
+                    
+                    if (availableIps.length) {
+                        availableIps.forEach(ip => {
+                            ipList.appendChild(createIpOption(ip, id));
+                        });
+                    } else {
+                        ipList.appendChild(createNoIpMessage());
+                    }
+                });
+            }
+
+            function filterIpAddresses(searchTerm) {
+                const items = Array.from(ipList.children);
+                let visibleCount = 0;
+
+                items.forEach(item => {
+                    if (item.classList.contains('ip-address-option')) {
+                        const matches = item.textContent.toLowerCase().includes(searchTerm.toLowerCase());
+                        item.style.display = matches ? '' : 'none';
+                        if (matches) visibleCount++;
+                    } else if (item.classList.contains('ip-host-group')) {
+                        const hasVisibleChild = hasVisibleChildren(item);
+                        item.style.display = hasVisibleChild ? '' : 'none';
+                    }
+                });
+
+                if (!visibleCount) {
+                    showNoResults(searchTerm ? 
+                        'Tidak ditemukan IP Address yang sesuai' : 
+                        'Tidak ada IP Address tersedia'
+                    );
+                }
+            }
+
+            ipSearch.addEventListener('input', e => filterIpAddresses(e.target.value.trim()));
+            clearSearch.addEventListener('click', () => {
+                ipSearch.value = '';
+                filterIpAddresses('');
+                ipSearch.focus();
+            });
+            ipSearch.addEventListener('keydown', e => {
+                if (e.key === 'Enter') e.preventDefault();
+            });
+        }
+
+        function createGroupHeader(text) {
+            const header = document.createElement('li');
+            header.textContent = text;
+            header.classList.add('ip-host-group');
+            return header;
+        }
+
+        function createIpOption(ip, computerId) {
+            const item = document.createElement('li');
+            item.classList.add('ip-address-option');
+            
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'ip_address';
+            radio.value = ip.id_ip;
+            radio.id = `ip-${ip.id_ip}-${computerId}`;
+
+            const label = document.createElement('label');
+            label.htmlFor = radio.id;
+            label.textContent = ` ${ip.ip_address}`;
+            label.style.marginLeft = '10px';
+
+            item.append(radio, label);
+            return item;
+        }
+
+        function createNoIpMessage() {
+            const item = document.createElement('li');
+            item.textContent = '  Tidak ada IP tersedia';
+            item.classList.add('ip-address-option');
+            item.style.fontStyle = 'italic';
+            item.style.color = '#6c757d';
+            return item;
+        }
+
+        function hasVisibleChildren(element) {
+            let next = element.nextElementSibling;
+            while (next && next.classList.contains('ip-address-option')) {
+                if (next.style.display !== 'none') return true;
+                next = next.nextElementSibling;
+            }
+            return false;
+        }
     });
 </script>
 @endforeach
-
-

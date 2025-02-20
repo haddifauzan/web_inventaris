@@ -64,12 +64,12 @@ class KomputerController extends Controller
                     ->orderBy('updated_at', 'desc');
                 break;
             default:
-                return redirect()->route('komputer.index', 'barang');
+                return redirect()->route('komputer.index', ['tab' => 'barang']);
         }
 
         $data = $query->get();
-        $lokasi = Lokasi::all();
-        $departemen = Departemen::all();
+        $lokasi = Lokasi::orderBy('nama_lokasi', 'asc')->get();
+        $departemen = Departemen::orderBy('nama_departemen', 'asc')->get();
         $ipAddresses = IpAddress::where('status', 'Available')->get();
 
         $viewPath = auth()->user()->role === 'admin' ? 'admin.komputer.index' : 'user.komputer.index';
@@ -158,7 +158,7 @@ class KomputerController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('komputer.index', 'backup')
+                ->route('komputer.index', ['tab' => 'backup'])
                 ->with('success', 'Komputer berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollback();
@@ -569,7 +569,8 @@ class KomputerController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus, silahkan refresh halaman.',
+                'message' => 'Data berhasil dihapus, halaman akan ter refresh.',
+
             ]);
         } catch (\Exception $e) {
             DB::rollback();

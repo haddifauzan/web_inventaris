@@ -11,6 +11,7 @@
                 <th>Tipe/Merk</th>
                 <th>Serial</th>
                 <th>Tahun Perolehan</th>
+                <th>Kelayakan</th>
                 <th>Keterangan Pemusnahan</th>
                 <th>Waktu Pemusnahan</th>
             </tr>
@@ -30,6 +31,23 @@
                     @endif
                 </td>
                 <td>{{ \Carbon\Carbon::parse($computer->tahun_perolehan)->format('M Y') }}</td>
+                <td>
+                    <div class="progress" style="height: 12px; width: 100px;">
+                        <div 
+                            class="progress-bar 
+                                {{ 
+                                    $computer->kelayakan >= 75 ? 'bg-success' :
+                                    ($computer->kelayakan >= 50 ? 'bg-warning' : 'bg-danger')
+                                }}"
+                            role="progressbar" 
+                            aria-valuenow="{{ $computer->kelayakan ?? 0 }}" 
+                            aria-valuemin="0" 
+                            aria-valuemax="100"
+                            style="width: {{ $computer->kelayakan ?? 0 }}%">
+                            {{ $computer->kelayakan ?? '-' }}%
+                        </div>
+                    </div>
+                </td>
                 <td title="{{ $computer->menuPemusnahan->keterangan ?? '-' }}">
                     {{ Str::limit($computer->menuPemusnahan->keterangan ?? '-', 50) }}
                 </td>
@@ -203,37 +221,49 @@
             fetch('/komputer/destroy-multiple', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
-                body: JSON.stringify({
-                    computers: selectedComputers
-                })
+                body: JSON.stringify({ computers: selectedComputers })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Reload table
-                    loadComputerData(yearFilter.value);
-                    // Reset selection
-                    selectedComputers = [];
-                    deleteSelectedBtn.disabled = true;
-                    selectAll.checked = false;
-                    // Close modals
-                    $('#confirmDeleteModal').modal('hide');
-                    // Show success message
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: data.message,
-                        showCloseButton: true,
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        toast: true,
-                        position: 'top-end'
-                    });
+                // Tutup modal konfirmasi terlebih dahulu
+                $('#confirmDeleteModal').modal('hide');
+                // Tutup juga modal utama
+                $('#deleteComputersModal').modal('hide');
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end'
+                }).then(() => {
+                    // Refresh halaman
+                    window.location.reload();
+                });
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                $('#confirmDeleteModal').modal('hide');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan saat menghapus data',
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    toast: true,
+                    position: 'top-end'
+                });
             });
         });
     
