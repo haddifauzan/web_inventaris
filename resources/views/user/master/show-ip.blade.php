@@ -54,10 +54,14 @@
                                             @endswitch
                                         </td>
                                         <td>
-                                            @if($ip->barang)
-                                                {{ $ip->barang->nama_barang }}
+                                            @if($ip->menuAktif)
+                                                <strong class="text-bold">{{ $ip->barang->jenis_barang }}: </strong>{{ $ip->menuAktif->komputer_name }}
+                                                @if($ip->menuAktif->user)
+                                                    <br>
+                                                    <strong class="text-bold">User: </strong>{{ $ip->menuAktif->user }}
+                                                @endif
                                             @else
-                                                -
+                                                <span>-</span>
                                             @endif
                                         </td>
                                         <td>

@@ -190,9 +190,13 @@ class IpAddressController extends Controller
             ['url' => '#', 'text' => 'Detail IP Address']
         ];
 
-        $ipHost = IpHost::with(['lokasi', 'ipAddresses' => function($query) {
-            $query->orderByRaw('CAST(SUBSTRING_INDEX(ip_address, ".", -1) AS UNSIGNED)');
-        }])->findOrFail($idIpHost);
+        $ipHost = IpHost::with([
+            'lokasi', 
+            'ipAddresses' => function($query) {
+                $query->orderByRaw('CAST(SUBSTRING_INDEX(ip_address, ".", -1) AS UNSIGNED)');
+            },
+            'ipAddresses.menuAktif'
+        ])->findOrFail($idIpHost);
 
         return view('admin.master.show-ip', compact('title', 'breadcrumbs', 'ipHost'));
     }

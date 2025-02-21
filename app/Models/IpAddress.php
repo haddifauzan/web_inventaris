@@ -31,6 +31,11 @@ class IpAddress extends Model
     {
         return $this->belongsTo(Barang::class, 'id_barang');
     }
+
+    public function menuAktif()
+    {
+        return $this->hasOne(MenuAktif::class, 'id_ip');
+    }
     
     public function ipHost()
     {
