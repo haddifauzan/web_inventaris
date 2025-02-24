@@ -87,7 +87,7 @@ class KomputerController extends Controller
             ['url' => '#', 'text' => 'Tambah Komputer'],
         ];
 
-        $tipeBarang = TipeBarang::where('jenis_barang', 'Komputer')->get();
+        $tipeBarang = TipeBarang::where('jenis_barang', 'Komputer')->orderBy('tipe_merk', 'asc')->get();
         return view('admin.komputer.create', compact('title', 'breadcrumbs', 'tipeBarang'));
     }
 
@@ -182,7 +182,7 @@ class KomputerController extends Controller
             ->where('jenis_barang', 'Komputer')
             ->firstOrFail();
 
-        $tipeBarang = TipeBarang::where('jenis_barang', 'Komputer')->get();
+            $tipeBarang = TipeBarang::where('jenis_barang', 'Komputer')->orderBy('tipe_merk', 'asc')->get();
 
         return view('admin.komputer.edit', compact('title', 'breadcrumbs', 'barang', 'tipeBarang'));
     }

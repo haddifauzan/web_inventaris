@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ComputerActiveExport;
+use App\Exports\TabletActiveExport;
 use App\Models\Barang;
 use App\Models\Lokasi;
 use App\Models\Departemen;
@@ -37,4 +38,31 @@ class LaporanController extends Controller
             $request->departemen,
         ), $fileName);
     }
+
+    public function exportReportTabletActive(Request $request)
+    {
+        $fileName = 'tablet_active_report';
+        
+        if ($request->filled('periode')) {
+            $fileName .= '_' . Carbon::parse($request->periode)->format('M_Y');
+        }
+        if ($request->filled('lokasi')) {
+            $lokasi = Lokasi::findOrFail($request->lokasi);
+            $fileName .= '_' . Str::slug($lokasi->nama_lokasi);
+        }
+        if ($request->filled('departemen')) {
+            $departemen = Departemen::findOrFail($request->departemen);
+            $fileName .= '_' . Str::slug($departemen->nama_departemen);
+        }
+        
+        $fileName .= '.xlsx';
+
+        
+        return Excel::download(new TabletActiveExport(
+            $request->periode,
+            $request->lokasi,
+            $request->departemen,
+        ), $fileName);
+    }
+    
 }

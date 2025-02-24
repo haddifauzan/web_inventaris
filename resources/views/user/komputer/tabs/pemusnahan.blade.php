@@ -240,7 +240,7 @@
                     text: data.message,
                     showCloseButton: true,
                     showConfirmButton: false,
-                    timer: 2000,
+                    timer: 1000,
                     timerProgressBar: true,
                     toast: true,
                     position: 'top-end'
@@ -259,7 +259,7 @@
                     text: 'Terjadi kesalahan saat menghapus data',
                     showCloseButton: true,
                     showConfirmButton: false,
-                    timer: 2000,
+                    timer: 1000,
                     timerProgressBar: true,
                     toast: true,
                     position: 'top-end'

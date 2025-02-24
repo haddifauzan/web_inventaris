@@ -61,9 +61,28 @@ class TipeBarangController extends Controller
         return redirect()->route('tipe-barang.index')->with('success', 'Data berhasil dihapus');
     }
 
-    public function getSpesifikasi($id)
+    public function getSpesifikasiKomputer($id)
     {
         $tipeBarang = TipeBarang::where('jenis_barang', 'Komputer')
+                               ->where('id_tipe_barang', $id)
+                               ->first();
+                               
+        if (!$tipeBarang) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $tipeBarang->spesifikasi
+        ]);
+    }
+
+    public function getSpesifikasiTablet($id)
+    {
+        $tipeBarang = TipeBarang::where('jenis_barang', 'Tablet')
                                ->where('id_tipe_barang', $id)
                                ->first();
                                

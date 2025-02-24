@@ -239,7 +239,7 @@
                 return;
             }
             
-            fetch(`/api/tipe-barang/${tipeBarangId}`)
+            fetch(`/api/tipe-barang/komputer/${tipeBarangId}`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.success && result.data) {

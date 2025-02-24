@@ -28,16 +28,6 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
 
     // DATA BARANG
 
-    // TABLET
-    Route::get('/tablet/{tab?}', [TabletController::class, 'index'])->name('tablet.index');
-    Route::get('/tablet/barang/create', [TabletController::class, 'create'])->name('tablet.create');
-    Route::post('/tablet/barang/store', [TabletController::class, 'store'])->name('tablet.store');
-    Route::get('/tablet/{id}/edit', [TabletController::class, 'edit'])->name('tablet.edit');
-    Route::put('/tablet/{id}/update', [TabletController::class, 'update'])->name('tablet.update');
-    Route::delete('/tablet/{id}/destroy', [TabletController::class, 'destroy'])->name('tablet.destroy');
-    Route::post('/tablet/{id}/aktivasi', [TabletController::class, 'aktivasi'])->name('tablet.aktivasi');
-    Route::put('/tablet/{id}/musnah', [TabletController::class, 'backupToMusnah'])->name('tablet.musnah');
-    Route::put('/tablet/{id}/tobackup', [TabletController::class, 'aktifToBackup'])->name('tablet.tobackup');
 });
 
 // User Routes
@@ -84,4 +74,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/komputer/destroy-multiple', [KomputerController::class, 'destroyMultiple'])->name('komputer.destroyMultiple');
     Route::get('/laporan/export-computer-active', [LaporanController::class, 'exportReportComputerActive'])
     ->name('laporan.export-computer-active');
+
+    // TABLET
+    Route::get('/tablet/{tab?}', [TabletController::class, 'index'])->name('tablet.index');
+    Route::get('/tablet/barang/create', [TabletController::class, 'create'])->name('tablet.create');
+    Route::post('/tablet/barang/store', [TabletController::class, 'store'])->name('tablet.store');
+    Route::get('/tablet/{id}/edit', [TabletController::class, 'edit'])->name('tablet.edit');
+    Route::put('/tablet/{id}/update', [TabletController::class, 'update'])->name('tablet.update');
+    Route::delete('/tablet/{id}/destroy', [TabletController::class, 'destroy'])->name('tablet.destroy');
+
+    Route::post('/tablet/{id}/aktivasi', [TabletController::class, 'aktivasi'])->name('tablet.aktivasi');
+    Route::put('/tablet/{id}/musnah', [TabletController::class, 'backupToMusnah'])->name('tablet.musnah');
+    Route::put('/tablet/{id}/tobackup', [TabletController::class, 'aktifToBackup'])->name('tablet.tobackup');
+    Route::put('/tablet/{id}/topemusnahan', [TabletController::class, 'aktifToMusnah'])->name('tablet.topemusnahan');
+    Route::get('/tablet/get-destroyed/{year}', [TabletController::class, 'getDestroyedByYear'])->name('tablet.getDestroyed');
+    Route::post('/tablet/destroy-multiple', [TabletController::class, 'destroyMultiple'])->name('tablet.destroyMultiple');
+    Route::get('/laporan/export-tablet-active', [LaporanController::class, 'exportReportTabletActive'])
+    ->name('laporan.export-tablet-active');
 });

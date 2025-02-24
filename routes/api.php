@@ -5,4 +5,5 @@ use App\Http\Controllers\TipeBarangController;
 use App\Http\Controllers\IpAddressController;
 
 Route::get('/lokasi/{lokasi}/ip-addresses', [IpAddressController::class, 'getAvailableIpAddresses']);
-Route::get('/tipe-barang/{id}', [TipeBarangController::class, 'getSpesifikasi']);
+Route::get('/tipe-barang/komputer/{id}', [TipeBarangController::class, 'getSpesifikasiKomputer']);
+Route::get('/tipe-barang/tablet/{id}', [TipeBarangController::class, 'getSpesifikasiTablet']);
