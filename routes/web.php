@@ -12,6 +12,7 @@ use App\Http\Controllers\KomputerController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\TipeBarangController;
 use App\Http\Controllers\TabletController;
+use App\Http\Controllers\SwitchController;
 use App\Http\Controllers\DashboardController as UserDashboardController;
 
 // Public routes
@@ -91,4 +92,21 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tablet/destroy-multiple', [TabletController::class, 'destroyMultiple'])->name('tablet.destroyMultiple');
     Route::get('/laporan/export-tablet-active', [LaporanController::class, 'exportReportTabletActive'])
     ->name('laporan.export-tablet-active');
+
+    // SWITCH
+    Route::get('/switch/{tab?}', [SwitchController::class, 'index'])->name('switch.index');
+    Route::get('/switch/barang/create', [SwitchController::class, 'create'])->name('switch.create');
+    Route::post('/switch/barang/store', [SwitchController::class, 'store'])->name('switch.store');
+    Route::get('/switch/{id}/edit', [SwitchController::class, 'edit'])->name('switch.edit');
+    Route::put('/switch/{id}/update', [SwitchController::class, 'update'])->name('switch.update');
+    Route::delete('/switch/{id}/destroy', [SwitchController::class, 'destroy'])->name('switch.destroy');
+
+    Route::post('/switch/{id}/aktivasi', [SwitchController::class, 'aktivasi'])->name('switch.aktivasi');
+    Route::put('/switch/{id}/musnah', [SwitchController::class, 'backupToMusnah'])->name('switch.musnah');
+    Route::put('/switch/{id}/tobackup', [SwitchController::class, 'aktifToBackup'])->name('switch.tobackup');
+    Route::put('/switch/{id}/topemusnahan', [SwitchController::class, 'aktifToMusnah'])->name('switch.topemusnahan');
+    Route::get('/switch/get-destroyed/{year}', [SwitchController::class, 'getDestroyedByYear'])->name('switch.getDestroyed');
+    Route::post('/switch/destroy-multiple', [SwitchController::class, 'destroyMultiple'])->name('switch.destroyMultiple');
+    Route::get('/laporan/export-switch-active', [LaporanController::class, 'exportReportSwitchActive'])
+    ->name('laporan.export-switch-active');
 });

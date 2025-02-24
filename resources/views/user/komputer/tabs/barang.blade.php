@@ -24,6 +24,7 @@
                 <th>Operating Sistem</th>
                 <th>Serial</th>
                 <th>Spesifikasi</th>
+                <th>Kepemilikan</th>
                 <th>Tahun Perolehan</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -55,6 +56,13 @@
                             data-bs-toggle="modal" data-bs-target="#spesifikasiModal{{ $komputer->id_barang }}">
                         <i class="bi bi-eye-fill"></i>
                     </button>
+                </td>
+                <td>
+                    @if ($komputer->kepemilikan === 'Inventaris')
+                        <span class="badge bg-info">{{ $komputer->kepemilikan }}</span>
+                    @else
+                        <span class="badge bg-secondary">{{ $komputer->kepemilikan }}</span>
+                    @endif
                 </td>
                 <td>{{ \Carbon\Carbon::parse($komputer->tahun_perolehan)->format('M Y') }}</td>
                 <td>

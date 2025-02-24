@@ -34,7 +34,7 @@
       </li>
       
       <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
+          <a class="nav-link {{ request()->routeIs('switch.index') || request()->routeIs('switch.edit') || request()->routeIs('switch.create')? '' : 'collapsed' }}" href="{{ route('switch.index') }}">
               <i class="bi bi-router" style="font-size: 14px;"></i>
               <span class="ms-1">Switch</span>
           </a>

@@ -10,6 +10,7 @@
                 <th>Model</th>
                 <th>Tipe/Merk</th>
                 <th>Serial</th>
+                <th>Kepemilikan</th>
                 <th>Tahun Perolehan</th>
                 <th>Kelayakan</th>
                 <th>Keterangan Pemusnahan</th>
@@ -28,6 +29,13 @@
                         Monitor: {{ json_decode($computer->serial)->monitor }}
                     @else
                         {{ $computer->serial }}
+                    @endif
+                </td>
+                <td>
+                    @if ($computer->kepemilikan === 'Inventaris')
+                        <span class="badge bg-info">{{ $computer->kepemilikan }}</span>
+                    @else
+                        <span class="badge bg-secondary">{{ $computer->kepemilikan }}</span>
                     @endif
                 </td>
                 <td>{{ \Carbon\Carbon::parse($computer->tahun_perolehan)->format('M Y') }}</td>

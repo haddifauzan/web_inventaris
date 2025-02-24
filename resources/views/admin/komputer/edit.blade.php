@@ -149,6 +149,7 @@
                             </div>
                         </div>
 
+                        <hr class="mt-3">
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label col-form-label-sm">Kelayakan (%)</label>
@@ -162,6 +163,25 @@
                                            required 
                                            style="direction: ltr;">
                                     <span id="kelayakanValue" class="fw-bold">{{ old('kelayakan', $barang->kelayakan) }}</span>%
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label col-form-label-sm">Kepemilikan</label>
+                                <div class="d-flex gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="kepemilikan" id="inventaris" value="Inventaris" 
+                                            {{ old('kepemilikan', $barang->kepemilikan) == 'Inventaris' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="inventaris">
+                                            Inventaris
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="kepemilikan" id="nop" value="NOP"
+                                            {{ old('kepemilikan', $barang->kepemilikan) == 'NOP' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="nop">
+                                            NOP
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -101,6 +101,7 @@ class KomputerController extends Controller
             'serial.monitor' => 'nullable',
             'operating_system' => 'required',
             'tahun_perolehan' => 'required|date_format:Y-m',
+            'kepemilikan' => 'required|in:Inventaris,NOP',
             'kelayakan' => 'required|numeric|min:0|max:100',
             'spesifikasi_keys' => 'required|array',
             'spesifikasi_values' => 'required|array'
@@ -147,6 +148,7 @@ class KomputerController extends Controller
                 'operating_system' => $request->operating_system,
                 'spesifikasi' => json_encode($spesifikasi),
                 'kelayakan' => $request->kelayakan,
+                'kepemilikan' => $request->kepemilikan,
                 'tahun_perolehan' => $tahunPerolehan, // Simpan dengan format YYYY-MM-01
                 'status' => 'Backup'
             ]);
@@ -198,6 +200,7 @@ class KomputerController extends Controller
             'operating_system' => 'required',
             'kelayakan' => 'required|numeric|min:0|max:100',
             'tahun_perolehan' => 'required|date_format:Y-m',
+            'kepemilikan' => 'required|in:Inventaris,NOP',
             'spesifikasi_keys' => 'required|array',
             'spesifikasi_values' => 'required|array'
         ]);
@@ -246,6 +249,7 @@ class KomputerController extends Controller
                 'operating_system' => $request->operating_system,
                 'spesifikasi' => json_encode($spesifikasi),
                 'kelayakan' => $request->kelayakan,
+                'kepemilikan' => $request->kepemilikan,
                 'tahun_perolehan' => $tahunPerolehan,
                 'keterangan' => $request->keterangan
             ]);

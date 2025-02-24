@@ -25,6 +25,7 @@
                 <th>Serial</th>
                 <th>Spesifikasi</th>
                 <th class="text-start">Kelayakan</th>
+                <th>Kepemilikan</th>
                 <th>Tahun Perolehan</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -73,6 +74,13 @@
                             {{ $komputer->kelayakan ?? '-' }}%
                         </div>
                     </div>
+                </td>
+                <td>
+                    @if ($komputer->kepemilikan === 'Inventaris')
+                        <span class="badge bg-info">{{ $komputer->kepemilikan }}</span>
+                    @else
+                        <span class="badge bg-secondary">{{ $komputer->kepemilikan }}</span>
+                    @endif
                 </td>
                 <td>{{ \Carbon\Carbon::parse($komputer->tahun_perolehan)->format('M Y') }}</td>
                 <td>
