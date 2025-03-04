@@ -75,4 +75,158 @@ class SwitchController extends Controller
             'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id'
         ));
     }
+
+    public function create()
+    {
+        $title = 'Tambah Switch';
+        $breadcrumbs = [
+            ['url' => route('switch.index', 'backup'), 'text' => 'Switch'],
+            ['url' => '#', 'text' => 'Tambah Switch'],
+        ];
+
+        $tipeBarang = TipeBarang::where('jenis_barang', 'Switch')->orderBy('tipe_merk', 'asc')->get();
+        return view('admin.switch.create', compact('title', 'breadcrumbs', 'tipeBarang'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'tipe_merk' => 'required',
+            'serial' => 'required|unique:tbl_barang,serial',
+            'tahun_perolehan' => 'required|date_format:Y-m',
+            'spesifikasi_keys' => 'required|array',
+            'spesifikasi_values' => 'required|array',
+        ]);
+
+        // Ubah format tahun_perolehan menjadi YYYY-MM-01
+        $tahunPerolehan = $request->tahun_perolehan . '-01';
+
+        DB::beginTransaction();
+
+        $spesifikasi = [];
+        $keys = $request->spesifikasi_keys ?? [];
+        $values = $request->spesifikasi_values ?? [];
+        
+        foreach ($keys as $index => $key) {
+            if (!empty($key) && isset($values[$index])) {
+                $spesifikasi[$key] = $values[$index];
+            }
+        }
+
+        try {
+            $barang = Barang::create([
+                'jenis_barang' => 'Switch',
+                'model' => 'Switch',
+                'tipe_merk' => TipeBarang::findOrFail($request->tipe_merk)->tipe_merk,
+                'serial' => $request->serial,
+                'spesifikasi' => json_encode($spesifikasi),
+                'tahun_perolehan' => $tahunPerolehan, // Simpan dengan format YYYY-MM-01
+                'status' => 'Backup'
+            ]);
+
+            MenuBackup::create([
+                'id_barang' => $barang->id_barang,
+                'keterangan' => $request->keterangan
+            ]);
+
+            DB::commit();
+            return redirect()
+                ->route('switch.index', ['tab' => 'backup'])
+                ->with('success', 'Switch berhasil ditambahkan');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function edit($id)
+    {
+        $title = 'Edit Switch';
+        $breadcrumbs = [
+            ['url' => route('switch.index'), 'text' => 'Switch'],
+            ['url' => '#', 'text' => 'Edit Switch'],
+        ];
+
+        $barang = Barang::where('id_barang', $id)
+            ->where('jenis_barang', 'Switch')
+            ->firstOrFail();
+
+        $tipeBarang = TipeBarang::where('jenis_barang', 'Switch')->orderBy('tipe_merk', 'asc')->get();
+
+        return view('admin.switch.edit', compact('title', 'breadcrumbs', 'barang', 'tipeBarang'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'tipe_merk' => 'required',
+            'serial' => 'required|unique:tbl_barang,serial,' . $id . ',id_barang',
+            'tahun_perolehan' => 'required|date_format:Y-m',
+            'spesifikasi_keys' => 'required|array',
+            'spesifikasi_values' => 'required|array',
+        ]);
+
+        // Check if barang exists and not in Pemusnahan status
+        $barang = Barang::where('id_barang', $id)
+            ->where('status', '!=', 'Pemusnahan')
+            ->firstOrFail();
+
+        // Format tahun_perolehan menjadi YYYY-MM-01
+        $tahunPerolehan = $request->tahun_perolehan . '-01';
+        
+        $spesifikasi = [];
+        $keys = $request->spesifikasi_keys ?? [];
+        $values = $request->spesifikasi_values ?? [];
+        
+        foreach ($keys as $index => $key) {
+            if (!empty($key) && isset($values[$index])) {
+            $spesifikasi[$key] = $values[$index];
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $barang->update([
+                'model' => 'Switch',
+                'tipe_merk' => TipeBarang::findOrFail($request->tipe_merk)->tipe_merk,
+                'serial' => $request->serial,
+                'spesifikasi' => json_encode($spesifikasi),
+                'tahun_perolehan' => $tahunPerolehan,
+                'keterangan' => $request->keterangan
+            ]);
+
+            DB::commit();
+            return redirect()
+            ->route('switch.index')
+            ->with('success', 'Data switch berhasil diperbarui');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+            ->back()
+            ->withInput()
+            ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $barang = Barang::findOrFail($id);
+            $barang->delete();
+
+            DB::commit();
+            return redirect()
+                ->route('switch.index')
+                ->with('success', 'Data switch berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
 }

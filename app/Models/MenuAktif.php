@@ -45,4 +45,9 @@ class MenuAktif extends Model
     {
         return $this->belongsTo(IpAddress::class, 'id_ip');
     }
+
+    public function maintenance()
+    {
+        return $this->hasMany(Maintenance::class, 'id_aktif', 'id_aktif');
+    }
 }

@@ -98,4 +98,23 @@ class TipeBarangController extends Controller
             'data' => $tipeBarang->spesifikasi
         ]);
     }
+
+    public function getSpesifikasiSwitch($id)
+    {
+        $tipeBarang = TipeBarang::where('jenis_barang', 'Switch')
+                               ->where('id_tipe_barang', $id)
+                               ->first();
+                               
+        if (!$tipeBarang) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $tipeBarang->spesifikasi
+        ]);
+    }
 }

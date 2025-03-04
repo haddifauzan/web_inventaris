@@ -184,21 +184,23 @@
                 });
         });
 
+        // Function to add new specification row
         function tambahSpesifikasiBaru(key = '', value = '') {
             const newItem = document.createElement('div');
             newItem.className = 'spesifikasi-item';
             newItem.innerHTML = `
                 <div class="d-flex gap-2 mb-3">
-                    <input type="text" class="form-control form-control-sm"
-                        name="spesifikasi_keys[]"
-                        value="<span class="math-inline">\{key\}"
-                        placeholder\="Nama Spesifikasi"\>
-                        <input type\="text" class\="form\-control form\-control\-sm"
-                        name\="spesifikasi\_values\[\]"
-                        value\="</span>{value}"
+                    <input type="text" class="form-control form-control-sm" 
+                        name="spesifikasi_keys[]" 
+                        value="${key}"
+                        placeholder="Nama Spesifikasi">
+                    <input type="text" class="form-control form-control-sm" 
+                        name="spesifikasi_values[]" 
+                        value="${value}"
                         placeholder="Nilai Spesifikasi">
                     <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
-                        <i class="bi bi-trash </button>
+                        <i class="bi bi-trash"></i>
+                    </button>
                 </div>
             `;
             spesifikasiContainer.appendChild(newItem);

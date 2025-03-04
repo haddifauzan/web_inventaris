@@ -242,7 +242,6 @@
                     return [
                         { key: 'Port Count', value: '' },
                         { key: 'Speed', value: '' },
-                        { key: 'Management', value: '' }
                     ];
                 default:
                     return [];
