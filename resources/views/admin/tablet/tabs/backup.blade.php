@@ -33,13 +33,12 @@
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $tablet->id_barang }}">
                             <i class="bi bi-check-circle"></i> Aktif
                         </button>                        
-                        @if($tablet->riwayat()->exists())
-                            <button type="button" class="btn btn-danger btn-sm"
-                                    data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $tablet->id_barang }}"
-                                    title="Musnahkan">
-                                <i class="bi bi-trash-fill"></i> Musnah
-                            </button>
-                        @endif
+                        <button type="button" class="btn btn-danger btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $tablet->id_barang }}"
+                                {{ !$tablet->riwayat()->exists() ? 'disabled' : '' }}
+                                title="{{ !$tablet->riwayat()->exists() ? 'Belum ada riwayat penggunaan barang ini' : 'Musnahkan' }}">
+                            <i class="bi bi-trash-fill"></i> Musnah
+                        </button>
                     </div>
                 </td>
             </tr>

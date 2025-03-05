@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('id_lokasi')->constrained('tbl_lokasi', 'id_lokasi')->onDelete('cascade');
             $table->foreignId('id_departemen')->constrained('tbl_departemen', 'id_departemen')->onDelete('cascade');
             $table->foreignId('id_ip')->nullable()->constrained('tbl_ip_address', 'id_ip')->onDelete('set null');
-            $table->string('komputer_name');
-            $table->string('user');
+            $table->string('komputer_name')->nullable();
+            $table->string('user')->nullable();
             $table->integer('kelayakan')->nullable();
             $table->integer('node_terpakai')->nullable();
             $table->integer('node_bagus')->nullable();

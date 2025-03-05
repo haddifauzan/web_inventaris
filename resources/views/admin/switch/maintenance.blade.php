@@ -1,150 +1,112 @@
-<div class="mb-3 p-0 m-0">
-    <div class="row align-items-center ms-1 me-1">
-        <!-- Export Button on the Left -->
-        <div class="col-md-3 mb-3">
-            <a href="{{route('switch.data-maintenance')}}" class="btn btn-warning text-white btn-sm">
-            <i class="bi bi-tools me-2"></i> Data Maintenance
-            </a>
-        </div>
-        
-        <!-- Spacer Column -->
-        <div class="col-md-5"></div>
-        
-        <!-- Filter on the Right -->
-        <div class="col-md-4 mb-3">
-            <form method="GET" action="{{ route('switch.index', ['tab' => 'aktif']) }}" class="d-flex" id="filterForm">
-            <select name="lokasi_id" class="form-select form-select-sm me-2" onchange="this.form.submit()">
-                <option value="">-- Semua Lokasi --</option>
-                @foreach($lokasi as $lok)
-                <option value="{{ $lok->id_lokasi }}" {{ request('lokasi_id') == $lok->id_lokasi ? 'selected' : '' }}>
-                    {{ $lok->nama_lokasi }}
-                </option>
-                @endforeach
-            </select>
-            <a href="{{route('switch.index', ['tab' => 'aktif'])}}" class="btn btn-danger btn-sm me-1 d-flex justify-content-center align-items-center">
-                <i class="bi bi-arrow-clockwise"></i>
-            </a>
-            </form>
+@extends('admin.layouts.master')
+
+@section('title', 'Data Maintenance')
+
+@section('content')
+<section class="section">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center mx-3">
+                        <div>
+                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exportModal">
+                                <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
+                            </button>
+                        </div>
+                        <a href="{{ route('switch.index', 'aktif') }}" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i> Kembali
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <div id="loading-container" class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                        <table class="table table-striped table-sm small table-hover d-none" id="table-maintenance">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Merk/Tipe</th>
+                                    <th>Serial</th>
+                                    <th>Tanggal Maintenance</th>
+                                    <th>Status Maintenance</th>
+                                    <th>Node Terpakai</th>
+                                    <th>Node Bagus</th>
+                                    <th>Node Rusak</th>
+                                    <th>Node Kosong</th>
+                                    <th>Status Net</th>
+                                    <th>Petugas</th>
+                                    <th>Lokasi Switch</th>
+                                    <th>Keterangan</th>
+                                    <th width="15%">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($maintenances as $maintenance)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $maintenance->barang->tipe_merk}}</td>
+                                    <td>{{ $maintenance->barang->serial}}</td>
+                                    <td>{{ $maintenance->tgl_maintenance ?? "-" }}</td>
+                                    <td>
+                                        @switch($maintenance->status_maintenance)
+                                            @case('Sudah')
+                                                <span class="badge bg-success">Sudah</span>
+                                                @break
+                                            @default
+                                                <span class="badge bg-secondary">Belum</span>
+                                        @endswitch
+                                    </td>
+                                    <td>{{ $maintenance->node_terpakai }}</td>
+                                    <td>{{ $maintenance->node_bagus }}</td>
+                                    <td>{{ $maintenance->node_rusak }}</td>
+                                    <td>{{ ($maintenance->node_bagus) - ($maintenance->node_terpakai) }}</td>
+                                    <td>
+                                        @switch($maintenance->status_net)
+                                            @case('OK')
+                                                <span class="badge bg-success">OK</span>
+                                                @break
+                                            @case('Rusak')
+                                                <span class="badge bg-danger">Rusak</span>
+                                                @break
+                                            @default
+                                                {{ $maintenance->status_net }}
+                                        @endswitch
+                                    </td>
+                                    <td>{{ $maintenance->petugas ?? "-" }}</td>
+                                    <td>{{ $maintenance->lokasi_switch }}</td>
+                                    <td>
+                                        @if(strlen($maintenance->keterangan) > 20)
+                                            <span title="{{ $maintenance->keterangan }}">{{ substr($maintenance->keterangan, 0, 20) }}...</span>
+                                        @else
+                                            {{ $maintenance->keterangan ?? "-" }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <button type="button" title="Maintenance" 
+                                            class="btn btn-warning btn-sm text-white d-flex" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#maintenanceModal{{ $maintenance->id_maintenance }}"
+                                            {{ $maintenance->status_maintenance === 'Sudah' ? 'disabled' : '' }}>
+                                            <i class="bi bi-tools me-2"></i> Maintenance
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<div class="table-responsive">
-    <table class="table table-sm small table-striped" id="activeTable">
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Lokasi</th>
-                <th>Departemen</th>
-                <th>Lokasi Switch</th>
-                <th>Type/Merk</th>
-                <th>Node Terpakai</th>
-                <th>Node Bagus</th>
-                <th>Node Rusak</th>
-                <th>Node Kosong</th>
-                <th>Status Net</th>
-                <th>Status Maintenance</th>
-                <th>Tahun Perolehan</th>
-                <th>Keterangan</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($data as $index => $switch)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $switch->menuAktif->first()->lokasi->nama_lokasi ?? '-' }}</td>
-                <td>{{ $switch->menuAktif->first()->departemen->nama_departemen ?? '-' }}</td>
-                <td>{{ $switch->maintenance->first()->lokasi_switch ?? '-' }}</td>
-                <td>{{ $switch->tipe_merk ?? '-' }}</td>
-                <td>{{ $switch->menuAktif->first()->node_terpakai ?? 0 }}</td>
-                <td>{{ $switch->menuAktif->first()->node_bagus ?? 0 }}</td>
-                <td>{{ $switch->menuAktif->first()->node_rusak ?? 0 }}</td>
-                <td>{{ ($switch->menuAktif->first()->node_bagus ?? 0) - ($switch->menuAktif->first()->node_terpakai ?? 0) }}</td>
-                <td>{{ $switch->maintenance->first()->status_net ?? '-' }}</td>
-                <td>
-                    @switch($switch->maintenance->first()->status_maintenance   )
-                        @case('Sudah')
-                            <span class="badge bg-success">Sudah</span>
-                            @break
-                        @default
-                            <span class="badge bg-secondary">Belum</span>
-                    @endswitch
-                </td>
-                <td>{{ \Carbon\Carbon::parse($switch->tahun_perolehan)->format('M Y') ?? '-' }}</td>
-                <td title="{{ $switch->menuAktif->first()->keterangan ?? '-' }}">
-                    {{ Str::limit($switch->menuAktif->first()->keterangan ?? '-', 50) }}
-                </td><td>
-                    <div class="btn-group">
-                        <button type="button" title="Backup" class="btn btn-success btn-sm text-white d-flex" data-bs-toggle="modal" data-bs-target="#backupModal{{ $switch->id_barang }}">
-                            <i class="bi bi-arrow-counterclockwise"></i>
-                        </button>
-                        <button type="button" title="Maintenance" class="btn btn-warning btn-sm text-white d-flex" data-bs-toggle="modal" data-bs-target="#maintenanceModal{{ $switch->id_maintenance }}" {{ $switch->maintenance->first()->status_maintenance === 'Sudah' ? 'disabled' : '' }}>
-                            <i class="bi bi-tools"></i>
-                        </button>
-                        <button type="button" title="Musnah" class="btn btn-danger btn-sm d-flex" data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $switch->id_barang }}">
-                            <i class="bi bi-trash-fill text-white"></i>
-                        </button>
-                    </div>
+</section>
 
-                    <!-- Modal Backup -->
-                    <div class="modal fade" id="backupModal{{ $switch->id_barang }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Kembalikan ke Backup</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <form action="{{ route('switch.tobackup', $switch->id_barang) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="form-label">Keterangan</label>
-                                            <textarea name="keterangan" class="form-control" placeholder="Masukkan keterangan jika diperlukan"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-primary">Simpan</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal Pemusnahan -->
-                    <div class="modal fade" id="pemusnahanModal{{ $switch->id_barang }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Pindahkan ke Pemusnahan</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <form action="{{ route('switch.topemusnahan', $switch->id_barang) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label class="form-label">Keterangan</label>
-                                            <textarea name="keterangan" class="form-control" placeholder="Masukkan keterangan jika diperlukan"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-primary">Simpan</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
-
-@foreach($data as $index => $maintenance)
+@foreach($maintenances as $maintenance)
 <div class="modal fade" id="maintenanceModal{{ $maintenance->id_maintenance }}" tabindex="-1" aria-labelledby="maintenanceModalLabel{{ $maintenance->id_maintenance }}" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -159,11 +121,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Model</label>
-                            <input type="text" class="form-control form-control-sm" value="{{ $maintenance->model }}" disabled>
+                            <input type="text" class="form-control form-control-sm" value="{{ $maintenance->barang->model }}" disabled>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Tipe/Merk</label>
-                            <input type="text" class="form-control form-control-sm" value="{{ $maintenance->tipe_merk }}" disabled>
+                            <input type="text" class="form-control form-control-sm" value="{{ $maintenance->barang->tipe_merk }}" disabled>
                         </div>
                     </div>
                     <div class="row">
@@ -172,9 +134,9 @@
                             <div class="table-responsive">
                                 <table class="table table-sm table-bordered">
                                     @php
-                                        $spesifikasi = is_string($maintenance->spesifikasi) ? 
-                                            json_decode($maintenance->spesifikasi, true) : 
-                                            (is_array($maintenance->spesifikasi) ? $maintenance->spesifikasi : []);
+                                        $spesifikasi = is_string($maintenance->barang->spesifikasi) ? 
+                                            json_decode($maintenance->barang->spesifikasi, true) : 
+                                            (is_array($maintenance->barang->spesifikasi) ? $maintenance->barang->spesifikasi : []);
                                     @endphp
                                     @if(count($spesifikasi) > 0)
                                         @foreach($spesifikasi as $key => $value)
@@ -272,7 +234,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    @foreach($data as $index => $maintenance)
+    @foreach($maintenances as $maintenance)
     const petugasContainer{{ $maintenance->id_maintenance }} = document.getElementById('petugas-container-{{ $maintenance->id_maintenance }}');
     const addPetugasBtn{{ $maintenance->id_maintenance }} = document.getElementById('add-petugas-{{ $maintenance->id_maintenance }}');
 
@@ -307,5 +269,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const table = document.getElementById('table-maintenance');
+        const loadingContainer = document.getElementById('loading-container');
 
-    
+        setTimeout(() => {
+            loadingContainer.classList.add('d-none');
+            table.classList.remove('d-none');
+            const datatable = new DataTable("#table-maintenance");
+        }, 100);
+    });
+</script>
+@endsection

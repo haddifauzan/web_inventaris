@@ -14,17 +14,20 @@ class Maintenance extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'id_aktif',
-        'status_maintenance',
-        'tgl_maintenance',
-        'status_net',
-        'petugas',
-        'lokasi_switch',
-        'keterangan'
+        'id_barang',          // Foreign key referensi ke tabel barang
+        'status_maintenance', // Status maintenance (Sudah/Belum)
+        'tgl_maintenance',   // Tanggal maintenance dilakukan
+        'node_terpakai',    // Jumlah node yang terpakai
+        'node_bagus',       // Jumlah node yang masih bagus
+        'node_rusak',       // Jumlah node yang rusak
+        'status_net',       // Status jaringan (OK/Rusak)
+        'petugas',          // Nama petugas maintenance
+        'lokasi_switch',    // Lokasi switch berada
+        'keterangan'        // Keterangan tambahan
     ];
 
-    public function aktif()
+    public function barang()
     {
-        return $this->belongsTo(MenuAktif::class, 'id_aktif', 'id_aktif');
+        return $this->belongsTo(Barang::class, 'id_barang', 'id_barang');
     }
 }

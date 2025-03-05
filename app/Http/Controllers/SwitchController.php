@@ -12,6 +12,7 @@ use App\Models\IpAddress;
 use App\Models\Departemen;
 use App\Models\Lokasi;
 use App\Models\TipeBarang;
+use App\Models\Maintenance;
 use Illuminate\Support\Facades\DB;
 
 class SwitchController extends Controller
@@ -27,7 +28,15 @@ class SwitchController extends Controller
                 $query = Barang::where('jenis_barang', 'Switch')->latest('created_at');
                 break;
             case 'backup':
-                $query = Barang::where('jenis_barang', 'Switch')->where('status', 'Backup')->latest('created_at');
+                $query = Barang::where('jenis_barang', 'Switch')
+                    ->where('status', 'Backup')
+                    ->latest('created_at')
+                    ->leftJoin('tbl_maintenance', 'tbl_barang.id_barang', '=', 'tbl_maintenance.id_barang')
+                    ->select('tbl_barang.*', 
+                        'tbl_maintenance.node_terpakai',
+                        'tbl_maintenance.node_bagus',
+                        'tbl_maintenance.node_rusak'
+                    );
                 break;
             case 'aktif':
                 $query = Barang::where('jenis_barang', 'Switch')
@@ -43,6 +52,7 @@ class SwitchController extends Controller
                 $query->join('tbl_menu_aktif', 'tbl_barang.id_barang', '=', 'tbl_menu_aktif.id_barang')
                     ->join('tbl_departemen', 'tbl_menu_aktif.id_departemen', '=', 'tbl_departemen.id_departemen')
                     ->join('tbl_lokasi', 'tbl_menu_aktif.id_lokasi', '=', 'tbl_lokasi.id_lokasi')
+                    ->leftJoin('tbl_maintenance', 'tbl_barang.id_barang', '=', 'tbl_maintenance.id_barang')
                     ->orderBy('tbl_lokasi.nama_lokasi', 'asc')
                     ->orderBy('tbl_departemen.nama_departemen', 'asc');
                 break;
@@ -227,6 +237,293 @@ class SwitchController extends Controller
             return redirect()
                 ->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function aktivasi(Request $request, $id)
+    {
+        $request->validate([
+            'id_lokasi' => 'required|exists:tbl_lokasi,id_lokasi',
+            'id_departemen' => 'required|exists:tbl_departemen,id_departemen',
+            'node_terpakai' => 'nullable|integer',
+            'node_bagus' => 'nullable|integer',
+            'node_rusak' => 'nullable|integer',
+            'lokasi_switch' => 'required|string',
+            'keterangan' => 'nullable',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $barang = Barang::where('id_barang', $id)
+                ->where('jenis_barang', 'Switch')
+                ->where('status', 'Backup')
+                ->firstOrFail();
+            
+            $barang->update(['status' => 'Aktif']);
+            
+            // Cek apakah switch sudah pernah diaktivasi sebelumnya
+            $existingActivation = Maintenance::where('id_barang', $id)->exists();
+
+            if (!$existingActivation) {
+                // Jika belum pernah diaktivasi, gunakan input dari form
+                $node_terpakai = $request->node_terpakai;
+                $node_bagus = $request->node_bagus;
+                $node_rusak = $request->node_rusak;
+            } else {
+                // Jika sudah pernah diaktivasi, ambil data dari maintenance terakhir
+                $maintenance = Maintenance::whereHas('barang', function ($query) use ($id) {
+                    $query->where('id_barang', $id);
+                })->latest()->first();
+                
+                $node_terpakai = $maintenance->node_terpakai ?? 0;
+                $node_bagus = $maintenance->node_bagus ?? 0;
+                $node_rusak = $maintenance->node_rusak ?? 0;
+            }
+
+            // Simpan ke Menu Aktif
+            $menuAktif = MenuAktif::create([
+                'id_barang' => $id,
+                'id_lokasi' => $request->id_lokasi,
+                'id_departemen' => $request->id_departemen,
+                'node_terpakai' => $node_terpakai,
+                'node_bagus' => $node_bagus,
+                'node_rusak' => $node_rusak,
+                'keterangan' => $request->keterangan
+            ]);
+
+            // Jika baru pertama kali diaktivasi, simpan ke tbl_maintenance
+            if (!$existingActivation) {
+                Maintenance::create([
+                    'id_barang' => $id,
+                    'status_maintenance' => 'Belum',
+                    'node_terpakai' => $node_terpakai,
+                    'node_bagus' => $node_bagus,
+                    'node_rusak' => $node_rusak,
+                    'status_net' => 'OK',
+                    'lokasi_switch' => $request->lokasi_switch,
+                ]);
+            }
+
+            // Update status IP jika diberikan
+            if ($request->ip_address) {
+                IpAddress::where('id_ip', $request->ip_address)
+                    ->update([
+                        'status' => 'In Use',
+                        'id_barang' => $barang->id_barang
+                    ]);
+            }
+
+            // Simpan ke Riwayat
+            Riwayat::create([
+                'id_barang' => $barang->id_barang,
+                'id_lokasi' => $request->id_lokasi,
+                'id_departemen' => $request->id_departemen,
+                'user' => $request->user,
+                'waktu_awal' => now(),
+                'status' => 'Aktif',
+                'keterangan' => $request->keterangan
+            ]);
+
+            // Hapus dari backup jika ada
+            MenuBackup::where('id_barang', $barang->id_barang)->delete();
+
+            DB::commit();
+            return redirect()
+                ->route('switch.index', ['tab' => 'backup'])
+                ->with('success', 'Switch berhasil diaktivasi');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function backupToMusnah(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'nullable'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $barang = Barang::where('id_barang', $id)
+                ->where('jenis_barang', 'Switch')
+                ->where('status', 'Backup')
+                ->firstOrFail();
+            
+            // Check if switch has no history
+            if ($barang->riwayat()->exists()) {
+                $barang->update([
+                    'status' => 'Pemusnahan',
+                ]);
+                
+                MenuPemusnahan::create([
+                    'id_barang' => $id,
+                    'keterangan' => $request->keterangan
+                ]);
+
+                MenuBackup::where('id_barang', $id)->delete();
+
+                DB::commit();
+                return redirect()
+                    ->route('switch.index', ['tab' => 'backup'])
+                    ->with('success', 'Switch berhasil dimusnahkan');
+            } else {
+                throw new \Exception('Switch tidak dapat dimusnahkan karena belum memiliki riwayat penggunaan');
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    public function aktifToBackup(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'nullable'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $barang = Barang::where('id_barang', $id)
+                ->where('jenis_barang', 'Switch')
+                ->where('status', 'Aktif')
+                ->firstOrFail();
+            
+            // Update status barang
+            $barang->update([
+                'status' => 'Backup',
+            ]);
+
+            // Create menu backup entry
+            MenuBackup::create([
+                'id_barang' => $id,
+                'keterangan' => $request->keterangan
+            ]);
+
+            // Update riwayat
+            Riwayat::where('id_barang', $id)
+                ->whereNull('waktu_akhir')
+                ->update([
+                    'waktu_akhir' => now(),
+                    'status' => 'Non-Aktif'
+                ]);
+
+            // Delete from menu aktif
+            MenuAktif::where('id_barang', $id)->delete();
+
+            DB::commit();
+            return redirect()
+                ->route('switch.index', ['tab' => 'aktif'])
+                ->with('success', 'Switch berhasil dikembalikan ke backup');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function aktifToMusnah(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'nullable'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $barang = Barang::where('id_barang', $id)
+                ->where('jenis_barang', 'Switch')
+                ->where('status', 'Aktif')
+                ->firstOrFail();
+            
+            // Update status barang
+            $barang->update([
+                'status' => 'Pemusnahan',
+            ]);
+
+            // Create menu pemusnahan entry
+            MenuPemusnahan::create([
+                'id_barang' => $id,
+                'keterangan' => $request->keterangan
+            ]);
+
+            // Update riwayat
+            Riwayat::where('id_barang', $id)
+                ->whereNull('waktu_akhir')
+                ->update([
+                    'waktu_akhir' => now(),
+                    'status' => 'Non-Aktif'
+                ]);
+
+            // Delete from menu aktif
+            MenuAktif::where('id_barang', $id)->delete();
+
+            DB::commit();
+            return redirect()
+                ->route('switch.index', ['tab' => 'aktif'])
+                ->with('success', 'Switch berhasil dipindahkan ke pemusnahan');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function getDestroyedByYear($year)
+    {
+        $switchs = Barang::where('jenis_barang', 'Switch')
+            ->whereHas('menuPemusnahan', function($query) use ($year) {
+                $query->whereYear('created_at', $year);
+            })
+            ->with('menuPemusnahan')
+            ->get();
+
+        return response()->json($switchs);
+    }
+
+    public function destroyMultiple(Request $request)
+    {
+        try {
+            $switchIds = $request->switchs;
+            
+            // Validate that all IDs belong to switchs
+            $validSwitchs = Barang::where('jenis_barang', 'Switch')
+                ->whereIn('id_barang', $switchIds)
+                ->count();
+                
+            if ($validSwitchs !== count($switchIds)) {
+                throw new \Exception('Invalid switch IDs detected');
+            }
+            
+            // Begin transaction
+            DB::beginTransaction();
+            
+            // Delete related menuPemusnahan records
+            MenuPemusnahan::whereIn('id_barang', $switchIds)->delete();
+            
+            // Delete switchs
+            Barang::whereIn('id_barang', $switchIds)->delete();
+            
+            // Commit transaction
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil dihapus, halaman akan ter refresh.',
+
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

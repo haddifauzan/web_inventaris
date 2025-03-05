@@ -53,4 +53,9 @@ class Barang extends Model
     {
         return $this->hasOne(BarangKelayakanTracker::class, 'id_barang');
     }
+
+    public function maintenance()
+    {
+        return $this->hasMany(Maintenance::class, 'id_barang', 'id_barang');
+    }
 }

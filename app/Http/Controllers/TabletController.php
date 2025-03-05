@@ -329,7 +329,7 @@ class TabletController extends Controller
                     ->route('tablet.index', ['tab' => 'backup'])
                     ->with('success', 'Tablet berhasil dimusnahkan');
             } else {
-                throw new \Exception('Tablet tidak dapat dimusnahkan belum memiliki riwayat penggunaan');
+                throw new \Exception('Tablet tidak dapat dimusnahkan karena belum memiliki riwayat penggunaan');
             }
         } catch (\Exception $e) {
             DB::rollback();

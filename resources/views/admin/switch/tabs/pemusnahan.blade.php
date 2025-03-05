@@ -1,4 +1,4 @@
-<button type="button" class="btn btn-danger btn-sm ms-2 my-2" data-bs-toggle="modal" data-bs-target="#deleteTabletsModal">
+<button type="button" class="btn btn-danger btn-sm ms-2 my-2" data-bs-toggle="modal" data-bs-target="#deleteSwitchsModal">
     <i class="bi bi-trash me-2"></i> Hapus Data Berdasarkan Periode
 </button>
 
@@ -16,17 +16,17 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($data as $index => $tablet)
+            @foreach($data as $index => $switch)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $tablet->model }}</td>
-                <td>{{ $tablet->tipe_merk }}</td>
-                <td>{{ $tablet->serial }}</td>
-                <td>{{ \Carbon\Carbon::parse($tablet->tahun_perolehan)->format('M Y') }}</td>
-                <td title="{{ $tablet->menuPemusnahan->keterangan ?? '-' }}">
-                    {{ Str::limit($tablet->menuPemusnahan->keterangan ?? '-', 50) }}
+                <td>{{ $switch->model }}</td>
+                <td>{{ $switch->tipe_merk }}</td>
+                <td>{{ $switch->serial }}</td>
+                <td>{{ \Carbon\Carbon::parse($switch->tahun_perolehan)->format('M Y') }}</td>
+                <td title="{{ $switch->menuPemusnahan->keterangan ?? '-' }}">
+                    {{ Str::limit($switch->menuPemusnahan->keterangan ?? '-', 50) }}
                 </td>
-                <td>{{ $tablet->menuPemusnahan->created_at ? \Carbon\Carbon::parse($tablet->menuPemusnahan->created_at)->format('d M Y - H:i') : '-' }}</td>
+                <td>{{ $switch->menuPemusnahan->created_at ? \Carbon\Carbon::parse($switch->menuPemusnahan->created_at)->format('d M Y - H:i') : '-' }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -35,11 +35,11 @@
 
 
 <!-- Delete Modal -->
-<div class="modal fade" id="deleteTabletsModal" tabindex="-1" aria-labelledby="deleteTabletsModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteSwitchsModal" tabindex="-1" aria-labelledby="deleteSwitchsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteTabletsModalLabel">Hapus Data tablet</h5>
+                <h5 class="modal-title" id="deleteSwitchsModalLabel">Hapus Data Switch</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -75,7 +75,7 @@
                                 <th>Waktu Pemusnahan</th>
                             </tr>
                         </thead>
-                        <tbody id="tabletTableBody">
+                        <tbody id="switchTableBody">
                             <!-- Data will be populated via JavaScript -->
                         </tbody>
                     </table>
@@ -115,30 +115,30 @@
         const selectAll = document.getElementById('selectAll');
         const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        let selectedTablets = [];
+        let selectedSwitchs = [];
     
         // Load data when year is selected
         yearFilter.addEventListener('change', function() {
-            loadTabletData(this.value);
+            loadSwitchData(this.value);
         });
     
         // Select all functionality
         selectAll.addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('.tablet-checkbox');
+            const checkboxes = document.querySelectorAll('.switch-checkbox');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = this.checked;
                 handleCheckboxChange(checkbox);
             });
         });
     
-        // Load tablet data based on year
-        function loadTabletData(year) {
+        // Load switch data based on year
+        function loadSwitchData(year) {
             console.log('Mengambil data untuk tahun:', year);
-            fetch(`/tablet/get-destroyed/${year}`)
+            fetch(`/switch/get-destroyed/${year}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Data yang diterima:', data);
-                    const tableBody = document.getElementById('tabletTableBody');
+                    const tableBody = document.getElementById('switchTableBody');
                     tableBody.innerHTML = '';
 
                     if (!data || data.length === 0) {
@@ -151,25 +151,25 @@
                         return;
                     }
 
-                    data.forEach((tablet, index) => {
-                        console.log('Memproses tablet:', tablet);
+                    data.forEach((switchItem, index) => {
+                        console.log('Memproses Switch:', switchItem);
                         const row = `
                             <tr>
-                                <td><input type="checkbox" class="form-check-input tablet-checkbox" value="${tablet.id_barang}"></td>
+                                <td><input type="checkbox" class="form-check-input switch-checkbox" value="${switchItem.id_barang}"></td>
                                 <td>${index + 1}</td>
-                                <td>${tablet.model || '-'}</td>
-                                <td>${tablet.tipe_merk || '-'}</td>
-                                <td>${tablet.serial}</td>
-                                <td>${formatDate(tablet.tahun_perolehan)}</td>
-                                <td>${tablet.menu_pemusnahan?.keterangan || '-'}</td>
-                                <td>${formatDate(tablet.menu_pemusnahan?.created_at)}</td>
+                                <td>${switchItem.model || '-'}</td>
+                                <td>${switchItem.tipe_merk || '-'}</td>
+                                <td>${switchItem.serial}</td>
+                                <td>${formatDate(switchItem.tahun_perolehan)}</td>
+                                <td>${switchItem.menu_pemusnahan?.keterangan || '-'}</td>
+                                <td>${formatDate(switchItem.menu_pemusnahan?.created_at)}</td>
                             </tr>
                         `;
                         tableBody.innerHTML += row;
                     });
 
                     // Tambahkan event listener ke checkbox baru
-                    document.querySelectorAll('.tablet-checkbox').forEach(checkbox => {
+                    document.querySelectorAll('.switch-checkbox').forEach(checkbox => {
                         checkbox.addEventListener('change', () => handleCheckboxChange(checkbox));
                     });
                 })
@@ -180,34 +180,34 @@
     
         // Handle checkbox changes
         function handleCheckboxChange(checkbox) {
-            const tabletId = checkbox.value;
+            const switchId = checkbox.value;
             if (checkbox.checked) {
-                if (!selectedTablets.includes(tabletId)) {
-                    selectedTablets.push(tabletId);
+                if (!selectedSwitchs.includes(switchId)) {
+                    selectedSwitchs.push(switchId);
                 }
             } else {
-                selectedTablets = selectedTablets.filter(id => id !== tabletId);
+                selectedSwitchs = selectedSwitchs.filter(id => id !== switchId);
             }
             
-            deleteSelectedBtn.disabled = selectedTablets.length === 0;
+            deleteSelectedBtn.disabled = selectedSwitchs.length === 0;
         }
     
-        // Delete selected tablets
+        // Delete selected switchs
         deleteSelectedBtn.addEventListener('click', function() {
-            if (selectedTablets.length > 0) {
+            if (selectedSwitchs.length > 0) {
                 $('#confirmDeleteModal').modal('show');
             }
         });
     
         // Confirm delete
         confirmDeleteBtn.addEventListener('click', function() {
-            fetch('/tablet/destroy-multiple', {
+            fetch('/switch/destroy-multiple', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
-                body: JSON.stringify({ tablets: selectedTablets })
+                body: JSON.stringify({ switchs: selectedSwitchs })
             })
             .then(response => response.json())
             .then(data => {
@@ -215,7 +215,7 @@
                 // Tutup modal konfirmasi terlebih dahulu
                 $('#confirmDeleteModal').modal('hide');
                 // Tutup juga modal utama
-                $('#deleteTabletsModal').modal('hide');
+                $('#deleteSwitchsModal').modal('hide');
                 
                 Swal.fire({
                     icon: 'success',

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('id_barang')->constrained('tbl_barang', 'id_barang')->onDelete('cascade');
             $table->foreignId('id_lokasi')->constrained('tbl_lokasi', 'id_lokasi')->onDelete('cascade');
             $table->foreignId('id_departemen')->constrained('tbl_departemen', 'id_departemen')->onDelete('cascade');
-            $table->string('user');
+            $table->string('user')->nullable();
             $table->integer('kelayakan')->nullable();
             $table->dateTime('waktu_awal');
             $table->dateTime('waktu_akhir')->nullable();

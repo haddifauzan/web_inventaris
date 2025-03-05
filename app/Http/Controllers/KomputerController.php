@@ -403,7 +403,7 @@ class KomputerController extends Controller
                     ->route('komputer.index', ['tab' => 'backup'])
                     ->with('success', 'Komputer berhasil dimusnahkan');
             } else {
-                throw new \Exception('Komputer tidak dapat dimusnahkan belum memiliki riwayat penggunaan');
+                throw new \Exception('Komputer tidak dapat dimusnahkan karena belum memiliki riwayat penggunaan');
             }
         } catch (\Exception $e) {
             DB::rollback();

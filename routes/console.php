@@ -11,3 +11,5 @@ Artisan::command('inspire', function () {
 
 Schedule::command('barang:update-kelayakan')->dailyAt('10:07')->timezone('Asia/Jakarta')->withoutOverlapping();
 
+Schedule::command('maintenance:reset')->monthlyOn(5, '14:19')->timezone('Asia/Jakarta')->withoutOverlapping();
+
