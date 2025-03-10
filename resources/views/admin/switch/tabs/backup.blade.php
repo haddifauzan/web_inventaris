@@ -247,8 +247,6 @@
                 'departemen-value{{ $switch->id_barang }}',
                 'clear-departemen-search{{ $switch->id_barang }}'
             );
-            
-            setupIpAddressHandler('{{ $switch->id_barang }}');
         @endforeach
         
         // Setup search select functionality

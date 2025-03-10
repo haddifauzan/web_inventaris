@@ -2,9 +2,9 @@
     <div class="row align-items-center ms-1 me-1">
         <!-- Export Button on the Left -->
         <div class="col-md-3 mb-3">
-            <a href="{{route('switch.data-maintenance')}}" class="btn btn-warning text-white btn-sm">
-            <i class="bi bi-tools me-2"></i> Data Maintenance
-            </a>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exportModal">
+                <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
+            </button>
         </div>
         
         <!-- Spacer Column -->
@@ -42,8 +42,7 @@
                 <th>Node Rusak</th>
                 <th>Node Kosong</th>
                 <th>Status Net</th>
-                <th>Status Maintenance</th>
-                <th>Tahun Perolehan</th>
+                <th>Tanggal Maintenance</th>
                 <th>Keterangan</th>
                 <th>Aksi</th>
             </tr>
@@ -60,17 +59,16 @@
                 <td>{{ $switch->menuAktif->first()->node_bagus ?? 0 }}</td>
                 <td>{{ $switch->menuAktif->first()->node_rusak ?? 0 }}</td>
                 <td>{{ ($switch->menuAktif->first()->node_bagus ?? 0) - ($switch->menuAktif->first()->node_terpakai ?? 0) }}</td>
-                <td>{{ $switch->maintenance->first()->status_net ?? '-' }}</td>
                 <td>
-                    @switch($switch->maintenance->first()->status_maintenance   )
-                        @case('Sudah')
-                            <span class="badge bg-success">Sudah</span>
-                            @break
-                        @default
-                            <span class="badge bg-secondary">Belum</span>
-                    @endswitch
+                    @if($switch->maintenance->first()->status_net === 'OK')
+                        <span class="badge bg-success">OK</span>
+                    @elseif($switch->maintenance->first()->status_net === 'Rusak')
+                        <span class="badge bg-danger">Rusak</span>
+                    @else
+                        -
+                    @endif
                 </td>
-                <td>{{ \Carbon\Carbon::parse($switch->tahun_perolehan)->format('M Y') ?? '-' }}</td>
+                <td>{{ $switch->maintenance->first()->tgl_maintenance ? \Carbon\Carbon::parse($switch->maintenance->first()->tgl_maintenance)->locale('id')->isoFormat('dddd, DD-MMMM-Y') : '-' }}</td>
                 <td title="{{ $switch->menuAktif->first()->keterangan ?? '-' }}">
                     {{ Str::limit($switch->menuAktif->first()->keterangan ?? '-', 50) }}
                 </td><td>
@@ -78,7 +76,7 @@
                         <button type="button" title="Backup" class="btn btn-success btn-sm text-white d-flex" data-bs-toggle="modal" data-bs-target="#backupModal{{ $switch->id_barang }}">
                             <i class="bi bi-arrow-counterclockwise"></i>
                         </button>
-                        <button type="button" title="Maintenance" class="btn btn-warning btn-sm text-white d-flex" data-bs-toggle="modal" data-bs-target="#maintenanceModal{{ $switch->id_maintenance }}" {{ $switch->maintenance->first()->status_maintenance === 'Sudah' ? 'disabled' : '' }}>
+                        <button type="button" title="Maintenance" class="btn btn-warning btn-sm text-white d-flex" data-bs-toggle="modal" data-bs-target="#maintenanceModal{{ $switch->id_maintenance }}">
                             <i class="bi bi-tools"></i>
                         </button>
                         <button type="button" title="Musnah" class="btn btn-danger btn-sm d-flex" data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $switch->id_barang }}">
@@ -194,15 +192,24 @@
                     </div>
                     <hr>
                     <div class="row">
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label small">Tanggal Maintenance</label>
                             <input type="date" name="tgl_maintenance" class="form-control form-control-sm" 
                                    value="{{ date('Y-m-d') }}" 
                                    id="maintenance-date-{{ $maintenance->id_maintenance }}">
                         </div>
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label small">Lokasi Switch</label>
                             <input type="text" class="form-control form-control-sm" value="{{ $maintenance->lokasi_switch }}" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label small">Status Jaringan</label>
+                                <select name="status_net" class="form-select form-select-sm">
+                                    <option value="OK" {{ $maintenance->status_net === 'OK' ? 'selected' : '' }}>OK</option>
+                                    <option value="Rusak" {{ $maintenance->status_net === 'Rusak' ? 'selected' : '' }}>Rusak</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -226,39 +233,6 @@
                                    min="0" max="{{ $maintenance->node_terpakai + $maintenance->node_bagus + $maintenance->node_rusak }}">
                         </div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-2">
-                                <label class="form-label small">Petugas Maintenance</label>
-                                <div id="petugas-container-{{ $maintenance->id_maintenance }}">
-                                    <div class="input-group input-group-sm mb-2">
-                                        <input type="text" name="petugas[]" class="form-control form-control-sm petugas-input" placeholder="Nama Petugas">
-                                        <button type="button" class="btn btn-danger btn-sm remove-petugas" style="display:none;">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn btn-secondary btn-sm mt-2" id="add-petugas-{{ $maintenance->id_maintenance }}">
-                                    <i class="bi bi-plus"></i> Tambah Petugas
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-2">
-                                <label class="form-label small">Status Jaringan</label>
-                                <select name="status_net" class="form-select form-select-sm">
-                                    <option value="OK" {{ $maintenance->status_net === 'OK' ? 'selected' : '' }}>OK</option>
-                                    <option value="Rusak" {{ $maintenance->status_net === 'Rusak' ? 'selected' : '' }}>Rusak</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label small">Keterangan Maintenance</label>
-                        <textarea name="keterangan" class="form-control form-control-sm" rows="3">{{ $maintenance->keterangan }}</textarea>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
@@ -270,42 +244,6 @@
 </div>
 @endforeach
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    @foreach($data as $index => $maintenance)
-    const petugasContainer{{ $maintenance->id_maintenance }} = document.getElementById('petugas-container-{{ $maintenance->id_maintenance }}');
-    const addPetugasBtn{{ $maintenance->id_maintenance }} = document.getElementById('add-petugas-{{ $maintenance->id_maintenance }}');
-
-    addPetugasBtn{{ $maintenance->id_maintenance }}.addEventListener('click', function() {
-        const newPetugasGroup = document.createElement('div');
-        newPetugasGroup.className = 'input-group mb-2';
-        newPetugasGroup.innerHTML = `
-            <input type="text" name="petugas[]" class="form-control form-control-sm petugas-input" placeholder="Nama Petugas">
-            <button type="button" class="btn btn-danger btn-sm remove-petugas">
-                <i class="bi bi-trash"></i>
-            </button>
-        `;
-
-        petugasContainer{{ $maintenance->id_maintenance }}.appendChild(newPetugasGroup);
-        updateRemoveButtons(petugasContainer{{ $maintenance->id_maintenance }});
-    });
-
-    petugasContainer{{ $maintenance->id_maintenance }}.addEventListener('click', function(event) {
-        if (event.target.closest('.remove-petugas')) {
-            event.target.closest('.input-group').remove();
-            updateRemoveButtons(petugasContainer{{ $maintenance->id_maintenance }});
-        }
-    });
-
-    function updateRemoveButtons(container) {
-        const removeButtons = container.querySelectorAll('.remove-petugas');
-        removeButtons.forEach((button, index) => {
-            button.style.display = removeButtons.length > 1 ? 'block' : 'none';
-        });
-    }
-    @endforeach
-});
-</script>
 
 
     

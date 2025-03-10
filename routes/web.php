@@ -108,10 +108,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/switch/{id}/topemusnahan', [SwitchController::class, 'aktifToMusnah'])->name('switch.topemusnahan');
     Route::get('/switch/get-destroyed/{year}', [SwitchController::class, 'getDestroyedByYear'])->name('switch.getDestroyed');
     Route::post('/switch/destroy-multiple', [SwitchController::class, 'destroyMultiple'])->name('switch.destroyMultiple');
-
-    Route::get('/switch/data/maintenance', [MaintenanceController::class, 'index'])->name('switch.data-maintenance');
     Route::post('/switch/data/maintenance/action/{id}', [MaintenanceController::class, 'action'])->name('switch.maintenance.action');
-
     Route::get('/laporan/export-switch-active', [LaporanController::class, 'exportReportSwitchActive'])
     ->name('laporan.export-switch-active');
 });

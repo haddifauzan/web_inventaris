@@ -15,7 +15,6 @@ class Maintenance extends Model
 
     protected $fillable = [
         'id_barang',          // Foreign key referensi ke tabel barang
-        'status_maintenance', // Status maintenance (Sudah/Belum)
         'tgl_maintenance',   // Tanggal maintenance dilakukan
         'node_terpakai',    // Jumlah node yang terpakai
         'node_bagus',       // Jumlah node yang masih bagus
@@ -23,7 +22,6 @@ class Maintenance extends Model
         'status_net',       // Status jaringan (OK/Rusak)
         'petugas',          // Nama petugas maintenance
         'lokasi_switch',    // Lokasi switch berada
-        'keterangan'        // Keterangan tambahan
     ];
 
     public function barang()

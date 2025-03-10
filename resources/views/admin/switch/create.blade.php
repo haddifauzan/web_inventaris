@@ -77,11 +77,11 @@
                                     <div class="d-flex gap-2 mb-3">
                                         <input type="text" class="form-control form-control-sm" 
                                                name="spesifikasi_keys[]" 
-                                               value="Processor"
+                                               value="Port Count"
                                                placeholder="Nama Spesifikasi">
                                         <input type="text" class="form-control form-control-sm" 
                                                name="spesifikasi_values[]" 
-                                               value="{{old('spesifikasi.processor')}}"
+                                               value="{{old('spesifikasi.Port Count')}}"
                                                placeholder="Nilai Spesifikasi">
                                         <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
                                             <i class="bi bi-trash"></i>
@@ -91,7 +91,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3">  
                             <label class="form-label col-form-label-sm">Keterangan</label>
                             <textarea class="form-control form-control-sm @error('keterangan') is-invalid @enderror"
                                       name="keterangan" rows="3"

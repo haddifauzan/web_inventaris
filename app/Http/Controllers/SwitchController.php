@@ -295,22 +295,12 @@ class SwitchController extends Controller
             if (!$existingActivation) {
                 Maintenance::create([
                     'id_barang' => $id,
-                    'status_maintenance' => 'Belum',
+                    'status_net' => 'OK',
                     'node_terpakai' => $node_terpakai,
                     'node_bagus' => $node_bagus,
                     'node_rusak' => $node_rusak,
-                    'status_net' => 'OK',
                     'lokasi_switch' => $request->lokasi_switch,
                 ]);
-            }
-
-            // Update status IP jika diberikan
-            if ($request->ip_address) {
-                IpAddress::where('id_ip', $request->ip_address)
-                    ->update([
-                        'status' => 'In Use',
-                        'id_barang' => $barang->id_barang
-                    ]);
             }
 
             // Simpan ke Riwayat

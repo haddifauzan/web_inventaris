@@ -9,20 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class MaintenanceController extends Controller
 {
-    public function index()
-    {
-        $title = 'Data Maintenance';
-        $breadcrumbs = [
-            ['url' => route('switch.index', ['tab' => 'aktif']), 'text' => 'Menu Aktif Switch'],
-            ['url' => '#', 'text' => 'Data Maintenance']
-        ];
-
-        $maintenances = Maintenance::with('barang')
-            ->orderByRaw("CASE WHEN status_maintenance = 'Belum' THEN 0 ELSE 1 END")
-            ->get();
-        return view('admin.switch.maintenance', compact('maintenances', 'breadcrumbs', 'title'));
-    }
-
     public function action(Request $request, $id)
     {
         // Validasi input
@@ -33,8 +19,6 @@ class MaintenanceController extends Controller
             'node_bagus' => 'required|numeric|min:0',
             'node_rusak' => 'required|numeric|min:0',
             'status_net' => 'required|in:OK,Rusak',
-            'petugas' => 'nullable|array',
-            'keterangan' => 'nullable|string'
         ]);
 
         // Gabungkan nama petugas menjadi string
@@ -46,14 +30,11 @@ class MaintenanceController extends Controller
             $maintenance = Maintenance::findOrFail($id);
             $maintenance->update([
                 'id_barang' => $validatedData['id_barang'],
-                'status_maintenance' => 'Sudah',
                 'tgl_maintenance' => $validatedData['tgl_maintenance'],
                 'node_terpakai' => $validatedData['node_terpakai'],
                 'node_bagus' => $validatedData['node_bagus'],
                 'node_rusak' => $validatedData['node_rusak'],
                 'status_net' => $validatedData['status_net'],
-                'petugas' => $petugasString,
-                'keterangan' => $request->input('keterangan')
             ]);
 
             // Update MenuAktif dengan data maintenance terbaru

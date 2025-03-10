@@ -10,7 +10,6 @@ return new class extends Migration {
         Schema::create('tbl_maintenance', function (Blueprint $table) {
             $table->id('id_maintenance');
             $table->unsignedBigInteger('id_barang');
-            $table->enum('status_maintenance', ['Sudah', 'Belum']);
             $table->date('tgl_maintenance')->nullable();
             $table->integer('node_terpakai');
             $table->integer('node_bagus');
@@ -18,7 +17,6 @@ return new class extends Migration {
             $table->enum('status_net', ['OK', 'Rusak']);
             $table->string('petugas')->nullable();
             $table->string('lokasi_switch');
-            $table->string('keterangan')->nullable();
             $table->timestamps();
 
             $table->foreign('id_barang')->references('id_barang')->on('tbl_barang')->onDelete('cascade');
