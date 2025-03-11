@@ -21,7 +21,7 @@ class Maintenance extends Model
         'node_rusak',       // Jumlah node yang rusak
         'status_net',       // Status jaringan (OK/Rusak)
         'petugas',          // Nama petugas maintenance
-        'lokasi_switch',    // Lokasi switch berada
+        'lokasi_switch',    // Lokasi switch berada contoh (R.MIS, R.RND., R.VAS)
     ];
 
     public function barang()

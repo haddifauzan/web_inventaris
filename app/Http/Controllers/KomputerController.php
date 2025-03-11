@@ -36,10 +36,43 @@ class KomputerController extends Controller
                     ->where('status', 'Aktif')
                     ->with(['menuAktif.departemen', 'menuAktif.lokasi', 'ipAddress']);
                 
+                // Filter by location
                 if ($lokasi_id) {
                     $query->whereHas('menuAktif', function ($q) use ($lokasi_id) {
                         $q->where('id_lokasi', $lokasi_id);
                     });
+                }
+
+                // Filter by department
+                if ($request->input('departemen_id')) {
+                    $query->whereHas('menuAktif', function ($q) use ($request) {
+                        $q->where('id_departemen', $request->departemen_id);
+                    });
+                }
+
+                // Filter by operating system
+                if ($request->input('os')) {
+                    $query->where('operating_system', $request->os);
+                }
+
+                // Filter by model
+                if ($request->input('model')) {
+                    $query->where('model', $request->model);
+                }
+
+                // Filter by type/brand
+                if ($request->input('tipe_merk')) {
+                    $query->where('tipe_merk', $request->tipe_merk);
+                }
+
+                // Filter by ownership
+                if ($request->input('kepemilikan')) {
+                    $query->where('kepemilikan', $request->kepemilikan);
+                }
+
+                // Filter by acquisition year
+                if ($request->input('tahun_perolehan')) {
+                    $query->whereRaw('DATE_FORMAT(tahun_perolehan, "%Y-%m") = ?', [$request->tahun_perolehan]);
                 }
                 
                 $query->join('tbl_menu_aktif', 'tbl_barang.id_barang', '=', 'tbl_menu_aktif.id_barang')
@@ -71,10 +104,11 @@ class KomputerController extends Controller
         $lokasi = Lokasi::orderBy('nama_lokasi', 'asc')->get();
         $departemen = Departemen::orderBy('nama_departemen', 'asc')->get();
         $ipAddresses = IpAddress::where('status', 'Available')->get();
+        $tipeMerk = TipeBarang::where('jenis_barang', 'Komputer')->orderBy('tipe_merk', 'asc')->get();
 
         $viewPath = auth()->user()->role === 'admin' ? 'admin.komputer.index' : 'user.komputer.index';
         return view($viewPath, compact(
-            'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id'
+            'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id', 'tipeMerk'
         ));
     }
 

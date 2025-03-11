@@ -41,18 +41,41 @@ class SwitchController extends Controller
             case 'aktif':
                 $query = Barang::where('jenis_barang', 'Switch')
                     ->where('status', 'Aktif')
-                    ->with(['menuAktif.departemen', 'menuAktif.lokasi', 'ipAddress']);
-                
+                    ->with(['menuAktif.departemen', 'menuAktif.lokasi', 'ipAddress', 'maintenance']); // Tambahkan relasi maintenance
+            
+                // Filter Lokasi
+                $lokasi_id = $request->input('lokasi_id');
                 if ($lokasi_id) {
                     $query->whereHas('menuAktif', function ($q) use ($lokasi_id) {
                         $q->where('id_lokasi', $lokasi_id);
                     });
                 }
-                
+            
+                // Filter Departemen
+                $departemen_id = $request->input('departemen_id'); 
+                if ($departemen_id) {
+                    $query->whereHas('menuAktif', function ($q) use ($departemen_id) {
+                        $q->where('id_departemen', $departemen_id);
+                    });
+                }
+            
+                // Filter Tipe/Merk 
+                $tipe_merk = $request->input('tipe_merk');
+                if ($tipe_merk) {
+                    $query->where('tipe_merk', $tipe_merk);
+                }
+            
+                // Filter Tahun Perolehan
+                $tahun_perolehan = $request->input('tahun_perolehan');
+                if ($tahun_perolehan) {
+                    $query->whereYear('tahun_perolehan', $tahun_perolehan);
+                }
+            
+                // Join dan Order By
                 $query->join('tbl_menu_aktif', 'tbl_barang.id_barang', '=', 'tbl_menu_aktif.id_barang')
                     ->join('tbl_departemen', 'tbl_menu_aktif.id_departemen', '=', 'tbl_departemen.id_departemen')
                     ->join('tbl_lokasi', 'tbl_menu_aktif.id_lokasi', '=', 'tbl_lokasi.id_lokasi')
-                    ->leftJoin('tbl_maintenance', 'tbl_barang.id_barang', '=', 'tbl_maintenance.id_barang')
+                    ->leftJoin('tbl_maintenance', 'tbl_barang.id_barang', '=', 'tbl_maintenance.id_barang') // Join dengan tabel maintenance
                     ->orderBy('tbl_lokasi.nama_lokasi', 'asc')
                     ->orderBy('tbl_departemen.nama_departemen', 'asc');
                 break;
@@ -79,10 +102,11 @@ class SwitchController extends Controller
         $lokasi = Lokasi::orderBy('nama_lokasi', 'asc')->get();
         $departemen = Departemen::orderBy('nama_departemen', 'asc')->get();
         $ipAddresses = IpAddress::where('status', 'Available')->get();
+        $tipeMerk = TipeBarang::where('jenis_barang', 'Switch')->orderBy('tipe_merk', 'asc')->get();
 
         $viewPath = auth()->user()->role === 'admin' ? 'admin.switch.index' : 'user.switch.index';
         return view($viewPath, compact(
-            'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id'
+            'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id', 'tipeMerk'
         ));
     }
 
@@ -245,7 +269,7 @@ class SwitchController extends Controller
         $request->validate([
             'id_lokasi' => 'required|exists:tbl_lokasi,id_lokasi',
             'id_departemen' => 'required|exists:tbl_departemen,id_departemen',
-            'node_terpakai' => 'nullable|integer',
+            'node_terpakai' => 'nullable|integer|lte:node_bagus',
             'node_bagus' => 'nullable|integer',
             'node_rusak' => 'nullable|integer',
             'lokasi_switch' => 'required|string',

@@ -15,7 +15,7 @@ class MaintenanceController extends Controller
         $validatedData = $request->validate([
             'id_barang' => 'required|exists:tbl_barang,id_barang',
             'tgl_maintenance' => 'required|date',
-            'node_terpakai' => 'required|numeric|min:0',
+            'node_terpakai' => 'required|numeric|min:0|lte:node_bagus',
             'node_bagus' => 'required|numeric|min:0',
             'node_rusak' => 'required|numeric|min:0',
             'status_net' => 'required|in:OK,Rusak',

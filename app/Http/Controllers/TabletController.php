@@ -33,13 +33,36 @@ class TabletController extends Controller
                 $query = Barang::where('jenis_barang', 'Tablet')
                     ->where('status', 'Aktif')
                     ->with(['menuAktif.departemen', 'menuAktif.lokasi', 'ipAddress']);
-                
+            
+                // Filter Lokasi
+                $lokasi_id = $request->input('lokasi_id');
                 if ($lokasi_id) {
                     $query->whereHas('menuAktif', function ($q) use ($lokasi_id) {
                         $q->where('id_lokasi', $lokasi_id);
                     });
                 }
-                
+            
+                // Filter Departemen
+                $departemen_id = $request->input('departemen_id'); 
+                if ($departemen_id) {
+                    $query->whereHas('menuAktif', function ($q) use ($departemen_id) {
+                        $q->where('id_departemen', $departemen_id);
+                    });
+                }
+            
+                // Filter Tipe/Merk 
+                $tipe_merk = $request->input('tipe_merk');
+                if ($tipe_merk) {
+                    $query->where('tipe_merk', $tipe_merk);
+                }
+            
+                // Filter Tahun Perolehan
+                $tahun_perolehan = $request->input('tahun_perolehan');
+                if ($tahun_perolehan) {
+                    $query->whereYear('tahun_perolehan', $tahun_perolehan);
+                }
+            
+                // Join dan Order By
                 $query->join('tbl_menu_aktif', 'tbl_barang.id_barang', '=', 'tbl_menu_aktif.id_barang')
                     ->join('tbl_departemen', 'tbl_menu_aktif.id_departemen', '=', 'tbl_departemen.id_departemen')
                     ->join('tbl_lokasi', 'tbl_menu_aktif.id_lokasi', '=', 'tbl_lokasi.id_lokasi')
@@ -69,10 +92,11 @@ class TabletController extends Controller
         $lokasi = Lokasi::orderBy('nama_lokasi', 'asc')->get();
         $departemen = Departemen::orderBy('nama_departemen', 'asc')->get();
         $ipAddresses = IpAddress::where('status', 'Available')->get();
+        $tipeMerk = TipeBarang::where('jenis_barang', 'Tablet')->orderBy('tipe_merk', 'asc')->get();
 
         $viewPath = auth()->user()->role === 'admin' ? 'admin.tablet.index' : 'user.tablet.index';
         return view($viewPath, compact(
-            'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id'
+            'title', 'breadcrumbs', 'tab', 'data', 'lokasi', 'departemen', 'ipAddresses', 'lokasi_id', 'tipeMerk'
         ));
     }
 

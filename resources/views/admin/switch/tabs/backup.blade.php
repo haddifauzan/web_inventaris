@@ -146,12 +146,31 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="form-label col-form-label-sm">Node Bagus</label>
-                            <input type="number" class="form-control form-control-sm" name="node_bagus" value="{{ $switch->node_bagus ?? 0 }}" required>
+                            <input type="number" class="form-control form-control-sm node-bagus" name="node_bagus" value="{{ $switch->node_bagus ?? 0 }}" required>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label col-form-label-sm">Node Terpakai</label>
-                            <input type="number" class="form-control form-control-sm" name="node_terpakai" value="{{ $switch->node_terpakai ?? 0 }}" required>
+                            <input type="number" class="form-control form-control-sm node-terpakai" name="node_terpakai" value="{{ $switch->node_terpakai ?? 0 }}" required>
+                            <div class="invalid-feedback">
+                                Node terpakai tidak boleh lebih besar dari node bagus
+                            </div>
                         </div>
+
+                        <script>
+                            document.querySelectorAll('.node-terpakai, .node-bagus').forEach(input => {
+                                input.addEventListener('input', function() {
+                                    const nodeBagus = parseInt(this.closest('.row').querySelector('.node-bagus').value) || 0;
+                                    const nodeTerpakai = parseInt(this.closest('.row').querySelector('.node-terpakai').value) || 0;
+                                    const nodeTerpakaiInput = this.closest('.row').querySelector('.node-terpakai');
+                                    
+                                    if (nodeTerpakai > nodeBagus) {
+                                        nodeTerpakaiInput.classList.add('is-invalid');
+                                    } else {
+                                        nodeTerpakaiInput.classList.remove('is-invalid');
+                                    }
+                                });
+                            });
+                        </script>
                         <div class="col-md-4">
                             <label class="form-label col-form-label-sm">Node Rusak</label>
                             <input type="number" class="form-control form-control-sm" name="node_rusak" value="{{ $switch->node_rusak ?? 0 }}" required>
