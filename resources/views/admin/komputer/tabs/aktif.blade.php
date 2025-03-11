@@ -184,11 +184,9 @@
                     <div class="btn-group">
                         <button type="button" title="Backup" class="btn btn-success btn-sm text-white d-flex" data-bs-toggle="modal" data-bs-target="#backupModal{{ $computer->id_barang }}">
                             <i class="bi bi-arrow-counterclockwise me-1"></i>
-                            Backup
                         </button>
                         <button type="button" title="Musnahkan" class="btn btn-danger btn-sm d-flex" data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $computer->id_barang }}">
                             <i class="bi bi-trash-fill text-white me-1"></i>
-                            Musnah
                         </button>
                     </div>
 

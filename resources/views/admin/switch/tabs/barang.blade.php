@@ -57,13 +57,11 @@
                            class="btn btn-warning btn-sm text-white"
                            title="Edit">
                             <i class="bi bi-pencil-fill"></i>
-                            Edit
                         </a>
                         <button type="button" class="btn btn-danger btn-sm"
                                 data-bs-toggle="modal" data-bs-target="#hapusModal{{ $switch->id_barang }}"
                                 title="Hapus">
                             <i class="bi bi-trash-fill"></i>
-                            Hapus
                         </button>
                     </div>
                 </td>
