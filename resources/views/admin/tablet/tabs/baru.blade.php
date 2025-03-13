@@ -1,74 +1,33 @@
 <div class="table-responsive">
-    <table class="table table-sm small table-striped" id="backupTable">
+    <table class="table table-sm small table-striped" id="newTable">
         <thead>
             <tr>
                 <th>No</th>
                 <th>Model</th>
                 <th>Tipe/Merk</th>
-                <th>Operating Sistem</th>
                 <th>Serial</th>
-                <th>Kepemilikan</th>
                 <th>Tahun</th>
-                <th class="text-start">Kelayakan</th>
                 <th>Keterangan</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($data as $index => $komputer)
+            @foreach($data as $index => $tablet)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $komputer->model }}</td>
-                <td>{{ $komputer->tipe_merk }}</td>
-                <td>{{ $komputer->operating_system }}</td>
-                <td>
-                    @if (json_decode($komputer->serial))
-                        <b><i>CPU:</i></b> {{ json_decode($komputer->serial)->cpu }}<br>
-                        <b><i>Monitor:</i></b> {{ json_decode($komputer->serial)->monitor }}
-                    @else
-                        {{ $komputer->serial ?? '-' }}
-                    @endif
-                </td>
-                <td>
-                    @if ($komputer->kepemilikan === 'Inventaris')
-                        <span class="badge bg-info">{{ $komputer->kepemilikan }}</span>
-                    @else
-                        <span class="badge bg-secondary">{{ $komputer->kepemilikan }}</span>
-                    @endif
-                </td>
-                <td>{{ \Carbon\Carbon::parse($komputer->tahun_perolehan)->format('M Y') }}</td>
-                <td>
-                    <div class="progress" style="height: 12px; width: 100px;">
-                        <div 
-                            class="progress-bar 
-                                {{ 
-                                    $komputer->kelayakan >= 75 ? 'bg-success' :
-                                    ($komputer->kelayakan >= 50 ? 'bg-warning' : 'bg-danger')
-                                }}"
-                            role="progressbar" 
-                            aria-valuenow="{{ $komputer->kelayakan ?? 0 }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="100"
-                            style="width: {{ $komputer->kelayakan ?? 0 }}%">
-                            {{ $komputer->kelayakan ?? '-' }}%
-                        </div>
-                    </div>
-                </td>
+                <td>{{ $tablet->model }}</td>
+                <td>{{ $tablet->tipe_merk }}</td>
+                <td>{{ $tablet->serial }}</td>
+                <td>{{ \Carbon\Carbon::parse($tablet->tahun_perolehan)->format('M Y') }}</td>
                 <td data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="{{ $komputer->menuBackup->keterangan ?? "-" }}">
-                    {{ Str::limit($komputer->menuBackup->keterangan ?? "-", 50) }}
+                    title="{{ $tablet->menuBackup->keterangan ?? "-" }}">
+                    {{ Str::limit($tablet->menuBackup->keterangan ?? "-", 50) }}
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $komputer->id_barang }}">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $tablet->id_barang }}">
                             <i class="bi bi-check-circle"></i> Aktif
                         </button>                        
-                        <button type="button" class="btn btn-danger btn-sm"
-                                data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $komputer->id_barang }}"
-                                {{ !$komputer->riwayat()->exists() ? 'disabled' : '' }}
-                                title="{{ !$komputer->riwayat()->exists() ? 'Belum ada riwayat penggunaan barang ini' : 'Musnahkan' }}">
-                            <i class="bi bi-trash-fill"></i> Musnah
-                        </button>
                     </div>
                 </td>
             </tr>
@@ -77,26 +36,26 @@
     </table>
 </div>
 
-@foreach ( $data as $index => $komputer )
+@foreach ( $data as $index => $tablet )
 {{-- Modal Aktivasi --}}
-<div class="modal fade" id="aktivasiModal{{ $komputer->id_barang }}" tabindex="-1" aria-labelledby="aktivasiModalLabel{{ $komputer->id_barang }}" aria-hidden="true">
+<div class="modal fade" id="aktivasiModal{{ $tablet->id_barang }}" tabindex="-1" aria-labelledby="aktivasiModalLabel{{ $tablet->id_barang }}" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="aktivasiModalLabel{{ $komputer->id_barang }}">Aktivasi Komputer</h5>
+                <h5 class="modal-title" id="aktivasiModalLabel{{ $tablet->id_barang }}">Aktivasi Tablet</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('komputer.aktivasi', $komputer->id_barang) }}" method="POST">
+            <form action="{{ route('tablet.aktivasi', $tablet->id_barang) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Model</label>
-                            <input type="text" class="form-control form-control-sm" value="{{ $komputer->model }}" disabled>
+                            <input type="text" class="form-control form-control-sm" value="{{ $tablet->model }}" disabled>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Tipe/Merk</label>
-                            <input type="text" class="form-control form-control-sm" value="{{ $komputer->tipe_merk }}" disabled>
+                            <input type="text" class="form-control form-control-sm" value="{{ $tablet->tipe_merk }}" disabled>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -104,14 +63,14 @@
                             <label class="form-label col-form-label-sm">Lokasi</label>
                             <div class="select-search-container">
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" id="lokasi-search{{ $komputer->id_barang }}" 
+                                    <input type="text" class="form-control" id="lokasi-search{{ $tablet->id_barang }}" 
                                            placeholder="Cari dan pilih lokasi..." autocomplete="off">
-                                    <button class="btn btn-secondary" type="button" id="clear-lokasi-search{{ $komputer->id_barang }}">
+                                    <button class="btn btn-secondary" type="button" id="clear-lokasi-search{{ $tablet->id_barang }}">
                                         <i class="bi bi-x"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" name="id_lokasi" id="lokasi-value{{ $komputer->id_barang }}" required>
-                                <div class="select-search-dropdown" id="lokasi-dropdown{{ $komputer->id_barang }}">
+                                <input type="hidden" name="id_lokasi" id="lokasi-value{{ $tablet->id_barang }}" required>
+                                <div class="select-search-dropdown" id="lokasi-dropdown{{ $tablet->id_barang }}">
                                     @foreach($lokasi as $lok)
                                     <div class="select-search-option" data-value="{{ $lok->id_lokasi }}">
                                         {{ $lok->nama_lokasi }}
@@ -125,14 +84,14 @@
                             <label class="form-label col-form-label-sm">Departemen</label>
                             <div class="select-search-container">
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" id="departemen-search{{ $komputer->id_barang }}" 
+                                    <input type="text" class="form-control" id="departemen-search{{ $tablet->id_barang }}" 
                                            placeholder="Cari dan pilih departemen..." autocomplete="off">
-                                    <button class="btn btn-secondary" type="button" id="clear-departemen-search{{ $komputer->id_barang }}">
+                                    <button class="btn btn-secondary" type="button" id="clear-departemen-search{{ $tablet->id_barang }}">
                                         <i class="bi bi-x"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" name="id_departemen" id="departemen-value{{ $komputer->id_barang }}" required>
-                                <div class="select-search-dropdown" id="departemen-dropdown{{ $komputer->id_barang }}">
+                                <input type="hidden" name="id_departemen" id="departemen-value{{ $tablet->id_barang }}" required>
+                                <div class="select-search-dropdown" id="departemen-dropdown{{ $tablet->id_barang }}">
                                     @foreach($departemen as $dep)
                                     <div class="select-search-option" data-value="{{ $dep->id_departemen }}">
                                         {{ $dep->nama_departemen }}
@@ -144,30 +103,24 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label col-form-label-sm">User</label>
-                            <input type="text" class="form-control form-control-sm" name="user" placeholder="Contoh: John Doe" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label col-form-label-sm">Komputer Name</label>
-                            <input type="text" class="form-control form-control-sm" name="komputer_name" placeholder="Contoh: PC-001" required>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
                             <label class="form-label col-form-label-sm">IP Address</label>
                             <div class="ip-selection-container">
                                 <div class="input-group input-group-sm mb-2">
-                                    <input type="text" id="ip-search-input{{ $komputer->id_barang }}" class="form-control" placeholder="Cari IP Address...">
-                                    <button class="btn btn-secondary" type="button" id="clear-search{{ $komputer->id_barang }}">
+                                    <input type="text" id="ip-search-input{{ $tablet->id_barang }}" class="form-control" placeholder="Cari IP Address...">
+                                    <button class="btn btn-secondary" type="button" id="clear-search{{ $tablet->id_barang }}">
                                         <i class="bi bi-x"></i>
                                     </button>
                                 </div>
                                 <div class="ip-list-container">
-                                    <ul id="ip-address-list{{ $komputer->id_barang }}" class="ip-list">
+                                    <ul id="ip-address-list{{ $tablet->id_barang }}" class="ip-list">
                                         <li class="no-results">Pilih lokasi terlebih dahulu</li>
                                     </ul>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label col-form-label-sm">User</label>
+                            <input type="text" class="form-control form-control-sm" name="user" placeholder="Contoh: John Doe" required>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -186,14 +139,14 @@
 
 
 <!-- Modal Pemusnahan -->
-<div class="modal fade" id="pemusnahanModal{{ $komputer->id_barang }}" tabindex="-1">
+<div class="modal fade" id="pemusnahanModal{{ $tablet->id_barang }}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Pindahkan ke Pemusnahan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('komputer.musnah', $komputer->id_barang) }}" method="POST">
+            <form action="{{ route('tablet.musnah', $tablet->id_barang) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
@@ -295,22 +248,22 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        @foreach($data as $komputer)
+        @foreach($data as $tablet)
         setupSearchSelect(
-            'lokasi-search{{ $komputer->id_barang }}',
-            'lokasi-dropdown{{ $komputer->id_barang }}',
-            'lokasi-value{{ $komputer->id_barang }}',
-            'clear-lokasi-search{{ $komputer->id_barang }}'
+            'lokasi-search{{ $tablet->id_barang }}',
+            'lokasi-dropdown{{ $tablet->id_barang }}',
+            'lokasi-value{{ $tablet->id_barang }}',
+            'clear-lokasi-search{{ $tablet->id_barang }}'
         );
         
         setupSearchSelect(
-            'departemen-search{{ $komputer->id_barang }}',
-            'departemen-dropdown{{ $komputer->id_barang }}',
-            'departemen-value{{ $komputer->id_barang }}',
-            'clear-departemen-search{{ $komputer->id_barang }}'
+            'departemen-search{{ $tablet->id_barang }}',
+            'departemen-dropdown{{ $tablet->id_barang }}',
+            'departemen-value{{ $tablet->id_barang }}',
+            'clear-departemen-search{{ $tablet->id_barang }}'
         );
         
-        setupIpAddressHandler('{{ $komputer->id_barang }}');
+        setupIpAddressHandler('{{ $tablet->id_barang }}');
         @endforeach
         
         // Setup search select functionality
@@ -587,7 +540,7 @@
             return header;
         }
 
-        function createIpOption(ip, computerId) {
+        function createIpOption(ip, tabletId) {
             const item = document.createElement('li');
             item.classList.add('ip-address-option');
             
@@ -595,7 +548,7 @@
             radio.type = 'radio';
             radio.name = 'ip_address';
             radio.value = ip.id_ip;
-            radio.id = `ip-${ip.id_ip}-${computerId}`;
+            radio.id = `ip-${ip.id_ip}-${tabletId}`;
 
             const label = document.createElement('label');
             label.htmlFor = radio.id;

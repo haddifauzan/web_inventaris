@@ -28,6 +28,9 @@ class KomputerController extends Controller
             case 'barang':
                 $query = Barang::where('jenis_barang', 'Komputer')->latest('created_at');
                 break;
+            case 'baru':
+                $query = Barang::where('jenis_barang', 'Komputer')->where('status', 'Baru')->latest('created_at');
+                break;
             case 'backup':
                 $query = Barang::where('jenis_barang', 'Komputer')->where('status', 'Backup')->latest('created_at');
                 break;
@@ -117,7 +120,7 @@ class KomputerController extends Controller
     {
         $title = 'Tambah Komputer';
         $breadcrumbs = [
-            ['url' => route('komputer.index', 'backup'), 'text' => 'Komputer'],
+            ['url' => route('komputer.index', 'barang'), 'text' => 'Komputer'],
             ['url' => '#', 'text' => 'Tambah Komputer'],
         ];
 
@@ -138,7 +141,8 @@ class KomputerController extends Controller
             'kepemilikan' => 'required|in:Inventaris,NOP',
             'kelayakan' => 'required|numeric|min:0|max:100',
             'spesifikasi_keys' => 'required|array',
-            'spesifikasi_values' => 'required|array'
+            'spesifikasi_values' => 'required|array',
+            'status' => 'required|in:Backup,Baru',
         ]);
 
         // Ubah format tahun_perolehan menjadi YYYY-MM-01
@@ -184,7 +188,7 @@ class KomputerController extends Controller
                 'kelayakan' => $request->kelayakan,
                 'kepemilikan' => $request->kepemilikan,
                 'tahun_perolehan' => $tahunPerolehan, // Simpan dengan format YYYY-MM-01
-                'status' => 'Backup'
+                'status' => $request->status,
             ]);
 
             MenuBackup::create([
@@ -194,7 +198,7 @@ class KomputerController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('komputer.index', ['tab' => 'backup'])
+                ->route('komputer.index', ['tab' => 'barang'])
                 ->with('success', 'Komputer berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollback();
@@ -210,7 +214,7 @@ class KomputerController extends Controller
     {
         $title = 'Edit Komputer';
         $breadcrumbs = [
-            ['url' => route('komputer.index'), 'text' => 'Komputer'],
+            ['url' => route('komputer.index', 'barang'), 'text' => 'Komputer'],
             ['url' => '#', 'text' => 'Edit Komputer'],
         ];
 
@@ -236,7 +240,7 @@ class KomputerController extends Controller
             'tahun_perolehan' => 'required|date_format:Y-m',
             'kepemilikan' => 'required|in:Inventaris,NOP',
             'spesifikasi_keys' => 'required|array',
-            'spesifikasi_values' => 'required|array'
+            'spesifikasi_values' => 'required|array',
         ]);
 
         // Check if barang exists and not in Pemusnahan status
@@ -285,7 +289,6 @@ class KomputerController extends Controller
                 'kelayakan' => $request->kelayakan,
                 'kepemilikan' => $request->kepemilikan,
                 'tahun_perolehan' => $tahunPerolehan,
-                'keterangan' => $request->keterangan
             ]);
 
             DB::commit();

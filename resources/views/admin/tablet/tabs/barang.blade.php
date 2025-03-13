@@ -1,7 +1,21 @@
 <div>
     <div class="row">
-        <div class="col-md-8"></div>
         <div class="col-md-4">
+            <a href="{{ route('tablet.create') }}" class="btn btn-primary btn-sm ms-2">
+                <i class="bi bi-plus me-1"></i>Tambah Tablet
+            </a>
+        </div>
+        <div class="col-md-3"></div>
+        <div class="col-md-2">
+            <select id="statusFilter" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Backup">Backup</option>
+                <option value="Baru">Baru</option>
+                <option value="Pemusnahan">Pemusnahan</option>
+            </select>
+        </div>
+        <div class="col-md-3">
             <div class="input-group">
                 <span class="input-group-text" id="basic-addon1">
                     <i class="bi bi-search"></i>
@@ -28,6 +42,9 @@
                 <th>Aksi</th>
             </tr>
         </thead>
+        <div id="noDataMessage" class="alert alert-secondary py-2 mx-2 mt-2" style="display: none;">
+            Data tidak ditemukan.
+        </div>
         <tbody>
             @foreach($data as $index => $tablet)
             <tr>
@@ -44,9 +61,11 @@
                 <td>{{ \Carbon\Carbon::parse($tablet->tahun_perolehan)->format('M Y') }}</td>
                 <td>
                     @if ($tablet->status === 'Backup')
-                        <span class="badge bg-success">{{ $tablet->status}}</span>
+                        <span class="badge bg-warning">{{ $tablet->status}}</span>
                     @elseif ($tablet->status === 'Aktif')
                         <span class="badge bg-primary">{{ $tablet->status}}</span>
+                    @elseif ($tablet->status === 'Baru')
+                        <span class="badge bg-success">{{ $tablet->status}}</span>
                     @else
                         <span class="badge bg-danger">{{ $tablet->status}}</span>
                     @endif
@@ -124,57 +143,47 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var table = new DataTable('#barangTable', {
-            searching: false,  // Nonaktifkan fitur pencarian bawaan DataTable
+            searching: false,  // Nonaktifkan search box
             paging: true,      // Mengaktifkan pagination
             info: true,        // Menampilkan informasi jumlah data
-            ordering: false    // Menonaktifkan fitur pengurutan kolom
+            ordering: false     // Mengaktifkan fitur pengurutan
         });
 
+        var statusFilter = document.getElementById('statusFilter');
         var searchInput = document.getElementById('searchSerial');
-        var noDataMessage = document.createElement('tr');
-        noDataMessage.innerHTML = '<td colspan="8" class="text-center">Data tidak ditemukan</td>';
-        noDataMessage.style.display = 'none';
-        document.querySelector('#barangTable tbody').appendChild(noDataMessage);
+        var noDataMessage = document.getElementById('noDataMessage');
 
-        // Fungsi pencarian berdasarkan serial CPU/Monitor
-        searchInput.addEventListener('keyup', function() {
-            var searchTerm = this.value.trim().toLowerCase();
+        function filterTable() {
+            var statusValue = statusFilter.value.toLowerCase();
+            var searchTerm = searchInput.value.toLowerCase();
             var rows = document.querySelectorAll('#barangTable tbody tr');
             var foundAny = false;
 
             rows.forEach(function(row) {
-                var serialCell = row.querySelector('td:nth-child(4)'); // Mengambil data di kolom "Serial"
-                if (serialCell) {
-                    var serialContent = serialCell.textContent.trim().toLowerCase();
-                    var found = serialContent.includes(searchTerm);
-                    row.style.display = (found || searchTerm === '') ? '' : 'none';
-                    if (found) foundAny = true;
+                var statusText = row.querySelector('td:nth-child(7)').textContent.toLowerCase();
+                var serialContent = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+                var statusMatch = statusValue === '' || statusText.includes(statusValue);
+                var searchMatch = searchTerm === '' || serialContent.includes(searchTerm);
+                
+                if (statusMatch && searchMatch) {
+                    row.style.display = '';
+                    foundAny = true;
+                } else {
+                    row.style.display = 'none';
                 }
             });
-
-            noDataMessage.style.display = foundAny ? 'none' : '';
-            updateRowNumbers();
-        });
-
-        // Fungsi untuk memperbarui nomor urut setelah pencarian
-        function updateRowNumbers() {
-            var visibleIndex = 1;
-            document.querySelectorAll('#barangTable tbody tr').forEach(function(row) {
-                if (row.style.display !== 'none' && !row.contains(noDataMessage)) {
-                    row.querySelector('td:first-child').textContent = visibleIndex++;
-                }
-            });
+            
+            noDataMessage.style.display = foundAny ? 'none' : 'block';
         }
 
-        // Tombol clear search
+        statusFilter.addEventListener('change', filterTable);
+        searchInput.addEventListener('keyup', filterTable);
+
         document.querySelectorAll('.clear-search').forEach(function(button) {
             button.addEventListener('click', function() {
-                var targetId = this.getAttribute('data-target');
-                var input = document.getElementById(targetId);
-                input.value = '';
-                input.dispatchEvent(new Event('keyup'));
+                searchInput.value = '';
+                filterTable();
             });
         });
     });
-
 </script>

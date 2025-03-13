@@ -94,6 +94,16 @@ class LaporanController extends Controller
         } else {
             $fileName .= Carbon::now()->format('d-m-Y');
         }
+
+        if ($lokasiId) {
+            $lokasi = Lokasi::findOrFail($lokasiId);
+            $fileName .= '_' . Str::slug($lokasi->nama_lokasi);
+        }
+        
+        if ($departemenId) {
+            $departemen = Departemen::findOrFail($departemenId);
+            $fileName .= '_' . Str::slug($departemen->nama_departemen);
+        }
         
         $fileName .= '.xlsx';
         

@@ -20,7 +20,7 @@ class Barang extends Model
         'kelayakan',     // Kelayakan barang
         'tahun_perolehan', // Tahun barang diperoleh dalam format date
         'kepemilikan', // Kepemilikan barang (Inventaris, NOP)
-        'status',        // Status barang (Backup, Aktif, Pemusnahan)
+        'status',        // Status barang (Baru, Backup, Aktif, Pemusnahan)
     ];
     protected $casts = ['spesifikasi' => 'array'];
 

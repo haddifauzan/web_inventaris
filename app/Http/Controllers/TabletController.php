@@ -26,6 +26,9 @@ class TabletController extends Controller
             case 'barang':
                 $query = Barang::where('jenis_barang', 'Tablet')->latest('created_at');
                 break;
+            case 'baru':
+                $query = Barang::where('jenis_barang', 'Tablet')->where('status', 'Baru')->latest('created_at');
+                break;
             case 'backup':
                 $query = Barang::where('jenis_barang', 'Tablet')->where('status', 'Backup')->latest('created_at');
                 break;
@@ -104,7 +107,7 @@ class TabletController extends Controller
     {
         $title = 'Tambah Tablet';
         $breadcrumbs = [
-            ['url' => route('tablet.index', 'backup'), 'text' => 'Tablet'],
+            ['url' => route('tablet.index', 'barang'), 'text' => 'Tablet'],
             ['url' => '#', 'text' => 'Tambah Tablet'],
         ];
 
@@ -119,7 +122,8 @@ class TabletController extends Controller
             'serial' => 'required|unique:tbl_barang,serial',
             'tahun_perolehan' => 'required|date_format:Y-m',
             'spesifikasi_keys' => 'required|array',
-            'spesifikasi_values' => 'required|array'
+            'spesifikasi_values' => 'required|array',
+            'status' => 'required|in:Backup,Baru'
         ]);
 
         // Ubah format tahun_perolehan menjadi YYYY-MM-01
@@ -145,7 +149,7 @@ class TabletController extends Controller
                 'serial' => $request->serial,
                 'spesifikasi' => json_encode($spesifikasi),
                 'tahun_perolehan' => $tahunPerolehan, // Simpan dengan format YYYY-MM-01
-                'status' => 'Backup'
+                'status' => $request->status,
             ]);
 
             MenuBackup::create([
@@ -155,7 +159,7 @@ class TabletController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('tablet.index', ['tab' => 'backup'])
+                ->route('tablet.index', ['tab' => 'barang'])
                 ->with('success', 'Tablet berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollback();
@@ -170,7 +174,7 @@ class TabletController extends Controller
     {
         $title = 'Edit Tablet';
         $breadcrumbs = [
-            ['url' => route('tablet.index'), 'text' => 'Tablet'],
+            ['url' => route('tablet.index', 'barang'), 'text' => 'Tablet'],
             ['url' => '#', 'text' => 'Edit Tablet'],
         ];
 
@@ -190,7 +194,7 @@ class TabletController extends Controller
             'serial' => 'required|unique:tbl_barang,serial,' . $id . ',id_barang',
             'tahun_perolehan' => 'required|date_format:Y-m',
             'spesifikasi_keys' => 'required|array',
-            'spesifikasi_values' => 'required|array'
+            'spesifikasi_values' => 'required|array',
         ]);
 
         // Check if barang exists and not in Pemusnahan status
@@ -220,7 +224,7 @@ class TabletController extends Controller
                 'serial' => $request->serial,
                 'spesifikasi' => json_encode($spesifikasi),
                 'tahun_perolehan' => $tahunPerolehan,
-                'keterangan' => $request->keterangan
+                'keterangan' => $request->keterangan,
             ]);
 
             DB::commit();

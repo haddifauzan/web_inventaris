@@ -27,6 +27,17 @@ class SwitchController extends Controller
             case 'barang':
                 $query = Barang::where('jenis_barang', 'Switch')->latest('created_at');
                 break;
+            case 'baru':
+                $query = Barang::where('jenis_barang', 'Switch')
+                    ->where('status', 'Baru')
+                    ->latest('created_at')
+                    ->leftJoin('tbl_maintenance', 'tbl_barang.id_barang', '=', 'tbl_maintenance.id_barang')
+                    ->select('tbl_barang.*', 
+                        'tbl_maintenance.node_terpakai',
+                        'tbl_maintenance.node_bagus',
+                        'tbl_maintenance.node_rusak'
+                    );
+                break;
             case 'backup':
                 $query = Barang::where('jenis_barang', 'Switch')
                     ->where('status', 'Backup')
@@ -114,7 +125,7 @@ class SwitchController extends Controller
     {
         $title = 'Tambah Switch';
         $breadcrumbs = [
-            ['url' => route('switch.index', 'backup'), 'text' => 'Switch'],
+            ['url' => route('switch.index', 'baru'), 'text' => 'Switch'],
             ['url' => '#', 'text' => 'Tambah Switch'],
         ];
 
@@ -130,6 +141,7 @@ class SwitchController extends Controller
             'tahun_perolehan' => 'required|date_format:Y-m',
             'spesifikasi_keys' => 'required|array',
             'spesifikasi_values' => 'required|array',
+            'status' => 'required|in:Baru,Backup',
         ]);
 
         // Ubah format tahun_perolehan menjadi YYYY-MM-01
@@ -155,7 +167,7 @@ class SwitchController extends Controller
                 'serial' => $request->serial,
                 'spesifikasi' => json_encode($spesifikasi),
                 'tahun_perolehan' => $tahunPerolehan, // Simpan dengan format YYYY-MM-01
-                'status' => 'Backup'
+                'status' => $request->status,
             ]);
 
             MenuBackup::create([
@@ -165,7 +177,7 @@ class SwitchController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('switch.index', ['tab' => 'backup'])
+                ->route('switch.index', ['tab' => 'barang'])
                 ->with('success', 'Switch berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollback();

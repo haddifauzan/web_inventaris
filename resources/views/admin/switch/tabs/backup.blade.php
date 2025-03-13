@@ -1,8 +1,3 @@
-<div class="mb-3">
-    <a href="{{ route('switch.create') }}" class="btn btn-primary btn-sm ms-2">
-        <i class="bi bi-plus me-1"></i>Tambah Switch
-    </a>
-</div>
 <div class="table-responsive">
     <table class="table table-sm small table-striped" id="backupTable">
         <thead>

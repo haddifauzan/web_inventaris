@@ -13,7 +13,9 @@ class UpdateBarangKelayakan extends Command
 
     public function handle()
     {
-        $barangs = Barang::where('status', 'Aktif')->get();
+        $barangs = Barang::where('status', 'Aktif')
+                 ->where('jenis_barang', 'Komputer')
+                 ->get();
         
         foreach ($barangs as $barang) {
             $tracker = BarangKelayakanTracker::firstOrCreate(

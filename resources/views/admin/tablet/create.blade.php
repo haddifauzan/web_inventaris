@@ -58,6 +58,26 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="col-md-3">
+                                    <label class="form-label col-form-label-sm">Status Barang <span class="text-danger text-sm">*</span></label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="status" 
+                                                id="statusBaru" value="Baru"
+                                                {{ old('status_barang', 'Baru') == 'Baru' ? 'checked' : '' }} required>
+                                            <label class="form-check-label" for="statusBaru">Baru</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="status" 
+                                                id="statusBackup" value="Backup"
+                                                {{ old('status_barang') == 'Backup' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="statusBackup">Backup</label>
+                                        </div>
+                                    </div>
+                                    @error('status_barang')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
                         </div>
 

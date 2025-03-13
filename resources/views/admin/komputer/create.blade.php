@@ -142,22 +142,45 @@
                                     <span id="kelayakanValue" class="fw-bold">100</span>%
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label col-form-label-sm">Kepemilikan</label>
-                                <div class="d-flex gap-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="kepemilikan" id="inventaris" value="Inventaris" checked>
-                                        <label class="form-check-label" for="inventaris">
-                                            Inventaris
-                                        </label>
+                            <div class="col-md-3">
+                                <label class="form-label col-form-label-sm">Kepemilikan <span class="text-danger text-sm">*</span></label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kepemilikan" 
+                                            id="kepemilikanInventaris" value="Inventaris" 
+                                            {{ old('kepemilikan', 'Inventaris') == 'Inventaris' ? 'checked' : '' }} required>
+                                        <label class="form-check-label" for="kepemilikanInventaris">Inventaris</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="kepemilikan" id="nop" value="NOP">
-                                        <label class="form-check-label" for="nop">
-                                            NOP
-                                        </label>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kepemilikan" 
+                                            id="kepemilikanNOP" value="NOP"
+                                            {{ old('kepemilikan') == 'NOP' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="kepemilikanNOP">NOP</label>
                                     </div>
                                 </div>
+                                @error('kepemilikan')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label col-form-label-sm">Status Barang <span class="text-danger text-sm">*</span></label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" 
+                                            id="statusBaru" value="Baru"
+                                            {{ old('status_barang', 'Baru') == 'Baru' ? 'checked' : '' }} required>
+                                        <label class="form-check-label" for="statusBaru">Baru</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="status" 
+                                            id="statusBackup" value="Backup"
+                                            {{ old('status_barang') == 'Backup' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="statusBackup">Backup</label>
+                                    </div>
+                                </div>
+                                @error('status_barang')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 

@@ -165,24 +165,25 @@
                                     <span id="kelayakanValue" class="fw-bold">{{ old('kelayakan', $barang->kelayakan) }}</span>%
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label class="form-label col-form-label-sm">Kepemilikan</label>
-                                <div class="d-flex gap-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="kepemilikan" id="inventaris" value="Inventaris" 
-                                            {{ old('kepemilikan', $barang->kepemilikan) == 'Inventaris' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="inventaris">
-                                            Inventaris
-                                        </label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kepemilikan" 
+                                            id="kepemilikanInventaris" value="Inventaris" 
+                                            {{ old('kepemilikan', $barang->kepemilikan ?? 'Inventaris') == 'Inventaris' ? 'checked' : '' }} required>
+                                        <label class="form-check-label" for="kepemilikanInventaris">Inventaris</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="kepemilikan" id="nop" value="NOP"
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="kepemilikan" 
+                                            id="kepemilikanNOP" value="NOP"
                                             {{ old('kepemilikan', $barang->kepemilikan) == 'NOP' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="nop">
-                                            NOP
-                                        </label>
+                                        <label class="form-check-label" for="kepemilikanNOP">NOP</label>
                                     </div>
                                 </div>
+                                @error('kepemilikan')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 

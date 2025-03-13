@@ -50,16 +50,20 @@
                             href="{{ route('switch.index', 'barang') }}">Data Barang</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ $tab == 'baru' ? 'active' : '' }}" 
+                            href="{{ route('switch.index', 'baru') }}">Barang Baru</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ $tab == 'backup' ? 'active' : '' }}" 
-                            href="{{ route('switch.index', 'backup') }}">Menu Backup</a>
+                            href="{{ route('switch.index', 'backup') }}">Barang Backup</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'aktif' ? 'active' : '' }}" 
-                            href="{{ route('switch.index', 'aktif') }}">Menu Aktif</a>
+                            href="{{ route('switch.index', 'aktif') }}">Barang Aktif</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'pemusnahan' ? 'active' : '' }}" 
-                            href="{{ route('switch.index', 'pemusnahan') }}">Menu Pemusnahan</a>
+                            href="{{ route('switch.index', 'pemusnahan') }}">Barang Pemusnahan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'riwayat' ? 'active' : '' }}" 
@@ -71,9 +75,10 @@
                     <div class="tab-dropdown">
                         <select class="form-select" onchange="location = this.value;">
                             <option value="{{ route('switch.index', 'barang') }}" {{ $tab == 'barang' ? 'selected' : '' }}>Data Barang</option>
-                            <option value="{{ route('switch.index', 'backup') }}" {{ $tab == 'backup' ? 'selected' : '' }}>Menu Backup</option>
-                            <option value="{{ route('switch.index', 'aktif') }}" {{ $tab == 'aktif' ? 'selected' : '' }}>Menu Aktif</option>
-                            <option value="{{ route('switch.index', 'pemusnahan') }}" {{ $tab == 'pemusnahan' ? 'selected' : '' }}>Menu Pemusnahan</option>
+                            <option value="{{ route('switch.index', 'baru') }}" {{ $tab == 'baru' ? 'selected' : '' }}>Barang Baru</option>
+                            <option value="{{ route('switch.index', 'backup') }}" {{ $tab == 'backup' ? 'selected' : '' }}>Barang Backup</option>
+                            <option value="{{ route('switch.index', 'aktif') }}" {{ $tab == 'aktif' ? 'selected' : '' }}>Barang Aktif</option>
+                            <option value="{{ route('switch.index', 'pemusnahan') }}" {{ $tab == 'pemusnahan' ? 'selected' : '' }}>Barang Pemusnahan</option>
                             <option value="{{ route('switch.index', 'riwayat') }}" {{ $tab == 'riwayat' ? 'selected' : '' }}>Riwayat Penggunaan</option>
                         </select>
                     </div>
@@ -104,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const tables = [
             { id: 'activeTable' },
             { id: 'backupTable' },
+            { id: 'newTable' },
             { id: 'historyTable' },
             @foreach($data as $barang)
             { id: 'historyDetailTable{{ $barang->id_barang }}' },
