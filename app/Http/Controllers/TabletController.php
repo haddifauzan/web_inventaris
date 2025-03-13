@@ -273,8 +273,10 @@ class TabletController extends Controller
         try {
             $barang = Barang::where('id_barang', $id)
                 ->where('jenis_barang', 'Tablet')
-                ->where('status', 'Backup')
+                ->whereIn('status', ['Backup', 'Baru'])
                 ->firstOrFail();
+
+            $statusAwal = $barang->status;
             
             $barang->update([
                 'status' => 'Aktif', 
@@ -315,7 +317,7 @@ class TabletController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('tablet.index', ['tab' => 'backup'])
+                ->route('tablet.index', ['tab' => $statusAwal === 'Baru' ? 'baru' : 'backup'])
                 ->with('success', 'Tablet berhasil diaktivasi');
         } catch (\Exception $e) {
             DB::rollback();

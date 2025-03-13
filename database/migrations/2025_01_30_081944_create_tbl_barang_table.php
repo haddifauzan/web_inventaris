@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('operating_system');
             $table->json('spesifikasi');
             $table->date('tahun_perolehan');
-            $table->enum('status', ['Backup', 'Aktif', 'Pemusnahan']);
+            $table->enum('status', ['Backup', 'Aktif', 'Pemusnahan', 'Baru']);
             $table->timestamps();
         });
     }

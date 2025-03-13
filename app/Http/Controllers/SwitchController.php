@@ -292,8 +292,10 @@ class SwitchController extends Controller
         try {
             $barang = Barang::where('id_barang', $id)
                 ->where('jenis_barang', 'Switch')
-                ->where('status', 'Backup')
+                ->whereIn('status', ['Backup', 'Baru'])
                 ->firstOrFail();
+            
+            $statusAwal = $barang->status;
             
             $barang->update(['status' => 'Aktif']);
             
@@ -355,7 +357,7 @@ class SwitchController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('switch.index', ['tab' => 'backup'])
+                ->route('switch.index', ['tab' => $statusAwal === 'Baru' ? 'baru' : 'backup'])
                 ->with('success', 'Switch berhasil diaktivasi');
         } catch (\Exception $e) {
             DB::rollback();
