@@ -37,7 +37,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($ipHost->ipAddresses as $ip)
-                                    <tr>
+                                    <tr id="{{ $ip->ip_address }}">
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $ip->ip_address }}</td>
                                         <td>
@@ -116,11 +116,34 @@
         document.addEventListener("DOMContentLoaded", function() {
             const table = document.getElementById('table-ip-detail');
             const loadingContainer = document.getElementById('loading-container');
-    
+
+            // Simulate data loading (replace with your actual data fetching)
             setTimeout(() => {
                 loadingContainer.classList.add('d-none');
                 table.classList.remove('d-none');
                 const datatable = new DataTable("#table-ip-detail");
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const searchResult = urlParams.get('search'); // Ambil ID dari URL
+
+                if (searchResult) {
+                    // Filter DataTables untuk menampilkan hanya data yang sesuai
+                    datatable.search(searchResult).draw();
+
+                    // Tunggu sebentar agar filtering selesai, lalu cari row yang sesuai
+                    setTimeout(() => {
+                        const row = document.querySelector(`#table-ip-detail tbody tr[id="${searchResult}"]`);
+                        if (row) {
+                            window.scrollTo({
+                                top: row.offsetTop - 100,
+                                behavior: 'smooth'
+                            });
+
+                            row.classList.add('table-warning');
+                            setTimeout(() => row.classList.remove('table-warning'), 3000);
+                        }
+                    }, 500);
+                }
             }, 100);
         });
     </script>

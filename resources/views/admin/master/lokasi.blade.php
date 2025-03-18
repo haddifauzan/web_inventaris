@@ -31,7 +31,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($lokasi as $index => $item)
-                                    <tr>
+                                    <tr id="{{ $item->nama_lokasi }}">
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $item->nama_lokasi }}</td>
                                         <td>{{ $item->deskripsi ?? '-' }}</td>
@@ -139,12 +139,6 @@
     @endforeach
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const datatable = new DataTable("#table-lokasi");
-        });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
             const table = document.getElementById('table-lokasi');
             const loadingContainer = document.getElementById('loading-container');
 
@@ -153,6 +147,28 @@
                 loadingContainer.classList.add('d-none');
                 table.classList.remove('d-none');
                 const datatable = new DataTable("#table-lokasi");
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const searchResult = urlParams.get('search'); // Ambil ID dari URL
+
+                if (searchResult) {
+                    // Filter DataTables untuk menampilkan hanya data yang sesuai
+                    datatable.search(searchResult).draw();
+
+                    // Tunggu sebentar agar filtering selesai, lalu cari row yang sesuai
+                    setTimeout(() => {
+                        const row = document.querySelector(`#table-lokasi tbody tr[id="${searchResult}"]`);
+                        if (row) {
+                            window.scrollTo({
+                                top: row.offsetTop - 100,
+                                behavior: 'smooth'
+                            });
+
+                            row.classList.add('table-warning');
+                            setTimeout(() => row.classList.remove('table-warning'), 3000);
+                        }
+                    }, 500);
+                }
             }, 100);
         });
     </script>

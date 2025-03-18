@@ -15,6 +15,7 @@ use App\Http\Controllers\TabletController;
 use App\Http\Controllers\SwitchController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\DashboardController as UserDashboardController;
+use App\Http\Controllers\SearchController;
 
 // Public routes
 Route::get('/', [AuthController::class, 'showLoginForm']);
@@ -27,9 +28,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-
-    // DATA BARANG
-
 });
 
 // User Routes
@@ -41,9 +39,10 @@ Route::prefix('user')->middleware(['auth', EnsureUser::class])->group(function (
 
 Route::middleware(['auth'])->group(function () {
     
-    Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])
-        ->name('updateCredential');
+    Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])->name('updateCredential');
 
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
+    Route::post('/search', [SearchController::class, 'search'])->name('search.post');
 
     // DATA MASTER
     Route::resource('lokasi', LokasiController::class);

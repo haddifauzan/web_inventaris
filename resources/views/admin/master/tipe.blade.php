@@ -41,7 +41,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach($tipeBarang as $index => $item)
-                                    <tr>
+                                    <tr id="{{ $item->tipe_merk }}">
                                         <td>{{ $index + 1 }}</td>
                                         <td>
                                             @switch($item->jenis_barang)
@@ -92,7 +92,7 @@
 
     <!-- Add Modal -->
     <div class="modal fade" id="addModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Tipe Barang</h5>
@@ -101,30 +101,30 @@
                 <form action="{{ route('tipe-barang.store') }}" method="POST" id="addForm">
                     @csrf
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="jenis_barang" class="form-label">Jenis Barang<span class="text-danger">*</span></label>
-                            <select class="form-select" id="jenis_barang" name="jenis_barang" required onchange="updateSpesifikasiFields(this.value, 'add')">
+                        <div class="mb-2">
+                            <label for="jenis_barang" class="form-label small">Jenis Barang<span class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm" id="jenis_barang" name="jenis_barang" required onchange="updateSpesifikasiFields(this.value, 'add')">
                                 <option value="">Pilih Jenis Barang</option>
                                 <option value="Komputer">Komputer</option>
                                 <option value="Tablet">Tablet</option>
                                 <option value="Switch">Switch</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="tipe_merk" class="form-label">Tipe/Merk Barang<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="tipe_merk" name="tipe_merk" required>
+                        <div class="mb-2">
+                            <label for="tipe_merk" class="form-label small">Tipe/Merk Barang<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" id="tipe_merk" name="tipe_merk" required>
                         </div>
-                        <label for="spesifikasi" class="form-label">Spesifikasi Barang</label>
+                        <label for="spesifikasi" class="form-label small">Spesifikasi Barang</label>
                         <div id="spesifikasi-container-add">
                             <!-- Spesifikasi fields will be dynamically added here -->
                         </div>
-                        <button type="button" class="btn btn-success btn-sm" onclick="addSpesifikasiField('add')">
+                        <button type="button" class="btn btn-success btn-sm mt-2" onclick="addSpesifikasiField('add')">
                             <i class="bi bi-plus"></i> Tambah Spesifikasi
                         </button>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Simpan</button>
                     </div>
                 </form>
             </div>
@@ -261,11 +261,11 @@
         function addSpesifikasiField(formType, key = '', value = '') {
             const container = document.getElementById(`spesifikasi-container-${formType}`);
             const div = document.createElement('div');
-            div.className = 'mb-3 spesifikasi-field';
+            div.className = 'mb-2 spesifikasi-field';
             div.innerHTML = `<div class="input-group">
-                    <input type="text" class="form-control" name="spesifikasi[key][]" value="${key}" placeholder="Nama Spesifikasi">
-                    <input type="text" class="form-control" name="spesifikasi[value][]" value="${value}" placeholder="Nilai Spesifikasi">
-                    <button type="button" class="btn btn-danger" onclick="removeSpesifikasiField(this)">
+                    <input type="text" class="form-control form-control-sm" name="spesifikasi[key][]" value="${key}" placeholder="Nama Spesifikasi">
+                    <input type="text" class="form-control form-control-sm" name="spesifikasi[value][]" value="${value}" placeholder="Nilai Spesifikasi">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeSpesifikasiField(this)">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -352,7 +352,29 @@
                 // Remove the custom filtering function
                 DataTable.ext.search.pop();
             });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchResult = urlParams.get('search'); // Ambil ID dari URL
+
+            if (searchResult) {
+                // Filter DataTables untuk menampilkan hanya data yang sesuai
+                datatable.search(searchResult).draw();
+
+                // Tunggu sebentar agar filtering selesai, lalu cari row yang sesuai
+                setTimeout(() => {
+                    const row = document.querySelector(`#table-tipe-barang tbody tr[id="${searchResult}"]`);
+                    if (row) {
+                        window.scrollTo({
+                            top: row.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+
+                        row.classList.add('table-warning');
+                        setTimeout(() => row.classList.remove('table-warning'), 3000);
+                    }
+                }, 500);
+            }
         }, 100);
     });
-    </script>
+</script>
 @endsection
