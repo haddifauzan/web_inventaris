@@ -44,8 +44,36 @@
                                             <td>{{ $result['title'] }}</td>
                                             <td>{{ $result['description'] }}</td>
                                             <td>
-                                                @if($result['route'])
-                                                    <a href="{{ route($result['route'], $result['route_params']) }}" class="btn btn-sm btn-primary">View</a>
+                                                @php
+                                                    $url = '';
+                                                    if ($result['category'] === 'barang') {
+                                                        if (str_contains($result['type'], 'Komputer')) {
+                                                            $url = url('/komputer') . '?search=' . $result['route_params']['serial'];
+                                                        } elseif (str_contains($result['type'], 'Tablet')) {
+                                                            $url = url('/tablet') . '?search=' . $result['route_params']['serial'];
+                                                        } elseif (str_contains($result['type'], 'Switch')) {
+                                                            $url = url('/switch') . '?search=' . $result['route_params']['serial'];
+                                                        }
+                                                    } elseif ($result['category'] === 'departemen') {
+                                                        $url = url('/departemen') . '?search=' . $result['route_params']['departemen'];
+                                                    } elseif ($result['category'] === 'lokasi') {
+                                                        $url = url('/lokasi') . '?search=' . $result['route_params']['lokasi'];
+                                                    } elseif ($result['category'] === 'ip') {
+                                                        $url = url('/ip-address/' . $result['route_params']['idIpHost'] . '/detail') . '?search=' . $result['route_params']['ipAddress'];
+                                                    } elseif ($result['category'] === 'tipebarang') {
+                                                        $url = url('/tipe-barang') . '?search=' . $result['route_params']['tipeBarang'];
+                                                    } elseif (in_array($result['category'], ['menuaktif', 'maintenance'])) {
+                                                        if (str_contains($result['type'], 'Komputer') || str_contains($result['description'], 'Jenis: Komputer')) {
+                                                            $url = url('/komputer/aktif');
+                                                        } elseif (str_contains($result['type'], 'Tablet') || str_contains($result['description'], 'Jenis: Tablet')) {
+                                                            $url = url('/tablet/aktif');
+                                                        } elseif (str_contains($result['type'], 'Switch') || str_contains($result['description'], 'Jenis: Switch')) {
+                                                            $url = url('/switch/aktif');
+                                                        }
+                                                    }
+                                                @endphp
+                                                @if($url)
+                                                    <a href="{{ $url }}" class="btn btn-sm btn-primary">View</a>
                                                 @else
                                                     <span class="text-muted">No action</span>
                                                 @endif

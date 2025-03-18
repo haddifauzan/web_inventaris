@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             } else if (result.type.includes('Tablet') || result.description.includes('Jenis: Tablet')) {
                                 url += '/tablet/aktif';
                             } else if (result.type.includes('Switch') || result.description.includes('Jenis: Switch')) {
-                                url += '/switch/switch';
+                                url += '/switch/aktif';
                             }
                         }
 
