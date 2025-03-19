@@ -16,6 +16,7 @@ use App\Http\Controllers\SwitchController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\DashboardController as UserDashboardController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ChatbotController;
 
 // Public routes
 Route::get('/', [AuthController::class, 'showLoginForm']);
@@ -43,6 +44,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/search', [SearchController::class, 'search'])->name('search');
     Route::post('/search', [SearchController::class, 'search'])->name('search.post');
+
+    // CHATBOT
+    Route::post('/chatbot/send', [ChatbotController::class, 'sendMessage'])->name('chatbot.send');
 
     // DATA MASTER
     Route::resource('lokasi', LokasiController::class);

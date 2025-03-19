@@ -50,7 +50,9 @@
                         <span class="badge bg-success">{{ $switch->status}}</span>
                     @elseif ($switch->status === 'Aktif')
                         <span class="badge bg-primary">{{ $switch->status}}</span>
-                    @else
+                    @elseif ($switch->status === 'Baru')
+                        <span class="badge bg-info">{{ $switch->status}}</span>
+                    @elseif ($switch->status === 'Pemusnahan')
                         <span class="badge bg-danger">{{ $switch->status}}</span>
                     @endif
                 </td>

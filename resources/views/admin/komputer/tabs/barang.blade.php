@@ -184,7 +184,7 @@
 
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             var statusValue = statusFilter.value.toLowerCase();
-            var statusText = data[6].toLowerCase(); // Index kolom ke-7 (mulai dari 0)
+            var statusText = data[9].toLowerCase(); // Index kolom ke-9 (mulai dari 0)
 
             return statusValue === '' || statusText.includes(statusValue);
         });

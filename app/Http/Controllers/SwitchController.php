@@ -125,7 +125,7 @@ class SwitchController extends Controller
     {
         $title = 'Tambah Switch';
         $breadcrumbs = [
-            ['url' => route('switch.index', 'baru'), 'text' => 'Switch'],
+            ['url' => route('switch.index', 'barang'), 'text' => 'Switch'],
             ['url' => '#', 'text' => 'Tambah Switch'],
         ];
 
