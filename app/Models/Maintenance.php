@@ -9,7 +9,7 @@ class Maintenance extends Model
 {
     use HasFactory;
 
-    protected $table = 'tbl_maintenance';
+    protected $table = 'tbl_maintenance'; //Khusus untuk barang switch
     protected $primaryKey = 'id_maintenance';
     public $timestamps = true;
 

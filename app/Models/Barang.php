@@ -17,7 +17,7 @@ class Barang extends Model
         'serial',        // Nomor seri unik barang
         'operating_system', // OS barang - khusus untuk Komputer
         'spesifikasi',   // Spesifikasi dalam format JSON
-        'kelayakan',     // Kelayakan barang
+        'kelayakan',     // Kelayakan barang (Khusus untuk Komputer dengan nilai 1-100)
         'tahun_perolehan', // Tahun barang diperoleh dalam format date
         'kepemilikan', // Kepemilikan barang (Inventaris, NOP)
         'status',        // Status barang (Baru, Backup, Aktif, Pemusnahan)

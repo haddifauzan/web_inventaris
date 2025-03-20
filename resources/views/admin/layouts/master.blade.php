@@ -35,6 +35,7 @@
   <link href="{{ asset('assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/vendor/datatable/datatables.min.css') }}" rel="stylesheet">
 
+  <link href="{{ asset('assets/css/style-ai.css') }}" rel="stylesheet">
   <style>
     /* Overlay Loading Screen */
     #loading-screen {
@@ -92,6 +93,74 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+
+  <!-- Tombol untuk membuka chatbot -->
+  <div>
+    <button class="btn btn-primary rounded-circle shadow-sm p-3 chat-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#chatOffcanvas" title="Chat dengan AI Assistant">
+        <i class="bi bi-chat-dots fs-4"></i>
+    </button>
+  </div>
+
+  <!-- Offcanvas Chatbot -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="chatOffcanvas" aria-labelledby="chatOffcanvasLabel">
+      <div class="offcanvas-header border-bottom">
+          <h5 class="offcanvas-title" id="chatOffcanvasLabel">
+              <i class="bi bi-robot me-2"></i> AI Assistant
+          </h5>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column p-0">
+          <div class="chat-messages flex-grow-1 p-3" id="chatContainer">
+              <div class="chat-message bot-message animate__animated animate__fadeIn">
+                  <div class="welcome-message">
+                    <p>Halo! Saya adalah AI Assistant. Saya dapat membantu Anda untuk memberikan informasi dengan perintah berikut:</p>
+                    <ul>
+                        <li>barang inventaris / pengelolaan barang</li>
+                        <li>komputer / tablet / switch</li>
+                        <li>baru / backup / aktif/ pemusnahan</li>
+                        <li>kelayakan</li>
+                        <li>barang aktif / barang backup/ pemusnahan</li>
+                        <li>lokasi barang / lokasi</li>
+                        <li>departemen</li>
+                        <li>ip / ip address</li>
+                        <li>maintenance switch / perawatan</li>
+                        <li>riwayat / os / kepemilikan</li>
+                        <li>tahun perolehan</li>
+                        <li>total barang</li>
+                    </ul>
+                    <p>Silakan ajukan pertanyaan Anda!</p>
+                    <p>Anda juga dapat mengajukan pertanyaan lain diluar informasi tersebut!!</p>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="typing-indicator px-4 py-2" id="typingIndicator">
+              <div class="typing-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+              </div>
+              <span class="ms-2">AI sedang mengetik</span>
+          </div>
+          
+          <div class="chat-input-area px-3 pt-2 border-top">
+            <div class="d-flex justify-content-between">
+                <form id="chatForm" class="flex-grow-1">
+                    <div class="input-group">
+                        <input type="text" id="userMessage" class="form-control border-end-0" placeholder="Ketik pesan Anda..." required>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <button id="refreshButton" class="btn btn-danger mx-3 mt-1 mb-3 p-2" title="Refresh Percakapan">
+          <i class="bi bi-arrow-clockwise"></i> Refresh Percakapan
+        </button>
+      </div>
+  </div>
+
   <!-- Vendor JS Files -->
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -107,7 +176,7 @@
 
   <!-- Template Main JS File -->
   <script src="{{ asset('assets/js/main.js') }}"></script>
-
+  <script src="{{ asset('assets/js/script-ai.js') }}"></script>
   <script>
     $(document).ready(function () {
       // Hilangkan loading saat halaman selesai dimuat

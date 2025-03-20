@@ -1,0 +1,174 @@
+/* Layout utama */
+.offcanvas-body {
+    position: relative;
+}
+
+.chat-messages {
+    height: calc(100% - 70px);
+    overflow-y: auto;
+    background-color: #f8f9fa;
+}
+
+.chat-input-area {
+    background-color: #fff;
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Style pesan */
+.chat-message {
+    margin-bottom: 15px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.user-message {
+    background-color: #f0f2f5;
+    color: #333;
+    margin-left: auto;
+    border-bottom-right-radius: 5px;
+}
+
+.bot-message {
+    background-color: #0d6efd;
+    color: white;
+    margin-right: auto;
+    border-bottom-left-radius: 5px;
+}
+
+/* Tombol chat */
+.chat-btn {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    z-index: 999;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.chat-btn:hover {
+    transform: scale(1.05);
+}
+
+.chat-btn i {
+    font-size: 1.5rem;
+}
+
+/* Indikator mengetik */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: #6c757d;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.typing-indicator.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.typing-dots {
+    display: inline-flex;
+    align-items: center;
+}
+
+.typing-dots span {
+    height: 8px;
+    width: 8px;
+    margin: 0 1px;
+    background-color: #6c757d;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.6;
+}
+
+.typing-dots span:nth-child(1) {
+    animation: pulse 1.5s infinite;
+}
+
+.typing-dots span:nth-child(2) {
+    animation: pulse 1.5s infinite 0.3s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation: pulse 1.5s infinite 0.6s;
+}
+
+/* Animasi */
+@keyframes pulse {
+    0% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+    100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+}
+
+/* Animasi Fade */
+.animate__animated {
+    animation-duration: 0.5s;
+}
+
+.animate__fadeIn {
+    animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Style untuk input */
+#chatForm .form-control {
+    border-radius: 20px 0 0 20px;
+    padding: 10px 16px;
+    height: auto;
+}
+
+#chatForm .btn {
+    border-radius: 0 20px 20px 0;
+    padding: 10px 16px;
+}
+
+/* Ubah warna scrollbar */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background-color: rgba(0,0,0,0.05);
+}
