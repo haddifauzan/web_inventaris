@@ -35,7 +35,7 @@ class ChatbotController extends Controller
 
         // Cek jika pertanyaan berkaitan dengan inventaris
         if (strpos($message, 'barang inventaris') !== false || strpos($message, 'pengelolaan barang') !== false) {
-            $aiMessage = "Untuk pengelolaan barang inventaris, Anda dapat melihat data barang di menu 'Inventaris'. Anda juga dapat menambah, mengedit, dan menghapus barang sesuai kebutuhan.";
+            $aiMessage = "Untuk pengelolaan barang inventaris, Anda dapat melihat data barang di menu Komputer, Switch, atau Tablet. Anda juga dapat menambah, mengedit, dan menghapus barang sesuai kebutuhan.";
         } 
         // Menampilkan data barang berdasarkan jenis (Komputer, Tablet, Switch)
         elseif (strpos($message, 'komputer') !== false || strpos($message, 'tablet') !== false || strpos($message, 'switch') !== false) {
@@ -45,7 +45,7 @@ class ChatbotController extends Controller
             elseif (strpos($message, 'switch') !== false) $jenis = 'Switch';
             
             $barang = Barang::where('jenis_barang', $jenis)->count();
-            $aiMessage = "Terdapat $barang unit $jenis dalam sistem. Anda dapat melihat detailnya di menu 'Inventaris' dengan filter jenis barang '$jenis'.";
+            $aiMessage = "Terdapat $barang unit $jenis dalam sistem. Anda dapat melihat detailnya di menu Komputer, Switch, atau Tablet.";
         }
         // Menampilkan data barang berdasarkan status (Baru, Backup, Aktif, Pemusnahan)
         elseif (strpos($message, 'baru') !== false || strpos($message, 'backup') !== false || 
@@ -57,7 +57,7 @@ class ChatbotController extends Controller
             elseif (strpos($message, 'pemusnahan') !== false) $status = 'Pemusnahan';
             
             $barang = Barang::where('status', $status)->count();
-            $aiMessage = "Terdapat $barang unit barang dengan status $status dalam sistem. Anda dapat melihat detailnya di menu 'Inventaris' dengan filter status '$status'.";
+            $aiMessage = "Terdapat $barang unit barang dengan status $status dalam sistem. Anda dapat melihat detailnya di menu Komputer, Switch, atau Tablet dengan filter status '$status'.";
         }
         // Menampilkan data barang berdasarkan kelayakan (khusus komputer)
         elseif (strpos($message, 'kelayakan') !== false) {
@@ -65,7 +65,7 @@ class ChatbotController extends Controller
                 $komputer = Barang::where('jenis_barang', 'Komputer')
                                   ->where('kelayakan', '<', 50)
                                   ->count();
-                $aiMessage = "Terdapat $komputer unit komputer dengan kelayakan di bawah 50%. Anda sebaiknya mempertimbangkan untuk mengganti atau melakukan maintenance pada unit-unit tersebut.";
+                $aiMessage = "Terdapat $komputer unit komputer dengan kelayakan di bawah 50%. Anda sebaiknya mempertimbangkan untuk memperbaiki, mengganti, atau memusnahkan pada unit-unit tersebut.";
             } elseif (strpos($message, 'baik') !== false || strpos($message, 'tinggi') !== false) {
                 $komputer = Barang::where('jenis_barang', 'Komputer')
                                   ->where('kelayakan', '>=', 80)
@@ -74,23 +74,23 @@ class ChatbotController extends Controller
             } else {
                 $rata = Barang::where('jenis_barang', 'Komputer')
                               ->avg('kelayakan');
-                $aiMessage = "Rata-rata kelayakan komputer dalam sistem adalah ".round($rata, 2)."%. Anda dapat melihat detail kelayakan di menu 'Inventaris' dengan filter jenis barang 'Komputer'.";
+                $aiMessage = "Rata-rata kelayakan komputer dalam sistem adalah ".round($rata, 2)."%. Anda dapat melihat detail kelayakan di menu barang Komputer.";
             }
         }
         // Menampilkan informasi tentang barang aktif
         elseif (strpos($message, 'barang aktif') !== false) {
             $aktif = MenuAktif::count();
-            $aiMessage = "Terdapat $aktif unit barang yang sedang aktif digunakan. Anda dapat melihat detailnya di menu 'Barang Aktif'.";
+            $aiMessage = "Terdapat $aktif unit barang yang sedang aktif digunakan. Anda dapat melihat detailnya di menu 'Barang pada Tab Aktif'.";
         }
         // Menampilkan informasi tentang barang backup
         elseif (strpos($message, 'barang backup') !== false || strpos($message, 'backup') !== false) {
             $backup = Barang::where('status', 'Backup')->count();
-            $aiMessage = "Terdapat $backup unit barang yang berstatus backup. Anda dapat melihat detailnya di menu 'Barang Backup'.";
+            $aiMessage = "Terdapat $backup unit barang yang berstatus backup. Anda dapat melihat detailnya di menu 'Barang pada Tab Backup'.";
         }
         // Menampilkan informasi tentang barang pemusnahan
         elseif (strpos($message, 'pemusnahan') !== false) {
             $pemusnahan = Barang::where('status', 'Pemusnahan')->count();
-            $aiMessage = "Terdapat $pemusnahan unit barang yang telah direkomendasikan untuk pemusnahan. Anda dapat melihat detailnya di menu 'Barang Pemusnahan'.";
+            $aiMessage = "Terdapat $pemusnahan unit barang yang telah direkomendasikan untuk pemusnahan. Anda dapat melihat detailnya di menu 'Barang pada Tab Pemusnahan'.";
         }
         // Menampilkan informasi tentang lokasi barang
         elseif (strpos($message, 'lokasi barang') !== false || strpos($message, 'lokasi') !== false) {
@@ -101,7 +101,7 @@ class ChatbotController extends Controller
                     $aiMessage .= "- {$lok->nama_lokasi}: {$lok->jumlah_barang} unit barang\n";
                 }
             }
-            $aiMessage .= "Anda dapat melihat detail lokasi barang di menu 'Lokasi'.";
+            $aiMessage .= "Anda dapat melihat detail lokasi barang di menu 'Data Master -> Lokasi'.";
         }
         // Menampilkan informasi tentang departemen
         elseif (strpos($message, 'departemen') !== false) {
@@ -112,7 +112,7 @@ class ChatbotController extends Controller
                     $aiMessage .= "- {$dept->nama_departemen}: {$dept->jumlah_barang} unit barang\n";
                 }
             }
-            $aiMessage .= "Anda dapat melihat detail departemen di menu 'Departemen'.";
+            $aiMessage .= "Anda dapat melihat detail departemen di menu 'Data Master -> Departemen'.";
         }
         // Menampilkan informasi tentang IP Address
         elseif (strpos($message, 'ip') !== false || strpos($message, 'ip address') !== false) {
@@ -126,7 +126,7 @@ class ChatbotController extends Controller
             $aiMessage .= "- Tersedia: $available alamat IP\n";
             $aiMessage .= "- Digunakan: $inUse alamat IP\n";
             $aiMessage .= "- Diblokir: $blocked alamat IP\n";
-            $aiMessage .= "Anda dapat mengelola IP Address di menu 'IP Address'.";
+            $aiMessage .= "Anda dapat mengelola IP Address di menu 'Data Master -> IP Address'.";
         }
         // Menampilkan informasi tentang maintenance switch
         elseif (strpos($message, 'maintenance') !== false || strpos($message, 'perawatan') !== false) {
@@ -137,9 +137,9 @@ class ChatbotController extends Controller
                 $aiMessage = "Informasi maintenance switch:\n";
                 $aiMessage .= "- Total maintenance: $maintenance kali\n";
                 $aiMessage .= "- Switch dengan status jaringan rusak: $switchRusak unit\n";
-                $aiMessage .= "Anda dapat melihat detail maintenance di menu 'Maintenance Switch'.";
+                $aiMessage .= "Anda dapat melihat detail maintenance di menu Switch pada Tab Barang Aktif.";
             } else {
-                $aiMessage = "Sistem mencatat maintenance untuk perangkat switch. Anda dapat melihat dan mengelola data maintenance di menu 'Maintenance'.";
+                $aiMessage = "Sistem mencatat maintenance untuk perangkat switch. Anda dapat melihat dan mengelola data maintenance di menu 'Switch pada Tab Aktif'.";
             }
         }
         // Menampilkan informasi tentang riwayat
@@ -152,7 +152,7 @@ class ChatbotController extends Controller
             $aiMessage .= "- Total catatan riwayat: $riwayat entri\n";
             $aiMessage .= "- Riwayat dengan status aktif: $aktif entri\n";
             $aiMessage .= "- Riwayat dengan status non-aktif: $nonAktif entri\n";
-            $aiMessage .= "Anda dapat melihat detail riwayat di menu 'Riwayat Barang'.";
+            $aiMessage .= "Anda dapat melihat detail riwayat di menu barang Komputer, Switch, atau Tablet pada tab 'Riwayat Penggunaan'.";
         }
         // Menampilkan informasi tentang OS (untuk komputer)
         elseif (strpos($message, 'os') !== false || strpos($message, 'operating system') !== false || strpos($message, 'sistem operasi') !== false) {
@@ -165,17 +165,17 @@ class ChatbotController extends Controller
             foreach ($osData as $os) {
                 $aiMessage .= "- {$os->operating_system}: {$os->total} unit\n";
             }
-            $aiMessage .= "Anda dapat melihat detail sistem operasi di menu 'Inventaris' dengan filter jenis barang 'Komputer'.";
+            $aiMessage .= "Anda dapat melihat detail sistem operasi di menu Komputer.";
         }
         // Menampilkan informasi tentang kepemilikan
         elseif (strpos($message, 'kepemilikan') !== false) {
             $inventaris = Barang::where('kepemilikan', 'Inventaris')->count();
             $nop = Barang::where('kepemilikan', 'NOP')->count();
             
-            $aiMessage = "Informasi kepemilikan barang:\n";
+            $aiMessage = "Informasi kepemilikan barang komputer:\n";
             $aiMessage .= "- Inventaris: $inventaris unit\n";
             $aiMessage .= "- NOP: $nop unit\n";
-            $aiMessage .= "Anda dapat melihat detail kepemilikan di menu 'Inventaris'.";
+            $aiMessage .= "Anda dapat melihat detail kepemilikan di menu komputer.";
         }
         // Menampilkan informasi tentang tahun perolehan
         elseif (strpos($message, 'tahun perolehan') !== false || strpos($message, 'tahun') !== false) {
@@ -188,7 +188,7 @@ class ChatbotController extends Controller
             foreach ($tahunData as $data) {
                 $aiMessage .= "- Tahun {$data->tahun}: {$data->total} unit\n";
             }
-            $aiMessage .= "Anda dapat melihat detail tahun perolehan di menu 'Inventaris'.";
+            $aiMessage .= "Anda dapat melihat detail tahun perolehan sesuai dengan barang yang diinginkan pada menu.";
         }
         // Menampilkan informasi tentang total barang
         elseif (strpos($message, 'total barang') !== false || strpos($message, 'jumlah barang') !== false) {
@@ -202,7 +202,7 @@ class ChatbotController extends Controller
             $aiMessage .= "- Komputer: $komputer unit\n";
             $aiMessage .= "- Tablet: $tablet unit\n";
             $aiMessage .= "- Switch: $switch unit\n";
-            $aiMessage .= "Anda dapat melihat detail barang di menu 'Inventaris'.";
+            $aiMessage .= "Anda dapat melihat detail barang di menu Komputer, Switch, atau Tablet.";
         }
         // Gunakan layanan Groq untuk pertanyaan yang tidak terkait dengan inventaris
         else {

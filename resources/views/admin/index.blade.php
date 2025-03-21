@@ -119,7 +119,7 @@
     </div>
 
     <!-- Charts Row 2 -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-3">
         <!-- Kelayakan Komputer Chart -->
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
@@ -150,7 +150,7 @@
     </div>
     
     <!-- Charts Row 3 -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-3">
         <!-- Barang per Departemen Chart -->
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
@@ -181,7 +181,7 @@
     </div>
 
     <!-- IP Address Stats Cards -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-2">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header py-2 bg-white">
@@ -234,7 +234,7 @@
     </div>
 
     <!-- Tables Row 1 -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-3">
         <!-- Barang Baru Table -->
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
@@ -245,7 +245,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sm mb-0">
+                        <table class="table table-hover table-striped table-sm small mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-3">Jenis</th>
@@ -292,7 +292,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sm mb-0">
+                        <table class="table table-hover table-striped table-sm small mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-3">Model</th>
@@ -344,7 +344,7 @@
     </div>
 
     <!-- Recent History Row -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-1">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header py-2 bg-white d-flex align-items-center justify-content-between">
@@ -354,7 +354,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sm mb-0">
+                        <table class="table table-hover table-striped table-sm small mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-3">Barang</th>
@@ -391,7 +391,7 @@
     </div>
 
     <!-- Maintenance Activity Table -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-1">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header py-2 bg-white d-flex align-items-center justify-content-between">
@@ -401,7 +401,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover table-striped table-sm mb-0">
+                        <table class="table table-hover table-striped table-sm small mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th class="ps-3">Hari/Tanggal</th>

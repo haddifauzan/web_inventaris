@@ -35,7 +35,6 @@
   <link href="{{ asset('assets/vendor/simple-datatables/style.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/vendor/datatable/datatables.min.css') }}" rel="stylesheet">
 
-  <link href="{{ asset('assets/css/style-ai.css') }}" rel="stylesheet">
   <style>
     /* Overlay Loading Screen */
     #loading-screen {
@@ -74,7 +73,7 @@
 
   <!-- Template Main CSS File -->
   <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
-
+  <link href="{{ asset('assets/css/style-ai.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -102,7 +101,7 @@
   </div>
 
   <!-- Offcanvas Chatbot -->
-  <div class="offcanvas offcanvas-end" tabindex="-1" id="chatOffcanvas" aria-labelledby="chatOffcanvasLabel">
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="chatOffcanvas" aria-labelledby="chatOffcanvasLabel" style="z-index: 99999;">
       <div class="offcanvas-header border-bottom">
           <h5 class="offcanvas-title" id="chatOffcanvasLabel">
               <i class="bi bi-robot me-2"></i> AI Assistant
@@ -155,9 +154,18 @@
                 </form>
             </div>
         </div>
-        <button id="refreshButton" class="btn btn-danger mx-3 mt-1 mb-3 p-2" title="Refresh Percakapan">
-          <i class="bi bi-arrow-clockwise"></i> Refresh Percakapan
-        </button>
+        <!-- Tombol Scroll -->
+        <div class="d-flex justify-content-center my-2">
+          <button id="scrollUpButton" class="btn btn-secondary mx-2" title="Scroll ke Atas">
+              <i class="bi bi-arrow-up"></i>
+          </button>
+          <button id="refreshButton" class="btn btn-danger w-100" title="Refresh Percakapan">
+            <i class="bi bi-arrow-clockwise"></i> Refresh Percakapan
+          </button>
+          <button id="scrollDownButton" class="btn btn-secondary mx-2" title="Scroll ke Bawah">
+              <i class="bi bi-arrow-down"></i>
+          </button>
+      </div>
       </div>
   </div>
 

@@ -155,4 +155,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener untuk tombol refresh
     refreshButton.addEventListener('click', refreshConversation);
+
+    // Event listener untuk tombol scroll ke atas
+    document.getElementById('scrollUpButton').addEventListener('click', function() {
+        chatContainer.scrollTo({
+            top: 0, // Scroll ke paling atas
+            behavior: 'smooth'
+        });
+    });
+
+    // Event listener untuk tombol scroll ke bawah
+    document.getElementById('scrollDownButton').addEventListener('click', function() {
+        chatContainer.scrollTo({
+            top: chatContainer.scrollHeight, // Scroll ke paling bawah
+            behavior: 'smooth'
+        });
+    });
 });
