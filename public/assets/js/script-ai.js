@@ -125,24 +125,37 @@ document.addEventListener('DOMContentLoaded', function() {
         chatContainer.innerHTML = ''; // Hapus semua pesan
         conversation = []; // Reset percakapan
         const welcomeMessage = `<div class="welcome-message">
-            <p>Halo! Saya adalah AI Assistant. Saya dapat membantu Anda untuk memberikan informasi dengan perintah berikut:</p>
-            <ul>
-                <li>barang inventaris / pengelolaan barang</li>
-                <li>komputer / tablet / switch</li>
-                <li>baru / backup / aktif/ pemusnahan</li>
-                <li>kelayakan</li>
-                <li>barang aktif / barang backup/ pemusnahan</li>
-                <li>lokasi barang / lokasi</li>
-                <li>departemen</li>
-                <li>ip / ip address</li>
-                <li>maintenance switch / perawatan</li>
-                <li>riwayat / os / kepemilikan</li>
-                <li>tahun perolehan</li>
-                <li>total barang</li>
-            </ul>
-            <p>Silakan ajukan pertanyaan Anda!</p>
-            <p>Anda juga dapat mengajukan pertanyaan lain diluar informasi tersebut!!</p>
-        </div>`;
+            <div class="mb-4">
+                <h5 class="mb-3">Halo! Saya adalah AI Assistant RHGIS 👋</h5>
+                <p class="mb-2">Saya dapat membantu Anda dengan informasi mengenai:</p>
+                
+                <div class="alert alert-info mb-3">
+                <strong><i class="bi bi-info-circle me-2"></i>Catatan:</strong>
+                Gunakan perintah <code>/cek</code> sebelum setiap pertanyaan
+                </div>
+
+                <div class="topics-list">
+                <h6 class="mb-2">Topik yang dapat ditanyakan:</h6>
+                <ul class="list-unstyled ms-3">
+                    <li><i class="bi bi-check2-circle me-2"></i>Barang inventaris & pengelolaan barang</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Komputer, tablet, dan switch</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Status barang (baru/backup/aktif/pemusnahan)</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Kelayakan barang</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Lokasi barang</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Informasi departemen</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>IP Address</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Maintenance dan perawatan switch</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Riwayat, OS, dan kepemilikan</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Tahun perolehan</li>
+                    <li><i class="bi bi-check2-circle me-2"></i>Total barang</li>
+                </ul>
+                </div>
+
+                <p class="mt-3 mb-0">
+                <i class="bi bi-chat-dots me-2"></i>Silakan ajukan pertanyaan Anda! Saya juga dapat membantu dengan pertanyaan di luar topik di atas.
+                </p>
+            </div>
+            </div>`;
 
         // Modifikasi fungsi addMessageToChat untuk menangani HTML
         const messageDiv = document.createElement('div');
@@ -171,4 +184,5 @@ document.addEventListener('DOMContentLoaded', function() {
             behavior: 'smooth'
         });
     });
+    
 });

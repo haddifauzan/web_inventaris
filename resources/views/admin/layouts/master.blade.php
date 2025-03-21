@@ -104,7 +104,7 @@
   <div class="offcanvas offcanvas-end" tabindex="-1" id="chatOffcanvas" aria-labelledby="chatOffcanvasLabel" style="z-index: 99999;">
       <div class="offcanvas-header border-bottom">
           <h5 class="offcanvas-title" id="chatOffcanvasLabel">
-              <i class="bi bi-robot me-2"></i> AI Assistant
+              <i class="bi bi-robot me-2"></i> AI Assistant RHGIS
           </h5>
           <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
@@ -112,23 +112,36 @@
           <div class="chat-messages flex-grow-1 p-3" id="chatContainer">
               <div class="chat-message bot-message animate__animated animate__fadeIn">
                   <div class="welcome-message">
-                    <p>Halo! Saya adalah AI Assistant. Saya dapat membantu Anda untuk memberikan informasi dengan perintah berikut:</p>
-                    <ul>
-                        <li>barang inventaris / pengelolaan barang</li>
-                        <li>komputer / tablet / switch</li>
-                        <li>baru / backup / aktif/ pemusnahan</li>
-                        <li>kelayakan</li>
-                        <li>barang aktif / barang backup/ pemusnahan</li>
-                        <li>lokasi barang / lokasi</li>
-                        <li>departemen</li>
-                        <li>ip / ip address</li>
-                        <li>maintenance switch / perawatan</li>
-                        <li>riwayat / os / kepemilikan</li>
-                        <li>tahun perolehan</li>
-                        <li>total barang</li>
-                    </ul>
-                    <p>Silakan ajukan pertanyaan Anda!</p>
-                    <p>Anda juga dapat mengajukan pertanyaan lain diluar informasi tersebut!!</p>
+                    <div class="mb-4">
+                      <h5 class="mb-3">Halo! Saya adalah AI Assistant RHGIS 👋</h5>
+                      <p class="mb-2">Saya dapat membantu Anda dengan informasi mengenai:</p>
+                      
+                      <div class="alert alert-info mb-3">
+                        <strong><i class="bi bi-info-circle me-2"></i>Catatan:</strong>
+                        Gunakan perintah <code>/cek</code> sebelum setiap pertanyaan
+                      </div>
+
+                      <div class="topics-list">
+                        <h6 class="mb-2">Topik yang dapat ditanyakan:</h6>
+                        <ul class="list-unstyled ms-3">
+                          <li><i class="bi bi-check2-circle me-2"></i>Barang inventaris & pengelolaan barang</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Komputer, tablet, dan switch</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Status barang (baru/backup/aktif/pemusnahan)</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Kelayakan barang</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Lokasi barang</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Informasi departemen</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>IP Address</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Maintenance dan perawatan switch</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Riwayat, OS, dan kepemilikan</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Tahun perolehan</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Total barang</li>
+                        </ul>
+                      </div>
+
+                      <p class="mt-3 mb-0">
+                        <i class="bi bi-chat-dots me-2"></i>Silakan ajukan pertanyaan Anda! Saya juga dapat membantu dengan pertanyaan di luar topik di atas.
+                      </p>
+                    </div>
                   </div>
               </div>
           </div>
@@ -139,16 +152,23 @@
                   <span></span>
                   <span></span>
               </div>
-              <span class="ms-2">AI sedang mengetik</span>
+              <span class="ms-2">AI RHGIS sedang mengetik</span>
           </div>
           
           <div class="chat-input-area px-3 pt-2 border-top">
             <div class="d-flex justify-content-between">
                 <form id="chatForm" class="flex-grow-1">
                     <div class="input-group">
-                        <input type="text" id="userMessage" class="form-control border-end-0" placeholder="Ketik pesan Anda..." required>
+                        <textarea id="userMessage" class="form-control border-end-0" 
+                          placeholder="Ketik pertanyaan Anda..." 
+                          required 
+                          autocomplete="off"
+                          rows="1"
+                          style="resize: none; min-height: 25px; max-height: 100px; overflow-y: auto;"
+                          onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); this.form.dispatchEvent(new Event('submit')); }"
+                        ></textarea>
                         <button class="btn btn-primary" type="submit">
-                            <i class="bi bi-send-fill"></i>
+                          <i class="bi bi-send-fill"></i>
                         </button>
                     </div>
                 </form>
