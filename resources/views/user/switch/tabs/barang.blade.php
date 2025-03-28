@@ -1,8 +1,8 @@
 <div>
     <div class="row mb-3">
         <div class="col-md-4">
-            <a href="{{ route('tablet.create') }}" class="btn btn-primary btn-sm ms-2">
-                <i class="bi bi-plus me-1"></i>Tambah Tablet
+            <a href="{{ route('switch.create') }}" class="btn btn-primary btn-sm ms-2">
+                <i class="bi bi-plus me-1"></i>Tambah Switch
             </a>
         </div>
         <div class="col-md-6"></div>
@@ -18,7 +18,7 @@
     </div>
 </div>
 <div class="table-responsive">
-    <table class="table table-sm small table-striped" id="tabletTable">
+    <table class="table table-sm small table-striped" id="switchTable">
         <thead>
             <tr>
                 <th>No</th>
@@ -32,39 +32,39 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($data as $index => $tablet)
-            <tr id="{{ $tablet->serial }}">
+            @foreach($data as $index => $switch)
+            <tr id="{{ $switch->serial }}">
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $tablet->model }}</td>
-                <td>{{ $tablet->tipe_merk }}</td>
-                <td>{{ $tablet->serial }}</td>
+                <td>{{ $switch->model }}</td>
+                <td>{{ $switch->tipe_merk }}</td>
+                <td>{{ $switch->serial }}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-primary text-white" 
-                            data-bs-toggle="modal" data-bs-target="#spesifikasiModal{{ $tablet->id_barang }}">
+                            data-bs-toggle="modal" data-bs-target="#spesifikasiModal{{ $switch->id_barang }}">
                         <i class="bi bi-eye-fill"></i>
                     </button>
                 </td>
-                <td>{{ \Carbon\Carbon::parse($tablet->tahun_perolehan)->format('M Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($switch->tahun_perolehan)->format('M Y') }}</td>
                 <td>
-                    @if ($tablet->status === 'Backup')
-                        <span class="badge bg-warning">{{ $tablet->status}}</span>
-                    @elseif ($tablet->status === 'Aktif')
-                        <span class="badge bg-primary">{{ $tablet->status}}</span>
-                    @elseif ($tablet->status === 'Baru')
-                        <span class="badge bg-success">{{ $tablet->status}}</span>
-                    @else
-                        <span class="badge bg-danger">{{ $tablet->status}}</span>
+                    @if ($switch->status === 'Backup')
+                        <span class="badge bg-success">{{ $switch->status}}</span>
+                    @elseif ($switch->status === 'Aktif')
+                        <span class="badge bg-primary">{{ $switch->status}}</span>
+                    @elseif ($switch->status === 'Baru')
+                        <span class="badge bg-info">{{ $switch->status}}</span>
+                    @elseif ($switch->status === 'Pemusnahan')
+                        <span class="badge bg-danger">{{ $switch->status}}</span>
                     @endif
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a href="{{ route('tablet.edit', $tablet->id_barang) }}" 
+                        <a href="{{ route('switch.edit', $switch->id_barang) }}" 
                            class="btn btn-warning btn-sm text-white"
                            title="Edit">
                             <i class="bi bi-pencil-fill"></i>
                         </a>
                         <button type="button" class="btn btn-danger btn-sm"
-                                data-bs-toggle="modal" data-bs-target="#hapusModal{{ $tablet->id_barang }}"
+                                data-bs-toggle="modal" data-bs-target="#hapusModal{{ $switch->id_barang }}"
                                 title="Hapus">
                             <i class="bi bi-trash-fill"></i>
                         </button>
@@ -77,9 +77,9 @@
 </div>
 
 <!-- Modal Serial -->
-@foreach($data as $index => $tablet)
+@foreach($data as $index => $switch)
     <!-- Modal Spesifikasi -->
-    <div class="modal fade" id="spesifikasiModal{{ $tablet->id_barang }}" tabindex="-1">
+    <div class="modal fade" id="spesifikasiModal{{ $switch->id_barang }}" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-md">
             <div class="modal-content">
                 <div class="modal-header">
@@ -88,8 +88,8 @@
                 </div>
                 <div class="modal-body">
                     <ul class="list-unstyled mb-0">
-                        @if(is_string($tablet->spesifikasi))
-                            @foreach(json_decode($tablet->spesifikasi, true) as $key => $value)
+                        @if(is_string($switch->spesifikasi))
+                            @foreach(json_decode($switch->spesifikasi, true) as $key => $value)
                                 <li><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</li>
                             @endforeach
                         @else
@@ -103,7 +103,7 @@
     <!-- End Modal Spesifikasi -->
 
     <!-- Modal Hapus -->
-    <div class="modal fade" id="hapusModal{{ $tablet->id_barang }}" tabindex="-1">
+    <div class="modal fade" id="hapusModal{{ $switch->id_barang }}" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -115,7 +115,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <form action="{{ route('tablet.destroy', $tablet->id_barang) }}" method="POST">
+                    <form action="{{ route('switch.destroy', $switch->id_barang) }}" method="POST">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Hapus</button>
@@ -128,7 +128,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var table = new DataTable('#tabletTable', {
+        var table = new DataTable('#switchTable', {
             searching: true,
             paging: true,
             info: true,
@@ -139,7 +139,6 @@
         });
 
         var statusFilter = document.getElementById('statusFilter');
-        var searchInput = document.getElementById('searchSerial');
 
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
             var statusValue = statusFilter.value.toLowerCase();
@@ -165,7 +164,7 @@
             if (loadingContainer) {
                 loadingContainer.classList.add('d-none');
             }
-            document.getElementById('tabletTable').style.visibility = 'visible';
+            document.getElementById('switchTable').style.visibility = 'visible';
 
             const urlParams = new URLSearchParams(window.location.search);
             const searchResult = urlParams.get('search');
@@ -174,7 +173,7 @@
                 table.search(searchResult).draw();
 
                 setTimeout(() => {
-                    const row = document.querySelector(`#tabletTable tbody tr[id="${searchResult}"]`);
+                    const row = document.querySelector(`#switchTable tbody tr[id="${searchResult}"]`);
                     if (row) {
                         window.scrollTo({
                             top: row.offsetTop - 100,

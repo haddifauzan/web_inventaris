@@ -1,17 +1,17 @@
 @extends('user.layouts.master')
-@section('title', 'Tambah tablet')
+@section('title', 'Tambah switch')
 @section('content')
 <section class="section text-sm">
     <div class="row">
         <div class="col-12">
             <div class="card p-3">
                 <div class="card-header text-dark text-center">
-                    <h2 class="text-bold mb-0">Form Tambah Tablet</h2>
+                    <h2 class="text-bold mb-0">Form Tambah Switch</h2>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('tablet.store') }}" method="POST">
+                    <form action="{{ route('switch.store') }}" method="POST">
                         @csrf
-                        <input type="hidden" name="jenis_barang" value="Tablet">
+                        <input type="hidden" name="jenis_barang" value="Switch">
 
                         @if(session('error'))
                             <div class="alert alert-danger">{{ session('error') }}</div>
@@ -50,10 +50,10 @@
                         <div class="mt-4 mb-3">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label col-form-label-sm">Serial Number Tablet <span class="text-danger">*</span></label>
+                                    <label class="form-label col-form-label-sm">Serial Number Switch <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control form-control-sm @error('serial') is-invalid @enderror"
                                            name="serial" value="{{ old('serial') }}"
-                                           placeholder="Masukkan serial number tablet">
+                                           placeholder="Masukkan serial number switch">
                                     @error('serial')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -97,11 +97,11 @@
                                     <div class="d-flex gap-2 mb-3">
                                         <input type="text" class="form-control form-control-sm" 
                                                name="spesifikasi_keys[]" 
-                                               value="Processor"
+                                               value="Port Count"
                                                placeholder="Nama Spesifikasi">
                                         <input type="text" class="form-control form-control-sm" 
                                                name="spesifikasi_values[]" 
-                                               value="{{old('spesifikasi.processor')}}"
+                                               value="{{old('spesifikasi.Port Count')}}"
                                                placeholder="Nilai Spesifikasi">
                                         <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
                                             <i class="bi bi-trash"></i>
@@ -111,7 +111,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3">  
                             <label class="form-label col-form-label-sm">Keterangan</label>
                             <textarea class="form-control form-control-sm @error('keterangan') is-invalid @enderror"
                                       name="keterangan" rows="3"
@@ -122,7 +122,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <a href="{{ route('tablet.index') }}" class="btn btn-secondary btn-sm me-2">
+                            <a href="{{ route('switch.index') }}" class="btn btn-secondary btn-sm me-2">
                                 <i class="bi bi-arrow-left me-1"></i>Kembali
                             </a>
                             <button type="reset" class="btn btn-danger btn-sm me-2">
@@ -166,9 +166,8 @@
     
         // Default spesifikasi fields
         const defaultSpesifikasi = {
-            'Processor': '',
-            'RAM': '',
-            'Storage': ''
+            'Port Count': '',
+            'Speed': ''
         };
     
         // Initialize with default fields
@@ -200,7 +199,7 @@
                 return;
             }
             
-            fetch(`/api/tipe-barang/tablet/${tipeBarangId}`)
+            fetch(`/api/tipe-barang/switch/${tipeBarangId}`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.success && result.data) {

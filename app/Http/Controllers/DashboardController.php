@@ -75,9 +75,11 @@ class DashboardController extends Controller
         
         $barangPerLokasiData = $lokasiData->pluck('total')->implode(',');
         
-        // Equipment by department data (for chart)
+        // Equipment by department data (for chart) - Computers only
         $departemenData = DB::table('tbl_menu_aktif')
             ->join('tbl_departemen', 'tbl_menu_aktif.id_departemen', '=', 'tbl_departemen.id_departemen')
+            ->join('tbl_barang', 'tbl_menu_aktif.id_barang', '=', 'tbl_barang.id_barang')
+            ->where('tbl_barang.jenis_barang', 'Komputer')
             ->select('tbl_departemen.nama_departemen', DB::raw('count(*) as total'))
             ->groupBy('tbl_departemen.nama_departemen')
             ->orderBy('total', 'desc')

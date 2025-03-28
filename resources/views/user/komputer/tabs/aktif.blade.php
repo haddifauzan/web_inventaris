@@ -1,33 +1,109 @@
-<div class="mb-3 p-0 m-0">
-    <div class="row align-items-center">
-        <!-- Export Button on the Left -->
-        <div class="col-md-3 mb-3">
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exportModal">
-                <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
-            </button>
-        </div>
-        
-        <!-- Spacer Column -->
-        <div class="col-md-5"></div>
-        
-        <!-- Filter on the Right -->
-        <div class="col-md-4 mb-3">
-            <form method="GET" action="{{ route('komputer.index', ['tab' => 'aktif']) }}" class="d-flex" id="filterForm">
-            <select name="lokasi_id" class="form-select form-select-sm me-2" onchange="this.form.submit()">
-                <option value="">-- Semua Lokasi --</option>
-                @foreach($lokasi as $lok)
-                <option value="{{ $lok->id_lokasi }}" {{ request('lokasi_id') == $lok->id_lokasi ? 'selected' : '' }}>
-                    {{ $lok->nama_lokasi }}
-                </option>
-                @endforeach
-            </select>
-            <a href="{{route('komputer.index', ['tab' => 'aktif'])}}" class="btn btn-danger btn-sm me-1 d-flex justify-content-center align-items-center">
-                <i class="bi bi-arrow-clockwise"></i>
-            </a>
-            </form>
+<div>
+    <div class="row">
+        <div class="card-body">        
+            <div class="card-body border-bottom col-md-12 mb-2">
+                <form method="GET" action="{{ route('komputer.index', ['tab' => 'aktif']) }}" id="filterForm">
+                    <div class="row g-2">
+                        <!-- First Row -->
+                        <div class="col-md-3">
+                            <label for="lokasi_id" class="form-label">Lokasi</label>
+                            <select name="lokasi_id" id="lokasi_id" class="form-select form-select-sm">
+                                <option value="">Semua Lokasi</option>
+                                @foreach($lokasi as $lok)
+                                    <option value="{{ $lok->id_lokasi }}" {{ request('lokasi_id') == $lok->id_lokasi ? 'selected' : '' }}>
+                                        {{ $lok->nama_lokasi }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="departemen_id" class="form-label">Departemen</label>
+                            <select name="departemen_id" id="departemen_id" class="form-select form-select-sm">
+                                <option value="">Semua Departemen</option>
+                                @foreach($departemen as $dept)
+                                    <option value="{{ $dept->id_departemen }}" {{ request('departemen_id') == $dept->id_departemen ? 'selected' : '' }}>
+                                        {{ $dept->nama_departemen }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="os" class="form-label">Operating System</label>
+                            <select name="os" id="os" class="form-select form-select-sm">
+                                <option value="">Semua OS</option>
+                                @foreach(['Windows 7', 'Windows 8', 'Windows 10', 'Windows 11', 'Linux', 'MacOS'] as $os)
+                                    <option value="{{ $os }}" {{ request('os') == $os ? 'selected' : '' }}>{{ $os }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="model" class="form-label">Model</label>
+                            <select name="model" id="model" class="form-select form-select-sm">
+                                <option value="">Semua Model</option>
+                                <option value="PC" {{ request('model') == 'PC' ? 'selected' : '' }}>PC</option>
+                                <option value="Laptop" {{ request('model') == 'Laptop' ? 'selected' : '' }}>Laptop</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Second Row -->
+                        <div class="col-md-3">
+                            <label for="tipe_merk" class="form-label">Tipe/Merk</label>
+                            <select name="tipe_merk" id="tipe_merk" class="form-select form-select-sm">
+                                <option value="">Semua Tipe Merk</option>
+                                @foreach($tipeMerk as $merk)
+                                    <option value="{{ $merk->tipe_merk }}" {{ request('tipe_merk') == $merk->tipe_merk ? 'selected' : '' }}>
+                                        {{ $merk->tipe_merk }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="kepemilikan" class="form-label">Kepemilikan</label>
+                            <select name="kepemilikan" id="kepemilikan" class="form-select form-select-sm">
+                                <option value="">Semua Kepemilikan</option>
+                                <option value="Inventaris" {{ request('kepemilikan') == 'Inventaris' ? 'selected' : '' }}>Inventaris</option>
+                                <option value="MIS" {{ request('kepemilikan') == 'MIS' ? 'selected' : '' }}>MIS</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
+                            <select name="tahun_perolehan" id="tahun_perolehan" class="form-select form-select-sm">
+                                <option value="">Semua Tahun</option>
+                                @for($year = date('Y'); $year >= 2000; $year--)
+                                    <option value="{{ $year }}" {{ request('tahun_perolehan') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2 d-flex align-items-end gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                                <i class="bi bi-search me-1"></i> Filter
+                            </button>
+                            <a href="{{ route('komputer.index', ['tab' => 'aktif']) }}" class="btn btn-danger btn-sm">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Export Button -->
+<div class="col-md-2 mb-3 ms-3">
+    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#exportModal">
+        <i class="bi bi-file-earmark-spreadsheet"></i> Export Excel
+    </button>
+</div>
+
 <div class="table-responsive">
     <table class="table table-sm small table-striped" id="activeTable">
         <thead>
@@ -90,11 +166,9 @@
                     <div class="btn-group">
                         <button type="button" title="Backup" class="btn btn-success btn-sm text-white d-flex" data-bs-toggle="modal" data-bs-target="#backupModal{{ $computer->id_barang }}">
                             <i class="bi bi-arrow-counterclockwise me-1"></i>
-                            Backup
                         </button>
                         <button type="button" title="Musnahkan" class="btn btn-danger btn-sm d-flex" data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $computer->id_barang }}">
                             <i class="bi bi-trash-fill text-white me-1"></i>
-                            Musnah
                         </button>
                     </div>
 

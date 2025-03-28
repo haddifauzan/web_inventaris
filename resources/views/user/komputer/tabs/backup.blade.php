@@ -1,8 +1,3 @@
-<div class="mb-3">
-    <a href="{{ route('komputer.create') }}" class="btn btn-primary btn-sm ms-2">
-        <i class="bi bi-plus me-1"></i>Tambah Komputer
-    </a>
-</div>
 <div class="table-responsive">
     <table class="table table-sm small table-striped" id="backupTable">
         <thead>
@@ -14,7 +9,6 @@
                 <th>Serial</th>
                 <th>Kepemilikan</th>
                 <th>Tahun</th>
-                <th class="text-start">Kelayakan</th>
                 <th>Keterangan</th>
                 <th>Aksi</th>
             </tr>
@@ -42,23 +36,6 @@
                     @endif
                 </td>
                 <td>{{ \Carbon\Carbon::parse($komputer->tahun_perolehan)->format('M Y') }}</td>
-                <td>
-                    <div class="progress" style="height: 12px; width: 100px;">
-                        <div 
-                            class="progress-bar 
-                                {{ 
-                                    $komputer->kelayakan >= 75 ? 'bg-success' :
-                                    ($komputer->kelayakan >= 50 ? 'bg-warning' : 'bg-danger')
-                                }}"
-                            role="progressbar" 
-                            aria-valuenow="{{ $komputer->kelayakan ?? 0 }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="100"
-                            style="width: {{ $komputer->kelayakan ?? 0 }}%">
-                            {{ $komputer->kelayakan ?? '-' }}%
-                        </div>
-                    </div>
-                </td>
                 <td data-bs-toggle="tooltip" data-bs-placement="top"
                     title="{{ $komputer->menuBackup->keterangan ?? "-" }}">
                     {{ Str::limit($komputer->menuBackup->keterangan ?? "-", 50) }}
@@ -631,5 +608,3 @@
     });
 </script>
 @endforeach
-
-

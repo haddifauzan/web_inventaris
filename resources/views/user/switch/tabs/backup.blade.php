@@ -12,26 +12,26 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($data as $index => $tablet)
+            @foreach($data as $index => $switch)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $tablet->model }}</td>
-                <td>{{ $tablet->tipe_merk }}</td>
-                <td>{{ $tablet->serial }}</td>
-                <td>{{ \Carbon\Carbon::parse($tablet->tahun_perolehan)->format('M Y') }}</td>
+                <td>{{ $switch->model }}</td>
+                <td>{{ $switch->tipe_merk }}</td>
+                <td>{{ $switch->serial }}</td>
+                <td>{{ \Carbon\Carbon::parse($switch->tahun_perolehan)->format('M Y') }}</td>
                 <td data-bs-toggle="tooltip" data-bs-placement="top"
-                    title="{{ $tablet->menuBackup->keterangan ?? "-" }}">
-                    {{ Str::limit($tablet->menuBackup->keterangan ?? "-", 50) }}
+                    title="{{ $switch->menuBackup->keterangan ?? "-" }}">
+                    {{ Str::limit($switch->menuBackup->keterangan ?? "-", 50) }}
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $tablet->id_barang }}">
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $switch->id_barang }}">
                             <i class="bi bi-check-circle"></i> Aktif
                         </button>                        
                         <button type="button" class="btn btn-danger btn-sm"
-                                data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $tablet->id_barang }}"
-                                {{ !$tablet->riwayat()->exists() ? 'disabled' : '' }}
-                                title="{{ !$tablet->riwayat()->exists() ? 'Belum ada riwayat penggunaan barang ini' : 'Musnahkan' }}">
+                                data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $switch->id_barang }}"
+                                {{ !$switch->riwayat()->exists() ? 'disabled' : '' }}
+                                title="{{ !$switch->riwayat()->exists() ? 'Belum ada riwayat penggunaan barang ini' : 'Musnahkan' }}">
                             <i class="bi bi-trash-fill"></i> Musnah
                         </button>
                     </div>
@@ -42,26 +42,52 @@
     </table>
 </div>
 
-@foreach ( $data as $index => $tablet )
+@foreach ( $data as $index => $switch )
 {{-- Modal Aktivasi --}}
-<div class="modal fade" id="aktivasiModal{{ $tablet->id_barang }}" tabindex="-1" aria-labelledby="aktivasiModalLabel{{ $tablet->id_barang }}" aria-hidden="true">
+<div class="modal fade" id="aktivasiModal{{ $switch->id_barang }}" tabindex="-1" aria-labelledby="aktivasiModalLabel{{ $switch->id_barang }}" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="aktivasiModalLabel{{ $tablet->id_barang }}">Aktivasi Tablet</h5>
+                <h5 class="modal-title" id="aktivasiModalLabel{{ $switch->id_barang }}">Aktivasi Switch</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('tablet.aktivasi', $tablet->id_barang) }}" method="POST">
+            <form action="{{ route('switch.aktivasi', $switch->id_barang) }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Model</label>
-                            <input type="text" class="form-control form-control-sm" value="{{ $tablet->model }}" disabled>
+                            <input type="text" class="form-control form-control-sm" value="{{ $switch->model }}" disabled>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Tipe/Merk</label>
-                            <input type="text" class="form-control form-control-sm" value="{{ $tablet->tipe_merk }}" disabled>
+                            <input type="text" class="form-control form-control-sm" value="{{ $switch->tipe_merk }}" disabled>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="form-label col-form-label-sm">Spesifikasi</label>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered">
+                                    @php
+                                        $spesifikasi = is_string($switch->spesifikasi) ? 
+                                            json_decode($switch->spesifikasi, true) : 
+                                            (is_array($switch->spesifikasi) ? $switch->spesifikasi : []);
+                                    @endphp
+                                    @if(count($spesifikasi) > 0)
+                                        @foreach($spesifikasi as $key => $value)
+                                        <tr>
+                                            <td style="width: 40%; font-size:0.8rem;" class="text-dark bg-light">{{ $key }}</td>
+                                            <td style="font-size:0.8rem;">{{ $value }}</td>
+                                        </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="2" style="font-size:0.8rem;"  class="text-center text-muted">Tidak ada spesifikasi</td>
+                                        </tr>
+                                    @endif
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -69,14 +95,14 @@
                             <label class="form-label col-form-label-sm">Lokasi</label>
                             <div class="select-search-container">
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" id="lokasi-search{{ $tablet->id_barang }}" 
+                                    <input type="text" class="form-control" id="lokasi-search{{ $switch->id_barang }}" 
                                            placeholder="Cari dan pilih lokasi..." autocomplete="off">
-                                    <button class="btn btn-secondary" type="button" id="clear-lokasi-search{{ $tablet->id_barang }}">
+                                    <button class="btn btn-secondary" type="button" id="clear-lokasi-search{{ $switch->id_barang }}">
                                         <i class="bi bi-x"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" name="id_lokasi" id="lokasi-value{{ $tablet->id_barang }}" required>
-                                <div class="select-search-dropdown" id="lokasi-dropdown{{ $tablet->id_barang }}">
+                                <input type="hidden" name="id_lokasi" id="lokasi-value{{ $switch->id_barang }}" required>
+                                <div class="select-search-dropdown" id="lokasi-dropdown{{ $switch->id_barang }}">
                                     @foreach($lokasi as $lok)
                                     <div class="select-search-option" data-value="{{ $lok->id_lokasi }}">
                                         {{ $lok->nama_lokasi }}
@@ -85,19 +111,18 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="col-md-6">
                             <label class="form-label col-form-label-sm">Departemen</label>
                             <div class="select-search-container">
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" id="departemen-search{{ $tablet->id_barang }}" 
+                                    <input type="text" class="form-control" id="departemen-search{{ $switch->id_barang }}" 
                                            placeholder="Cari dan pilih departemen..." autocomplete="off">
-                                    <button class="btn btn-secondary" type="button" id="clear-departemen-search{{ $tablet->id_barang }}">
+                                    <button class="btn btn-secondary" type="button" id="clear-departemen-search{{ $switch->id_barang }}">
                                         <i class="bi bi-x"></i>
                                     </button>
                                 </div>
-                                <input type="hidden" name="id_departemen" id="departemen-value{{ $tablet->id_barang }}" required>
-                                <div class="select-search-dropdown" id="departemen-dropdown{{ $tablet->id_barang }}">
+                                <input type="hidden" name="id_departemen" id="departemen-value{{ $switch->id_barang }}" required>
+                                <div class="select-search-dropdown" id="departemen-dropdown{{ $switch->id_barang }}">
                                     @foreach($departemen as $dep)
                                     <div class="select-search-option" data-value="{{ $dep->id_departemen }}">
                                         {{ $dep->nama_departemen }}
@@ -109,24 +134,41 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label col-form-label-sm">IP Address</label>
-                            <div class="ip-selection-container">
-                                <div class="input-group input-group-sm mb-2">
-                                    <input type="text" id="ip-search-input{{ $tablet->id_barang }}" class="form-control" placeholder="Cari IP Address...">
-                                    <button class="btn btn-secondary" type="button" id="clear-search{{ $tablet->id_barang }}">
-                                        <i class="bi bi-x"></i>
-                                    </button>
-                                </div>
-                                <div class="ip-list-container">
-                                    <ul id="ip-address-list{{ $tablet->id_barang }}" class="ip-list">
-                                        <li class="no-results">Pilih lokasi terlebih dahulu</li>
-                                    </ul>
-                                </div>
+                            <label class="form-label col-form-label-sm">Lokasi Switch</label>
+                            <input type="text" class="form-control form-control-sm" name="lokasi_switch" placeholder="Contoh: R.MIS, R.Server, R.RND, dsb" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label col-form-label-sm">Node Bagus</label>
+                            <input type="number" class="form-control form-control-sm node-bagus" name="node_bagus" value="{{ $switch->node_bagus ?? 0 }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label col-form-label-sm">Node Terpakai</label>
+                            <input type="number" class="form-control form-control-sm node-terpakai" name="node_terpakai" value="{{ $switch->node_terpakai ?? 0 }}" required>
+                            <div class="invalid-feedback">
+                                Node terpakai tidak boleh lebih besar dari node bagus
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label col-form-label-sm">User</label>
-                            <input type="text" class="form-control form-control-sm" name="user" placeholder="Contoh: John Doe" required>
+
+                        <script>
+                            document.querySelectorAll('.node-terpakai, .node-bagus').forEach(input => {
+                                input.addEventListener('input', function() {
+                                    const nodeBagus = parseInt(this.closest('.row').querySelector('.node-bagus').value) || 0;
+                                    const nodeTerpakai = parseInt(this.closest('.row').querySelector('.node-terpakai').value) || 0;
+                                    const nodeTerpakaiInput = this.closest('.row').querySelector('.node-terpakai');
+                                    
+                                    if (nodeTerpakai > nodeBagus) {
+                                        nodeTerpakaiInput.classList.add('is-invalid');
+                                    } else {
+                                        nodeTerpakaiInput.classList.remove('is-invalid');
+                                    }
+                                });
+                            });
+                        </script>
+                        <div class="col-md-4">
+                            <label class="form-label col-form-label-sm">Node Rusak</label>
+                            <input type="number" class="form-control form-control-sm" name="node_rusak" value="{{ $switch->node_rusak ?? 0 }}" required>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -145,14 +187,14 @@
 
 
 <!-- Modal Pemusnahan -->
-<div class="modal fade" id="pemusnahanModal{{ $tablet->id_barang }}" tabindex="-1">
+<div class="modal fade" id="pemusnahanModal{{ $switch->id_barang }}" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Pindahkan ke Pemusnahan</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('tablet.musnah', $tablet->id_barang) }}" method="POST">
+            <form action="{{ route('switch.musnah', $switch->id_barang) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="modal-body">
@@ -171,55 +213,6 @@
 </div>
 
 <style>
-    .ip-selection-container {
-        position: relative;
-    }
-
-    .ip-list-container {
-        border: 1px solid #ced4da;
-        border-radius: 5px;
-        max-height: 150px; /* Batasi tinggi agar tidak memanjang ke bawah */
-        overflow-y: auto; /* Aktifkan scroll hanya dalam batas ini */
-        background: white;
-        width: 100%;
-    }
-
-    .ip-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .ip-list li {
-        padding: 5px 10px;
-        display: flex;
-        align-items: center;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .ip-list li:last-child {
-        border-bottom: none;
-    }
-
-    .ip-host-group {
-        font-weight: bold;
-        background-color: #f8f9fa;
-        padding: 5px;
-        color: #495057;
-        cursor: default;
-    }
-
-    .ip-address-option {
-        padding-left: 15px;
-    }
-
-    .no-results {
-        padding: 10px;
-        color: #6c757d;
-        text-align: center;
-        font-style: italic;
-    }
-
     .select-search-container {
         position: relative;
     }
@@ -254,22 +247,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        @foreach($data as $tablet)
-        setupSearchSelect(
-            'lokasi-search{{ $tablet->id_barang }}',
-            'lokasi-dropdown{{ $tablet->id_barang }}',
-            'lokasi-value{{ $tablet->id_barang }}',
-            'clear-lokasi-search{{ $tablet->id_barang }}'
-        );
-        
-        setupSearchSelect(
-            'departemen-search{{ $tablet->id_barang }}',
-            'departemen-dropdown{{ $tablet->id_barang }}',
-            'departemen-value{{ $tablet->id_barang }}',
-            'clear-departemen-search{{ $tablet->id_barang }}'
-        );
-        
-        setupIpAddressHandler('{{ $tablet->id_barang }}');
+        @foreach($data as $switch)
+            setupSearchSelect(
+                'lokasi-search{{ $switch->id_barang }}',
+                'lokasi-dropdown{{ $switch->id_barang }}',
+                'lokasi-value{{ $switch->id_barang }}',
+                'clear-lokasi-search{{ $switch->id_barang }}'
+            );
+            
+            setupSearchSelect(
+                'departemen-search{{ $switch->id_barang }}',
+                'departemen-dropdown{{ $switch->id_barang }}',
+                'departemen-value{{ $switch->id_barang }}',
+                'clear-departemen-search{{ $switch->id_barang }}'
+            );
         @endforeach
         
         // Setup search select functionality
@@ -436,151 +427,6 @@
                                 this.nextElementSibling : null;
                 if (errorMsg) errorMsg.remove();
             });
-        }
-
-        // Setup IP address handling
-        function setupIpAddressHandler(id) {
-            const lokasiValue = document.getElementById(`lokasi-value${id}`);
-            const ipSearch = document.getElementById(`ip-search-input${id}`);
-            const ipList = document.getElementById(`ip-address-list${id}`);
-            const clearSearch = document.getElementById(`clear-search${id}`);
-
-            if (!lokasiValue || !ipSearch || !ipList || !clearSearch) return;
-
-            new MutationObserver(mutations => {
-                mutations.forEach(mutation => {
-                    if (mutation.attributeName === 'value') {
-                        const lokasiId = lokasiValue.value;
-                        lokasiId ? loadIpAddresses(lokasiId) : 
-                                 showNoResults('Pilih lokasi terlebih dahulu');
-                    }
-                });
-            }).observe(lokasiValue, {attributes: true});
-
-            lokasiValue.addEventListener('change', () => {
-                const lokasiId = lokasiValue.value;
-                lokasiId ? loadIpAddresses(lokasiId) : 
-                         showNoResults('Pilih lokasi terlebih dahulu');
-            });
-
-            async function loadIpAddresses(lokasiId) {
-                try {
-                    showNoResults('Memuat data IP...');
-                    const response = await fetch(`/api/lokasi/${lokasiId}/ip-addresses`);
-                    const data = await response.json();
-                    
-                    if (!data.ipHosts?.length) {
-                        showNoResults('Tidak ada IP Address tersedia');
-                        return;
-                    }
-
-                    renderIpAddresses(data.ipHosts);
-                    filterIpAddresses('');
-                } catch (error) {
-                    console.error('Error loading IP addresses:', error);
-                    showNoResults('Error loading IP addresses');
-                }
-            }
-
-            function showNoResults(message) {
-                ipList.innerHTML = `<li class="no-results">${message}</li>`;
-            }
-
-            function renderIpAddresses(ipHosts) {
-                ipList.innerHTML = '';
-                
-                ipHosts.forEach(host => {
-                    const groupHeader = createGroupHeader(host.ip_host);
-                    ipList.appendChild(groupHeader);
-
-                    const availableIps = host.ip_addresses?.filter(ip => ip.status === 'Available') || [];
-                    
-                    if (availableIps.length) {
-                        availableIps.forEach(ip => {
-                            ipList.appendChild(createIpOption(ip, id));
-                        });
-                    } else {
-                        ipList.appendChild(createNoIpMessage());
-                    }
-                });
-            }
-
-            function filterIpAddresses(searchTerm) {
-                const items = Array.from(ipList.children);
-                let visibleCount = 0;
-
-                items.forEach(item => {
-                    if (item.classList.contains('ip-address-option')) {
-                        const matches = item.textContent.toLowerCase().includes(searchTerm.toLowerCase());
-                        item.style.display = matches ? '' : 'none';
-                        if (matches) visibleCount++;
-                    } else if (item.classList.contains('ip-host-group')) {
-                        const hasVisibleChild = hasVisibleChildren(item);
-                        item.style.display = hasVisibleChild ? '' : 'none';
-                    }
-                });
-
-                if (!visibleCount) {
-                    showNoResults(searchTerm ? 
-                        'Tidak ditemukan IP Address yang sesuai' : 
-                        'Tidak ada IP Address tersedia'
-                    );
-                }
-            }
-
-            ipSearch.addEventListener('input', e => filterIpAddresses(e.target.value.trim()));
-            clearSearch.addEventListener('click', () => {
-                ipSearch.value = '';
-                filterIpAddresses('');
-                ipSearch.focus();
-            });
-            ipSearch.addEventListener('keydown', e => {
-                if (e.key === 'Enter') e.preventDefault();
-            });
-        }
-
-        function createGroupHeader(text) {
-            const header = document.createElement('li');
-            header.textContent = text;
-            header.classList.add('ip-host-group');
-            return header;
-        }
-
-        function createIpOption(ip, tabletId) {
-            const item = document.createElement('li');
-            item.classList.add('ip-address-option');
-            
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = 'ip_address';
-            radio.value = ip.id_ip;
-            radio.id = `ip-${ip.id_ip}-${tabletId}`;
-
-            const label = document.createElement('label');
-            label.htmlFor = radio.id;
-            label.textContent = ` ${ip.ip_address}`;
-            label.style.marginLeft = '10px';
-
-            item.append(radio, label);
-            return item;
-        }
-
-        function createNoIpMessage() {
-            const item = document.createElement('li');
-            item.textContent = '  Tidak ada IP tersedia';
-            item.classList.add('ip-address-option');
-            item.style.fontStyle = 'italic';
-            item.style.color = '#6c757d';
-            return item;
-        }
-
-        function hasVisibleChildren(element) {
-            let next = element.nextElementSibling;
-            while (next && next.classList.contains('ip-address-option')) {
-                if (next.style.display !== 'none') return true;
-                next = next.nextElementSibling;
-            }
-            return false;
         }
     });
 </script>

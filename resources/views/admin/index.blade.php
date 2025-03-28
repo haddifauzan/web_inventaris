@@ -151,16 +151,16 @@
     
     <!-- Charts Row 3 -->
     <div class="row g-3 mb-3">
-        <!-- Barang per Departemen Chart -->
+        <!-- Komputer per Departemen Chart -->
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-header py-2 bg-white d-flex align-items-center justify-content-between">
                     <h6 class="m-0 fw-bold text-primary">
-                        <i class="bi bi-diagram-3 me-1"></i> Barang per Departemen
+                        <i class="bi bi-diagram-3 me-1"></i> Komputer per Departemen
                     </h6>
                 </div>
                 <div class="card-body">
-                    <div id="barangPerDepartemenChart" style="height: 280px;"></div>
+                    <div id="komputerPerDepartemenChart" style="height: 280px;"></div>
                 </div>
             </div>
         </div>
@@ -659,8 +659,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     };
-    var barangPerDepartemenChart = new ApexCharts(document.querySelector("#barangPerDepartemenChart"), departemenOptions);
-    barangPerDepartemenChart.render();
+    var komputerPerDepartemenChart = new ApexCharts(document.querySelector("#komputerPerDepartemenChart"), departemenOptions);
+    komputerPerDepartemenChart.render();
 
     // Tahun Perolehan Chart
     var tahunOptions = {

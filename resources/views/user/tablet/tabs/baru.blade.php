@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table table-sm small table-striped" id="backupTable">
+    <table class="table table-sm small table-striped" id="newTable">
         <thead>
             <tr>
                 <th>No</th>
@@ -28,12 +28,6 @@
                         <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#aktivasiModal{{ $tablet->id_barang }}">
                             <i class="bi bi-check-circle"></i> Aktif
                         </button>                        
-                        <button type="button" class="btn btn-danger btn-sm"
-                                data-bs-toggle="modal" data-bs-target="#pemusnahanModal{{ $tablet->id_barang }}"
-                                {{ !$tablet->riwayat()->exists() ? 'disabled' : '' }}
-                                title="{{ !$tablet->riwayat()->exists() ? 'Belum ada riwayat penggunaan barang ini' : 'Musnahkan' }}">
-                            <i class="bi bi-trash-fill"></i> Musnah
-                        </button>
                     </div>
                 </td>
             </tr>

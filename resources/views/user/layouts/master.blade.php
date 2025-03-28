@@ -73,7 +73,7 @@
 
   <!-- Template Main CSS File -->
   <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
-
+  <link href="{{ asset('assets/css/style-ai.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -92,6 +92,102 @@
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
+
+  <!-- Tombol untuk membuka chatbot -->
+  <div>
+    <button class="btn btn-primary rounded-circle shadow-sm p-3 chat-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#chatOffcanvas" title="Chat dengan AI Assistant">
+        <i class="bi bi-chat-dots fs-4"></i>
+    </button>
+  </div>
+
+  <!-- Offcanvas Chatbot -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="chatOffcanvas" aria-labelledby="chatOffcanvasLabel" style="z-index: 99999;">
+      <div class="offcanvas-header border-bottom">
+          <h5 class="offcanvas-title" id="chatOffcanvasLabel">
+              <i class="bi bi-robot me-2"></i> AI Assistant RHGIS
+          </h5>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column p-0">
+          <div class="chat-messages flex-grow-1 p-3" id="chatContainer">
+              <div class="chat-message bot-message animate__animated animate__fadeIn">
+                  <div class="welcome-message">
+                    <div class="mb-4">
+                      <h5 class="mb-3">Halo! Saya adalah AI Assistant RHGIS 👋</h5>
+                      <p class="mb-2">Saya dapat membantu Anda dengan informasi mengenai:</p>
+                      
+                      <div class="alert alert-info mb-3">
+                        <strong><i class="bi bi-info-circle me-2"></i>Catatan:</strong>
+                        Gunakan perintah <code>/cek</code> sebelum setiap pertanyaan
+                      </div>
+
+                      <div class="topics-list">
+                        <h6 class="mb-2">Topik yang dapat ditanyakan:</h6>
+                        <ul class="list-unstyled ms-3">
+                          <li><i class="bi bi-check2-circle me-2"></i>Barang inventaris & pengelolaan barang</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Komputer, tablet, dan switch</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Status barang (baru/backup/aktif/pemusnahan)</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Lokasi barang</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Informasi departemen</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>IP Address</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Maintenance dan perawatan switch</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Riwayat, OS, dan kepemilikan</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Tahun perolehan</li>
+                          <li><i class="bi bi-check2-circle me-2"></i>Total barang</li>
+                        </ul>
+                      </div>
+
+                      <p class="mt-3 mb-0">
+                        <i class="bi bi-chat-dots me-2"></i>Silakan ajukan pertanyaan Anda! Saya juga dapat membantu dengan pertanyaan di luar topik di atas.
+                      </p>
+                    </div>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="typing-indicator px-4 py-2" id="typingIndicator">
+              <div class="typing-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+              </div>
+              <span class="ms-2">AI RHGIS sedang mengetik</span>
+          </div>
+          
+          <div class="chat-input-area px-3 pt-2 border-top">
+            <div class="d-flex justify-content-between">
+                <form id="chatForm" class="flex-grow-1">
+                    <div class="input-group">
+                        <textarea id="userMessage" class="form-control border-end-0" 
+                          placeholder="Ketik pertanyaan Anda..." 
+                          required 
+                          autocomplete="off"
+                          rows="1"
+                          style="resize: none; min-height: 25px; max-height: 100px; overflow-y: auto;"
+                          onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); this.form.dispatchEvent(new Event('submit')); }"
+                        ></textarea>
+                        <button class="btn btn-primary" type="submit">
+                          <i class="bi bi-send-fill"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Tombol Scroll -->
+        <div class="d-flex justify-content-center my-2">
+          <button id="scrollUpButton" class="btn btn-secondary mx-2" title="Scroll ke Atas">
+              <i class="bi bi-arrow-up"></i>
+          </button>
+          <button id="refreshButton" class="btn btn-danger w-100" title="Refresh Percakapan">
+            <i class="bi bi-arrow-clockwise"></i> Refresh Percakapan
+          </button>
+          <button id="scrollDownButton" class="btn btn-secondary mx-2" title="Scroll ke Bawah">
+              <i class="bi bi-arrow-down"></i>
+          </button>
+      </div>
+      </div>
+  </div>
+
   <!-- Vendor JS Files -->
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -107,7 +203,7 @@
 
   <!-- Template Main JS File -->
   <script src="{{ asset('assets/js/main.js') }}"></script>
-
+  <script src="{{ asset('assets/js/script-ai.js') }}"></script>
   <script>
     $(document).ready(function () {
       // Hilangkan loading saat halaman selesai dimuat

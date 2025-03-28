@@ -1,18 +1,18 @@
 @extends('user.layouts.master')
-@section('title', 'Edit Tablet')
+@section('title', 'Edit Switch')
 @section('content')
 <section class="section text-sm">
     <div class="row">
         <div class="col-12">
             <div class="card p-3">
                 <div class="card-header text-dark text-center">
-                    <h2 class="text-bold mb-0">Form Edit Tablet</h2>
+                    <h2 class="text-bold mb-0">Form Edit Switch</h2>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('tablet.update', $barang->id_barang) }}" method="POST">
+                    <form action="{{ route('switch.update', $barang->id_barang) }}" method="POST">
                         @csrf
                         @method('PUT')
-                        <input type="hidden" name="jenis_barang" value="Tablet">
+                        <input type="hidden" name="jenis_barang" value="Switch">
 
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -49,10 +49,10 @@
                         <div class="mt-4 mb-3">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label class="form-label col-form-label-sm">Serial Number Tablet <span class="text-danger">*</span></label>
+                                    <label class="form-label col-form-label-sm">Serial Number Switch <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control form-control-sm @error('serial') is-invalid @enderror"
                                            name="serial" value="{{ old('serial', $barang->serial ?? '') }}"
-                                           placeholder="Masukkan serial number tablet">
+                                           placeholder="Masukkan serial number switch">
                                     @error('serial')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -71,43 +71,28 @@
                                 </button>
                             </div>
                             <div id="spesifikasiContainer">
-                                @if(old('spesifikasi_keys'))
-                                    @foreach(old('spesifikasi_keys') as $key => $value)
-                                        <div class="spesifikasi-item">
-                                            <div class="d-flex gap-2 mb-3">
-                                                <input type="text" class="form-control form-control-sm"
-                                                       name="spesifikasi_keys[]"
-                                                       value="{{ $value }}"
-                                                       placeholder="Nama Spesifikasi">
-                                                <input type="text" class="form-control form-control-sm"
-                                                       name="spesifikasi_values[]"
-                                                       value="{{ old('spesifikasi_values')[$key] }}"
-                                                       placeholder="Nilai Spesifikasi">
-                                                <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
+                                @php
+                                    $spesifikasi = is_string($barang->spesifikasi) ? 
+                                        json_decode($barang->spesifikasi, true) : 
+                                        (is_array($barang->spesifikasi) ? $barang->spesifikasi : []);
+                                @endphp
+                                @foreach($spesifikasi as $key => $value)
+                                    <div class="spesifikasi-item">
+                                        <div class="d-flex gap-2 mb-3">
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="spesifikasi_keys[]" 
+                                                   value="{{$key}}"
+                                                   placeholder="Nama Spesifikasi">
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="spesifikasi_values[]" 
+                                                   value="{{$value}}"
+                                                   placeholder="Nilai Spesifikasi">
+                                            <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
-                                    @endforeach
-                                @else
-                                    @foreach(json_decode($barang->spesifikasi ?? '{"Processor":""}') as $key => $value)
-                                        <div class="spesifikasi-item">
-                                            <div class="d-flex gap-2 mb-3">
-                                                <input type="text" class="form-control form-control-sm"
-                                                       name="spesifikasi_keys[]"
-                                                       value="{{ $key }}"
-                                                       placeholder="Nama Spesifikasi">
-                                                <input type="text" class="form-control form-control-sm"
-                                                       name="spesifikasi_values[]"
-                                                       value="{{ $value }}"
-                                                       placeholder="Nilai Spesifikasi">
-                                                <button type="button" class="btn btn-danger btn-sm hapus-spesifikasi">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @endif
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
 
@@ -122,7 +107,7 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <a href="{{ route('tablet.index') }}" class="btn btn-secondary btn-sm me-2">
+                            <a href="{{ route('switch.index') }}" class="btn btn-secondary btn-sm me-2">
                                 <i class="bi bi-arrow-left me-1"></i>Kembali
                             </a>
                             <button type="submit" class="btn btn-primary btn-sm">
@@ -167,7 +152,7 @@
                 return;
             }
 
-            fetch(`/api/tipe-barang/tablet/${tipeBarangId}`)
+            fetch(`/api/tipe-barang/switch/${tipeBarangId}`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.success && result.data) {

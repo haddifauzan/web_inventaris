@@ -1,4 +1,4 @@
-@extends('admin.layouts.master')
+@extends('user.layouts.master')
 @section('title', 'Data Tablet')
 @section('content')
 
@@ -48,16 +48,20 @@
                                href="{{ route('tablet.index', 'barang') }}">Data Barang</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ $tab == 'baru' ? 'active' : '' }}" 
+                               href="{{ route('tablet.index', 'baru') }}">Barang Baru</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ $tab == 'backup' ? 'active' : '' }}" 
-                               href="{{ route('tablet.index', 'backup') }}">Menu Backup</a>
+                               href="{{ route('tablet.index', 'backup') }}">Barang Backup</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'aktif' ? 'active' : '' }}" 
-                               href="{{ route('tablet.index', 'aktif') }}">Menu Aktif</a>
+                               href="{{ route('tablet.index', 'aktif') }}">Barang Aktif</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'pemusnahan' ? 'active' : '' }}" 
-                               href="{{ route('tablet.index', 'pemusnahan') }}">Menu Pemusnahan</a>
+                               href="{{ route('tablet.index', 'pemusnahan') }}">Barang Pemusnahan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'riwayat' ? 'active' : '' }}" 
@@ -69,9 +73,10 @@
                     <div class="tab-dropdown">
                         <select class="form-select" onchange="location = this.value;">
                             <option value="{{ route('tablet.index', 'barang') }}" {{ $tab == 'barang' ? 'selected' : '' }}>Data Barang</option>
-                            <option value="{{ route('tablet.index', 'backup') }}" {{ $tab == 'backup' ? 'selected' : '' }}>Menu Backup</option>
-                            <option value="{{ route('tablet.index', 'aktif') }}" {{ $tab == 'aktif' ? 'selected' : '' }}>Menu Aktif</option>
-                            <option value="{{ route('tablet.index', 'pemusnahan') }}" {{ $tab == 'pemusnahan' ? 'selected' : '' }}>Menu Pemusnahan</option>
+                            <option value="{{ route('tablet.index', 'baru') }}" {{ $tab == 'baru' ? 'selected' : '' }}>Barang Baru</option>
+                            <option value="{{ route('tablet.index', 'backup') }}" {{ $tab == 'backup' ? 'selected' : '' }}>Barang Backup</option>
+                            <option value="{{ route('tablet.index', 'aktif') }}" {{ $tab == 'aktif' ? 'selected' : '' }}>Barang Aktif</option>
+                            <option value="{{ route('tablet.index', 'pemusnahan') }}" {{ $tab == 'pemusnahan' ? 'selected' : '' }}>Barang Pemusnahan</option>
                             <option value="{{ route('tablet.index', 'riwayat') }}" {{ $tab == 'riwayat' ? 'selected' : '' }}>Riwayat Penggunaan</option>
                         </select>
                     </div>
@@ -86,7 +91,7 @@
                     <!-- Konten Tabs -->
                     <div id="table-container" class="tab-content mt-3" style="display: none;">
                         <div class="tab-pane fade show active">
-                            @include("admin.tablet.tabs.$tab", ['data' => $data])
+                            @include("user.tablet.tabs.$tab", ['data' => $data])
                         </div>
                     </div>
 
@@ -101,6 +106,7 @@
         const tables = [
                 { id: 'activeTable' },
                 { id: 'backupTable' },
+                { id: 'newTable' },
                 { id: 'historyTable' },
                 @foreach($data as $barang)
                 { id: 'historyDetailTable{{ $barang->id_barang }}' },

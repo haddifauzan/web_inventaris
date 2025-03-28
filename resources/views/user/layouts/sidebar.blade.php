@@ -13,21 +13,21 @@
       <li class="nav-heading">Inventaris Komputer</li>
       
       <li class="nav-item">
-          <a class="nav-link {{ request()->routeIs('komputer.index') || request()->routeIs('komputer.edit') || request()->routeIs('komputer.create') ? '' : 'collapsed' }}" href="{{ route('komputer.index') }}">
-              <i class="bi bi-pc-display" style="font-size: 14px;"></i>
-              <span class="ms-1">Komputer</span>
-          </a>
-      </li>
-      
-      <li class="nav-item">
-        <a class="nav-link {{ request()->routeIs('tablet.index') || request()->routeIs('tablet.edit') || request()->routeIs('tablet.create')? '' : 'collapsed' }}" href="{{ route('tablet.index') }}">
-            <i class="bi bi-tablet" style="font-size: 14px;"></i>
-            <span class="ms-1">Tablet</span>
+        <a class="nav-link {{ request()->routeIs('komputer.index') || request()->routeIs('komputer.edit') || request()->routeIs('komputer.create') ? '' : 'collapsed' }}" href="{{ route('komputer.index') }}">
+            <i class="bi bi-pc-display" style="font-size: 14px;"></i>
+            <span class="ms-1">Komputer</span>
         </a>
       </li>
       
       <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
+          <a class="nav-link {{ request()->routeIs('tablet.index') || request()->routeIs('tablet.edit') || request()->routeIs('tablet.create')? '' : 'collapsed' }}" href="{{ route('tablet.index') }}">
+              <i class="bi bi-tablet" style="font-size: 14px;"></i>
+              <span class="ms-1">Tablet</span>
+          </a>
+      </li>
+      
+      <li class="nav-item">
+          <a class="nav-link {{ request()->routeIs('switch.index') || request()->routeIs('switch.edit') || request()->routeIs('switch.create')? '' : 'collapsed' }}" href="{{ route('switch.index') }}">
               <i class="bi bi-router" style="font-size: 14px;"></i>
               <span class="ms-1">Switch</span>
           </a>

@@ -1,21 +1,24 @@
 <div>
-    <div class="row">
-        <div class="col-md-8"></div>
+    <div class="row mb-3">
         <div class="col-md-4">
-            <div class="input-group">
-                <span class="input-group-text" id="basic-addon1">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" id="searchSerial" class="form-control" placeholder="Cari Serial CPU/Monitor...">
-                <button class="btn btn-secondary clear-search" type="button" data-target="searchSerial">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
+            <a href="{{ route('komputer.create') }}" class="btn btn-primary btn-sm ms-2">
+                <i class="bi bi-plus me-1"></i>Tambah Komputer
+            </a>
+        </div>
+        <div class="col-md-6"></div>
+        <div class="col-md-2">
+            <select id="statusFilter" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Backup">Backup</option>
+                <option value="Baru">Baru</option>
+                <option value="Pemusnahan">Pemusnahan</option>
+            </select>
         </div>
     </div>
 </div>
 <div class="table-responsive">
-    <table class="table table-sm small table-striped" id="barangTable">
+    <table class="table table-sm small table-striped" id="komputerTable">
         <thead>
             <tr>
                 <th>No</th>
@@ -35,7 +38,7 @@
         </div>
         <tbody>
             @foreach($data as $index => $komputer)
-            <tr>
+            <tr id="{{ json_decode($komputer->serial, true)['cpu'] ?? '' }}">
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $komputer->model }}</td>
                 <td>{{ $komputer->tipe_merk }}</td>
@@ -67,9 +70,11 @@
                 <td>{{ \Carbon\Carbon::parse($komputer->tahun_perolehan)->format('M Y') }}</td>
                 <td>
                     @if ($komputer->status === 'Backup')
-                        <span class="badge bg-success">{{ $komputer->status}}</span>
+                        <span class="badge bg-warning">{{ $komputer->status}}</span>
                     @elseif ($komputer->status === 'Aktif')
                         <span class="badge bg-primary">{{ $komputer->status}}</span>
+                    @elseif ($komputer->status === 'Baru')
+                        <span class="badge bg-success">{{ $komputer->status}}</span>
                     @else
                         <span class="badge bg-danger">{{ $komputer->status}}</span>
                     @endif
@@ -147,57 +152,63 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var table = new DataTable('#barangTable', {
-            searching: false,  // Nonaktifkan search box
-            paging: true,      // Mengaktifkan pagination
-            info: true,        // Menampilkan informasi jumlah data
-            ordering: false     // Mengaktifkan fitur pengurutan
+        var table = new DataTable('#komputerTable', {
+            searching: true,
+            paging: true,
+            info: true,
+            ordering: false,
+            language: {
+            searchPlaceholder: "Cari Serial..."
+            }
         });
 
-        // Fungsi pencarian berdasarkan serial CPU atau Monitor
-        document.getElementById('searchSerial').addEventListener('keyup', function() {
-            var searchTerm = this.value.toLowerCase();
-            var rows = document.querySelectorAll('#barangTable tbody tr');
-            var noDataMessage = document.getElementById('noDataMessage');
-            var foundAny = false;
+        var statusFilter = document.getElementById('statusFilter');
 
-            rows.forEach(function(row) {
-                // Ambil konten dari kolom serial (kolom ke-5)
-                var serialContent = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
-                // Cek apakah konten serial mengandung searchTerm
-                var found = serialContent.includes(searchTerm);
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var statusValue = statusFilter.value.toLowerCase();
+            var statusText = data[9].toLowerCase(); // Index kolom ke-9 (mulai dari 0)
 
-                // Tampilkan atau sembunyikan baris berdasarkan hasil pencarian
-                row.style.display = (found || searchTerm === '') ? '' : 'none';
-                if (found) {
-                    foundAny = true; // Set foundAny to true if at least one row is found
-                }
-            });
-
-            // Tampilkan atau sembunyikan pesan "Data tidak ditemukan"
-            noDataMessage.style.display = foundAny ? 'none' : 'block';
-
-            updateRowNumbers();
+            return statusValue === '' || statusText.includes(statusValue);
         });
 
-        // Fungsi untuk memperbarui nomor urut
-        function updateRowNumbers() {
-            var visibleIndex = 1;
-            document.querySelectorAll('#barangTable tbody tr').forEach(function(row) {
-                if (row.style.display !== 'none') {
-                    row.querySelector('td:first-child').textContent = visibleIndex++;
-                }
-            });
-        }
+        statusFilter.addEventListener('change', function() {
+            table.draw();
+        });
 
-        // Tombol clear search
         document.querySelectorAll('.clear-search').forEach(function(button) {
             button.addEventListener('click', function() {
-                var targetId = this.getAttribute('data-target');
-                var input = document.getElementById(targetId);
-                input.value = '';
-                input.dispatchEvent(new Event('keyup'));
+                searchInput.value = '';
+                table.search('').draw();
             });
         });
+
+        const loadingContainer = document.getElementById('loading-container');
+
+        setTimeout(() => {
+            if (loadingContainer) {
+                loadingContainer.classList.add('d-none');
+            }
+            document.getElementById('komputerTable').style.visibility = 'visible';
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchResult = urlParams.get('search');
+
+            if (searchResult) {
+                table.search(searchResult).draw();
+
+                setTimeout(() => {
+                    const row = document.querySelector(`#komputerTable tbody tr[id="${searchResult}"]`);
+                    if (row) {
+                        window.scrollTo({
+                            top: row.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+
+                        row.classList.add('table-warning');
+                        setTimeout(() => row.classList.remove('table-warning'), 3000);
+                    }
+                }, 500);
+            }
+        }, 100);
     });
 </script>

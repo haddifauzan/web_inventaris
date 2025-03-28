@@ -1,5 +1,5 @@
 @extends('user.layouts.master')
-@section('title', 'Data Komputer')
+@section('title', 'Data Switch')
 @section('content')
 
 <style>
@@ -44,42 +44,42 @@
                 <div class="card-body">
                     <!-- Tabs dengan Route -->
                     <!-- Tabs untuk Desktop -->
-                    <ul class="nav nav-tabs" id="computerTabs" role="tablist">
+                    <ul class="nav nav-tabs" id="switchTabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'barang' ? 'active' : '' }}" 
-                            href="{{ route('komputer.index', 'barang') }}">Data Barang</a>
+                            href="{{ route('switch.index', 'barang') }}">Data Barang</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'baru' ? 'active' : '' }}" 
-                            href="{{ route('komputer.index', 'baru') }}">Barang Baru</a>
+                            href="{{ route('switch.index', 'baru') }}">Barang Baru</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'backup' ? 'active' : '' }}" 
-                            href="{{ route('komputer.index', 'backup') }}">Barang Backup</a>
+                            href="{{ route('switch.index', 'backup') }}">Barang Backup</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'aktif' ? 'active' : '' }}" 
-                            href="{{ route('komputer.index', 'aktif') }}">Barang Aktif</a>
+                            href="{{ route('switch.index', 'aktif') }}">Barang Aktif</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'pemusnahan' ? 'active' : '' }}" 
-                            href="{{ route('komputer.index', 'pemusnahan') }}">Barang Pemusnahan</a>
+                            href="{{ route('switch.index', 'pemusnahan') }}">Barang Pemusnahan</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link {{ $tab == 'riwayat' ? 'active' : '' }}" 
-                            href="{{ route('komputer.index', 'riwayat') }}">Riwayat Penggunaan</a>
+                            href="{{ route('switch.index', 'riwayat') }}">Riwayat Penggunaan</a>
                         </li>
                     </ul>
 
                     <!-- Dropdown untuk Mobile -->
                     <div class="tab-dropdown">
                         <select class="form-select" onchange="location = this.value;">
-                            <option value="{{ route('komputer.index', 'barang') }}" {{ $tab == 'barang' ? 'selected' : '' }}>Data Barang</option>
-                            <option value="{{ route('komputer.index', 'baru') }}" {{ $tab == 'barang' ? 'selected' : '' }}>Barang Baru</option>
-                            <option value="{{ route('komputer.index', 'backup') }}" {{ $tab == 'backup' ? 'selected' : '' }}>Barang Backup</option>
-                            <option value="{{ route('komputer.index', 'aktif') }}" {{ $tab == 'aktif' ? 'selected' : '' }}>Barang Aktif</option>
-                            <option value="{{ route('komputer.index', 'pemusnahan') }}" {{ $tab == 'pemusnahan' ? 'selected' : '' }}>Barang Pemusnahan</option>
-                            <option value="{{ route('komputer.index', 'riwayat') }}" {{ $tab == 'riwayat' ? 'selected' : '' }}>Riwayat Penggunaan</option>
+                            <option value="{{ route('switch.index', 'barang') }}" {{ $tab == 'barang' ? 'selected' : '' }}>Data Barang</option>
+                            <option value="{{ route('switch.index', 'baru') }}" {{ $tab == 'baru' ? 'selected' : '' }}>Barang Baru</option>
+                            <option value="{{ route('switch.index', 'backup') }}" {{ $tab == 'backup' ? 'selected' : '' }}>Barang Backup</option>
+                            <option value="{{ route('switch.index', 'aktif') }}" {{ $tab == 'aktif' ? 'selected' : '' }}>Barang Aktif</option>
+                            <option value="{{ route('switch.index', 'pemusnahan') }}" {{ $tab == 'pemusnahan' ? 'selected' : '' }}>Barang Pemusnahan</option>
+                            <option value="{{ route('switch.index', 'riwayat') }}" {{ $tab == 'riwayat' ? 'selected' : '' }}>Riwayat Penggunaan</option>
                         </select>
                     </div>
                   
@@ -94,7 +94,7 @@
                     <!-- Konten Tabs -->
                     <div id="table-container" class="tab-content mt-3" style="display: none;">
                         <div class="tab-pane fade show active">
-                            @include("user.komputer.tabs.$tab", ['data' => $data])
+                            @include("user.switch.tabs.$tab", ['data' => $data])
                         </div>
                     </div>
 
