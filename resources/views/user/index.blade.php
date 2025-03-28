@@ -1,6 +1,6 @@
 @extends('user.layouts.master')
 
-@section('title', 'Admin Dashboard')
+@section('title', 'User Dashboard')
 
 @section('content')
 <div class="container-fluid py-3">
