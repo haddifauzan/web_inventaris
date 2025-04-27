@@ -299,44 +299,36 @@ class SwitchController extends Controller
             
             $barang->update(['status' => 'Aktif']);
             
-            // Cek apakah switch sudah pernah diaktivasi sebelumnya
-            $existingActivation = Maintenance::where('id_barang', $id)->exists();
-
-            if (!$existingActivation) {
-                // Jika belum pernah diaktivasi, gunakan input dari form
-                $node_terpakai = $request->node_terpakai;
-                $node_bagus = $request->node_bagus;
-                $node_rusak = $request->node_rusak;
-            } else {
-                // Jika sudah pernah diaktivasi, ambil data dari maintenance terakhir
-                $maintenance = Maintenance::whereHas('barang', function ($query) use ($id) {
-                    $query->where('id_barang', $id);
-                })->latest()->first();
-                
-                $node_terpakai = $maintenance->node_terpakai ?? 0;
-                $node_bagus = $maintenance->node_bagus ?? 0;
-                $node_rusak = $maintenance->node_rusak ?? 0;
-            }
-
             // Simpan ke Menu Aktif
             $menuAktif = MenuAktif::create([
                 'id_barang' => $id,
                 'id_lokasi' => $request->id_lokasi,
                 'id_departemen' => $request->id_departemen,
-                'node_terpakai' => $node_terpakai,
-                'node_bagus' => $node_bagus,
-                'node_rusak' => $node_rusak,
+                'node_terpakai' => $request->node_terpakai,
+                'node_bagus' => $request->node_bagus,
+                'node_rusak' => $request->node_rusak,
                 'keterangan' => $request->keterangan
             ]);
 
-            // Jika baru pertama kali diaktivasi, simpan ke tbl_maintenance
-            if (!$existingActivation) {
+            // Simpan ke tbl_maintenance
+            $maintenance = Maintenance::whereHas('barang', function ($query) use ($id) {
+                $query->where('id_barang', $id);
+            })->latest()->first();
+
+            if ($maintenance) {
+                $maintenance->update([
+                    'node_terpakai' => $request->node_terpakai,
+                    'node_bagus' => $request->node_bagus,
+                    'node_rusak' => $request->node_rusak,
+                    'lokasi_switch' => $request->lokasi_switch,
+                ]);
+            } else {
                 Maintenance::create([
                     'id_barang' => $id,
                     'status_net' => 'OK',
-                    'node_terpakai' => $node_terpakai,
-                    'node_bagus' => $node_bagus,
-                    'node_rusak' => $node_rusak,
+                    'node_terpakai' => $request->node_terpakai,
+                    'node_bagus' => $request->node_bagus,
+                    'node_rusak' => $request->node_rusak,
                     'lokasi_switch' => $request->lokasi_switch,
                 ]);
             }
