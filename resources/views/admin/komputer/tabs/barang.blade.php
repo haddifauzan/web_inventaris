@@ -215,7 +215,7 @@
                 table.search(searchResult).draw();
 
                 setTimeout(() => {
-                    const row = document.querySelector(`#komputerTable tbody tr[id="${searchResult}"]`);
+                    const row = document.querySelector(#komputerTable tbody tr[id="${searchResult}"]);
                     if (row) {
                         window.scrollTo({
                             top: row.offsetTop - 100,
