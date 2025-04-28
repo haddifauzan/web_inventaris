@@ -25,7 +25,14 @@ class SwitchController extends Controller
 
         switch ($tab) {
             case 'barang':
-                $query = Barang::where('jenis_barang', 'Switch')->latest('created_at');
+                $query = Barang::where('jenis_barang', 'Switch')
+                    ->latest('created_at')
+                    ->leftJoin('tbl_maintenance', 'tbl_barang.id_barang', '=', 'tbl_maintenance.id_barang')
+                    ->select('tbl_barang.*', 
+                        'tbl_maintenance.node_terpakai',
+                        'tbl_maintenance.node_bagus',
+                        'tbl_maintenance.node_rusak'
+                    );
                 break;
             case 'baru':
                 $query = Barang::where('jenis_barang', 'Switch')
@@ -295,8 +302,6 @@ class SwitchController extends Controller
                 ->whereIn('status', ['Backup', 'Baru'])
                 ->firstOrFail();
             
-            $statusAwal = $barang->status;
-            
             $barang->update(['status' => 'Aktif']);
             
             // Simpan ke Menu Aktif
@@ -349,7 +354,7 @@ class SwitchController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('switch.index', ['tab' => $statusAwal === 'Baru' ? 'baru' : 'backup'])
+                ->back()
                 ->with('success', 'Switch berhasil diaktivasi');
         } catch (\Exception $e) {
             DB::rollback();

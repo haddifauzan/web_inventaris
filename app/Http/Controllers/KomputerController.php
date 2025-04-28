@@ -340,8 +340,6 @@ class KomputerController extends Controller
                 ->where('jenis_barang', 'Komputer')
                 ->whereIn('status', ['Backup', 'Baru'])
                 ->firstOrFail();
-
-            $statusAwal = $barang->status;
             
             $barang->update([
                 'status' => 'Aktif', 
@@ -400,8 +398,8 @@ class KomputerController extends Controller
 
             DB::commit();
             return redirect()
-                ->route('komputer.index', ['tab' => $statusAwal === 'Baru' ? 'baru' : 'backup'])
-                ->with('success', 'Komputer berhasil diaktivasi');
+                ->back()
+                ->with('success', 'Switch berhasil diaktivasi');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()
