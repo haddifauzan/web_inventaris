@@ -15,6 +15,7 @@ use App\Http\Controllers\TabletController;
 use App\Http\Controllers\SwitchController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\DashboardController as UserDashboardController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ChatbotController;
 
@@ -29,17 +30,19 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function () {
     // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/tentang-aplikasi', [DashboardController::class, 'tentangAplikasi'])->name('admin.tentang-aplikasi');
 });
 
 // User Routes
 Route::prefix('user')->middleware(['auth', EnsureUser::class])->group(function () {
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])->name('user.dashboard');
+    Route::get('/tentang-aplikasi', [DashboardController::class, 'tentangAplikasi'])->name('user.tentang-aplikasi');
 });
 
 
 Route::middleware(['auth'])->group(function () {
-    
+
     Route::put('/update-credentials/{id}', [AuthController::class, 'updateCredentials'])->name('updateCredential');
 
     Route::get('/search', [SearchController::class, 'search'])->name('search');
@@ -80,6 +83,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporan/export-computer-active', [LaporanController::class, 'exportReportComputerActive'])
     ->name('laporan.export-computer-active');
 
+    Route::put('/komputer/update-teknis/{id}', [KomputerController::class, 'updateTeknis'])->name('komputer.update.teknis');
+    Route::put('/komputer/update-aktivasi/{id}', [KomputerController::class, 'updateAktivasi'])->name('komputer.update.aktivasi');
+
+
     // TABLET
     Route::get('/tablet/{tab?}', [TabletController::class, 'index'])->name('tablet.index');
     Route::get('/tablet/barang/create', [TabletController::class, 'create'])->name('tablet.create');
@@ -96,6 +103,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tablet/destroy-multiple', [TabletController::class, 'destroyMultiple'])->name('tablet.destroyMultiple');
     Route::get('/laporan/export-tablet-active', [LaporanController::class, 'exportReportTabletActive'])
     ->name('laporan.export-tablet-active');
+
+    Route::put('/tablet/update-teknis/{id}', [TabletController::class, 'updateTeknis'])->name('tablet.update.teknis');
+    Route::put('/tablet/update-aktivasi/{id}', [TabletController::class, 'updateAktivasi'])->name('tablet.update.aktivasi');
 
     // SWITCH
     Route::get('/switch/{tab?}', [SwitchController::class, 'index'])->name('switch.index');

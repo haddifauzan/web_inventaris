@@ -409,6 +409,142 @@ class KomputerController extends Controller
         }
     }
 
+    public function updateTeknis(Request $request, $id)
+    {
+        $request->validate([
+            'id_lokasi' => 'nullable|exists:tbl_lokasi,id_lokasi',
+            'id_departemen' => 'nullable|exists:tbl_departemen,id_departemen', 
+            'ip_address' => 'nullable|exists:tbl_ip_address,id_ip',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $barang = Barang::findOrFail($id);
+            $menuAktif = MenuAktif::where('id_barang', $id)->firstOrFail();
+
+            // Only handle IP changes if ip_address is present in request
+            if ($request->has('ip_address')) {
+                // If there's an existing IP address, set it back to available
+                if ($menuAktif->id_ip) {
+                    IpAddress::where('id_ip', $menuAktif->id_ip)
+                        ->update([
+                            'status' => 'Available',
+                            'id_barang' => null
+                        ]);
+                }
+
+                // If new IP is provided, update it
+                if ($request->ip_address) {
+                    IpAddress::where('id_ip', $request->ip_address)
+                        ->update([
+                            'status' => 'In Use',
+                            'id_barang' => $id
+                        ]);
+                }
+            }
+
+            // Prepare update data - only include fields that were provided
+            $updateData = [];
+            
+            if ($request->filled('id_lokasi')) {
+                $updateData['id_lokasi'] = $request->id_lokasi;
+            }
+            
+            if ($request->filled('id_departemen')) {
+                $updateData['id_departemen'] = $request->id_departemen;
+            }
+
+            if ($request->has('ip_address')) {
+                $updateData['id_ip'] = $request->ip_address;
+            }
+
+            // Update menu aktif if there are any changes
+            if (!empty($updateData)) {
+                $menuAktif->update($updateData);
+            }
+
+            DB::commit();
+            return back()->with('success', 'Data teknis berhasil diperbarui');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function updateAktivasi(Request $request, $id)
+    {
+        $request->validate([
+            'id_lokasi' => 'required|exists:tbl_lokasi,id_lokasi',
+            'id_departemen' => 'required|exists:tbl_departemen,id_departemen',
+            'ip_address' => 'nullable|exists:tbl_ip_address,id_ip',
+            'komputer_name' => 'required',
+            'user' => 'required'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $barang = Barang::findOrFail($id);
+            $menuAktif = MenuAktif::where('id_barang', $id)->firstOrFail();
+
+            // Release old IP if exists
+            if ($menuAktif->id_ip) {
+                IpAddress::where('id_ip', $menuAktif->id_ip)
+                    ->update([
+                        'status' => 'Available',
+                        'id_barang' => null
+                    ]);
+            }
+
+            // Update MenuAktif
+            $menuAktif->update([
+                'id_lokasi' => $request->id_lokasi,
+                'id_departemen' => $request->id_departemen,
+                'id_ip' => $request->ip_address,
+                'komputer_name' => $request->komputer_name,
+                'user' => $request->user,
+                'keterangan' => $request->keterangan
+            ]);
+
+            // Update IP status if new IP is provided
+            if ($request->ip_address) {
+                IpAddress::where('id_ip', $request->ip_address)
+                    ->update([
+                        'status' => 'In Use',
+                        'id_barang' => $id
+                    ]);
+            }
+
+            // Close previous riwayat
+            Riwayat::where('id_barang', $id)
+                ->whereNull('waktu_akhir')
+                ->update([
+                    'waktu_akhir' => now(),
+                    'kelayakan_akhir' => $barang->kelayakan,
+                    'status' => 'Non-Aktif'
+                ]);
+
+            // Create new riwayat
+            Riwayat::create([
+                'id_barang' => $id,
+                'id_lokasi' => $request->id_lokasi,
+                'id_departemen' => $request->id_departemen,
+                'user' => $request->user,
+                'kelayakan_awal' => $barang->kelayakan,
+                'waktu_awal' => now(),
+                'status' => 'Aktif',
+                'keterangan' => $request->keterangan
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Data aktivasi berhasil diperbarui');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal update: ' . $e->getMessage());
+        }
+    }
+
+
     public function backupToMusnah(Request $request, $id)
     {
         $request->validate([

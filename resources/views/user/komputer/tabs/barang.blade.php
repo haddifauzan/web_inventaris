@@ -27,7 +27,6 @@
                 <th>Operating Sistem</th>
                 <th>Serial</th>
                 <th>Spesifikasi</th>
-                <th class="text-start">Kelayakan</th>
                 <th>Kepemilikan</th>
                 <th>Tahun Perolehan</th>
                 <th>Status</th>
@@ -60,23 +59,6 @@
                             data-bs-toggle="modal" data-bs-target="#spesifikasiModal{{ $komputer->id_barang }}">
                         <i class="bi bi-eye-fill"></i>
                     </button>
-                </td>
-                <td>
-                    <div class="progress" style="height: 12px; width: 100px;">
-                        <div 
-                            class="progress-bar 
-                                {{ 
-                                    $komputer->kelayakan >= 75 ? 'bg-success' :
-                                    ($komputer->kelayakan >= 50 ? 'bg-warning' : 'bg-danger')
-                                }}"
-                            role="progressbar" 
-                            aria-valuenow="{{ $komputer->kelayakan ?? 0 }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="100"
-                            style="width: {{ $komputer->kelayakan ?? 0 }}%">
-                            {{ $komputer->kelayakan ?? '-' }}%
-                        </div>
-                    </div>
                 </td>
                 <td>
                     @if ($komputer->kepemilikan === 'Inventaris')

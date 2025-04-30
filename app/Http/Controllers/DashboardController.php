@@ -186,4 +186,20 @@ class DashboardController extends Controller
             
         return response()->json($maintenanceData);
     }
+
+    // Pada controller untuk halaman Tentang Aplikasi
+    public function tentangAplikasi()
+    {
+        $data = [
+            'title' => 'Tentang Aplikasi',
+            'breadcrumbs' => [
+                [
+                    'text' => 'Tentang Aplikasi',
+                    'url' => route('admin.tentang-aplikasi')
+                ]
+            ]
+        ];
+
+        return view('admin.tentang-aplikasi', $data);
+    }
 }
