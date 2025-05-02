@@ -210,6 +210,7 @@
         </div>
     </div>
 </div>
+@endforeach
 
 <style>
     .ip-selection-container {
@@ -625,4 +626,3 @@
         }
     });
 </script>
-@endforeach

@@ -331,7 +331,8 @@
       </div>
     </div>
   </div>
-
+  @endforeach
+  
   <style>
     .ip-selection-container {
         position: relative;
@@ -473,19 +474,8 @@
                 'aktivasi-ip-address-list{{ $computer->id_barang }}',
                 'aktivasi-clear-ip-search{{ $computer->id_barang }}'
             );
-            
-            // Setup IP Address current handler
-            setupIpAddressHandler(
-                'aktivasi', 
-                '{{ $computer->id_barang }}', 
-                'aktivasi-lokasi-value{{ $computer->id_barang }}',
-                'aktivasi-ip-search-input{{ $computer->id_barang }}',
-                'aktivasi-ip-address-list{{ $computer->id_barang }}',
-                'aktivasi-clear-ip-search{{ $computer->id_barang }}'
-            );
         @endforeach
         
-        // Setup search select functionality
         function setupSearchSelect(searchId, dropdownId, valueId, clearId) {
             const searchInput = document.getElementById(searchId);
             const dropdown = document.getElementById(dropdownId);
@@ -508,13 +498,10 @@
                     if (matches) visible++;
                 });
                 
-                // Tampilkan pesan jika tidak ada hasil
                 if (visible === 0) {
-                    // Hapus pesan 'tidak ada data' yang mungkin sudah ada
                     const existingNoData = dropdown.querySelector('.no-data-message');
                     if (existingNoData) existingNoData.remove();
                     
-                    // Tambahkan pesan baru
                     const noDataMsg = document.createElement('div');
                     noDataMsg.className = 'select-search-option no-data-message';
                     noDataMsg.textContent = 'Tidak ada data yang cocok';
@@ -523,7 +510,6 @@
                     noDataMsg.style.textAlign = 'center';
                     dropdown.appendChild(noDataMsg);
                 } else {
-                    // Hapus pesan 'tidak ada data' jika ada
                     const existingNoData = dropdown.querySelector('.no-data-message');
                     if (existingNoData) existingNoData.remove();
                 }
@@ -531,20 +517,17 @@
                 dropdown.classList.add('show');
             });
 
-            // Mencegah input manual dengan bantuan fungsi validasi
             searchInput.addEventListener('blur', () => {
                 setTimeout(() => {
                     if (!valueInput.value) {
-                        searchInput.value = ''; // Kosongkan input jika tidak ada nilai yang dipilih
+                        searchInput.value = '';
                     } else {
-                        // Cari opsi yang nilai ID-nya cocok dengan value yang tersimpan
                         const selectedOption = Array.from(options).find(opt => opt.dataset.value === valueInput.value);
                         if (selectedOption) {
-                            // Pastikan teks input sesuai dengan opsi yang dipilih
                             searchInput.value = selectedOption.textContent.trim();
                         }
                     }
-                }, 200); // Berikan sedikit delay agar klik pada opsi bisa diproses
+                }, 200);
             });
 
             Array.from(options).forEach(option => {
@@ -556,7 +539,6 @@
                     Array.from(options).forEach(opt => opt.classList.remove('select-search-selected'));
                     option.classList.add('select-search-selected');
                     
-                    // Hapus pesan 'tidak ada data' jika ada
                     const existingNoData = dropdown.querySelector('.no-data-message');
                     if (existingNoData) existingNoData.remove();
                     
@@ -572,7 +554,6 @@
                     option.classList.remove('select-search-selected');
                 });
                 
-                // Hapus pesan 'tidak ada data' jika ada
                 const existingNoData = dropdown.querySelector('.no-data-message');
                 if (existingNoData) existingNoData.remove();
                 
@@ -587,18 +568,15 @@
                     !clearButton.contains(target)) {
                     dropdown.classList.remove('show');
                     
-                    // Validasi setelah dropdown ditutup
                     if (!valueInput.value) {
-                        searchInput.value = ''; // Kosongkan input jika tidak ada nilai yang dipilih
+                        searchInput.value = '';
                     }
                 }
             });
 
-            // Tambahkan validasi pada form submit
             const form = searchInput.closest('form');
-            if (form && !form.querySelector('[id^="teknis"]')) {  // Only for non-teknis forms
+            if (form && !form.querySelector('[id^="teknis"]')) {
                 form.addEventListener('submit', function(e) {
-                    // Pastikan lokasi dan departemen dipilih sebelum form di-submit
                     const lokasiValue = form.querySelector(`input[name="id_lokasi"]`);
                     const depValue = form.querySelector(`input[name="id_departemen"]`);
                     
@@ -635,7 +613,6 @@
                             }
                         }
                         
-                        // Tampilkan pesan alert
                         Swal.fire({
                             icon: 'warning',
                             title: 'Perhatian',
@@ -646,7 +623,6 @@
                 });
             }
 
-            // Hapus class is-invalid saat input difokuskan
             searchInput.addEventListener('focus', function() {
                 this.classList.remove('is-invalid');
                 const errorMsg = this.nextElementSibling?.classList.contains('invalid-feedback') ? 
@@ -655,7 +631,6 @@
             });
         }
 
-        // Setup IP address handling
         function setupIpAddressHandler(prefix, id, lokasiValueId, ipSearchId, ipListId, clearSearchId) {
             const lokasiValue = document.getElementById(lokasiValueId);
             const ipSearch = document.getElementById(ipSearchId);
@@ -664,41 +639,48 @@
 
             if (!lokasiValue || !ipSearch || !ipList || !clearSearch) return;
 
-            // For teknis tab, we need to initialize with current IP
+            // Initial state - empty
+            ipList.innerHTML = '<li class="no-results">Pilih lokasi terlebih dahulu</li>';
+            ipSearch.disabled = true;
+            clearSearch.disabled = true;
+
+            // For teknis tab, initialize if location already selected
             if (prefix === 'teknis' && lokasiValue.value) {
                 loadIpAddresses(lokasiValue.value);
             }
 
-            // Add MutationObserver to lokasi value field to detect attribute changes
             const observer = new MutationObserver(mutations => {
                 mutations.forEach(mutation => {
                     if (mutation.attributeName === 'value') {
                         const lokasiId = lokasiValue.value;
-                        lokasiId ? loadIpAddresses(lokasiId) : 
-                                showNoResults('Pilih lokasi terlebih dahulu');
+                        if (lokasiId) {
+                            loadIpAddresses(lokasiId);
+                        } else {
+                            ipList.innerHTML = '<li class="no-results">Pilih lokasi terlebih dahulu</li>';
+                            ipSearch.disabled = true;
+                            clearSearch.disabled = true;
+                        }
                     }
                 });
             });
             
-            try {
-                observer.observe(lokasiValue, {attributes: true});
-            } catch (e) {
-                console.error('Failed to observe value attribute:', e);
-            }
+            observer.observe(lokasiValue, {attributes: true});
 
-            // Also listen for change events on the lokasi value field
             lokasiValue.addEventListener('change', () => {
                 const lokasiId = lokasiValue.value;
-                lokasiId ? loadIpAddresses(lokasiId) : 
-                        showNoResults('Pilih lokasi terlebih dahulu');
+                if (lokasiId) {
+                    loadIpAddresses(lokasiId);
+                } else {
+                    ipList.innerHTML = '<li class="no-results">Pilih lokasi terlebih dahulu</li>';
+                    ipSearch.disabled = true;
+                    clearSearch.disabled = true;
+                }
             });
 
-            // Setup search filtering for IP addresses
             ipSearch.addEventListener('input', function() {
                 filterIpAddresses(this.value.toLowerCase());
             });
 
-            // Clear search button
             clearSearch.addEventListener('click', function() {
                 ipSearch.value = '';
                 filterIpAddresses('');
@@ -706,47 +688,75 @@
 
             async function loadIpAddresses(lokasiId) {
                 try {
-                    showNoResults('Memuat data IP...');
+                    // Show loading state
+                    ipList.innerHTML = '<li class="no-results">Memuat data IP...</li>';
+                    ipSearch.disabled = true;
+                    clearSearch.disabled = true;
+                    
                     const response = await fetch(`/api/lokasi/${lokasiId}/ip-addresses`);
-                    if (!response.ok) {
-                        throw new Error(`Network response error: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
                     const data = await response.json();
                     
                     if (!data.ipHosts?.length) {
-                        showNoResults('Tidak ada IP Address tersedia');
+                        ipList.innerHTML = '<li class="no-results">Tidak ada IP Address tersedia</li>';
                         return;
                     }
 
-                    renderIpAddresses(data.ipHosts);
+                    // Render all IP addresses first in memory
+                    const fragment = document.createDocumentFragment();
+                    
+                    data.ipHosts.forEach(host => {
+                        const groupHeader = document.createElement('li');
+                        groupHeader.textContent = host.ip_host;
+                        groupHeader.classList.add('ip-host-group');
+                        fragment.appendChild(groupHeader);
+
+                        const availableIps = host.ip_addresses?.filter(ip => ip.status === 'Available') || [];
+                        
+                        if (availableIps.length) {
+                            availableIps.forEach(ip => {
+                                const item = document.createElement('li');
+                                item.classList.add('ip-address-option');
+                                
+                                const radio = document.createElement('input');
+                                radio.type = 'radio';
+                                radio.name = 'ip_address';
+                                radio.value = ip.id_ip;
+                                radio.id = `ip-${ip.id_ip}-${id}`;
+
+                                const label = document.createElement('label');
+                                label.htmlFor = radio.id;
+                                label.textContent = ` ${ip.ip_address}`;
+                                label.style.marginLeft = '10px';
+
+                                item.append(radio, label);
+                                fragment.appendChild(item);
+                            });
+                        } else {
+                            const item = document.createElement('li');
+                            item.textContent = '  Tidak ada IP tersedia';
+                            item.classList.add('ip-address-option');
+                            item.style.fontStyle = 'italic';
+                            item.style.color = '#6c757d';
+                            fragment.appendChild(item);
+                        }
+                    });
+
+                    // Only update DOM after all IPs are rendered in memory
+                    ipList.innerHTML = '';
+                    ipList.appendChild(fragment);
+                    
+                    // Enable search and clear
+                    ipSearch.disabled = false;
+                    clearSearch.disabled = false;
                     filterIpAddresses('');
                 } catch (error) {
                     console.error('Error loading IP addresses:', error);
-                    showNoResults('Error loading IP addresses');
+                    ipList.innerHTML = '<li class="no-results">Gagal memuat data IP</li>';
+                    ipSearch.disabled = false;
+                    clearSearch.disabled = false;
                 }
-            }
-
-            function showNoResults(message) {
-                ipList.innerHTML = `<li class="no-results">${message}</li>`;
-            }
-
-            function renderIpAddresses(ipHosts) {
-                ipList.innerHTML = '';
-                
-                ipHosts.forEach(host => {
-                    const groupHeader = createGroupHeader(host.ip_host);
-                    ipList.appendChild(groupHeader);
-
-                    const availableIps = host.ip_addresses?.filter(ip => ip.status === 'Available') || [];
-                    
-                    if (availableIps.length) {
-                        availableIps.forEach(ip => {
-                            ipList.appendChild(createIpOption(ip, id));
-                        });
-                    } else {
-                        ipList.appendChild(createNoIpMessage());
-                    }
-                });
             }
 
             function filterIpAddresses(searchTerm) {
@@ -765,66 +775,21 @@
                 });
 
                 if (!visibleCount) {
-                    showNoResults(searchTerm ? 
-                        'Tidak ditemukan IP Address yang sesuai' : 
-                        'Tidak ada IP Address tersedia'
-                    );
+                    ipList.innerHTML = searchTerm ? 
+                        '<li class="no-results">Tidak ditemukan IP Address yang sesuai</li>' : 
+                        '<li class="no-results">Tidak ada IP Address tersedia</li>';
                 }
             }
 
-            ipSearch.addEventListener('input', e => filterIpAddresses(e.target.value.trim()));
-            clearSearch.addEventListener('click', () => {
-                ipSearch.value = '';
-                filterIpAddresses('');
-                ipSearch.focus();
-            });
-            ipSearch.addEventListener('keydown', e => {
-                if (e.key === 'Enter') e.preventDefault();
-            });
-        }
-        function createGroupHeader(text) {
-            const header = document.createElement('li');
-            header.textContent = text;
-            header.classList.add('ip-host-group');
-            return header;
-        }
-
-        function createIpOption(ip, computerId) {
-            const item = document.createElement('li');
-            item.classList.add('ip-address-option');
-            
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = 'ip_address';
-            radio.value = ip.id_ip;
-            radio.id = `ip-${ip.id_ip}-${computerId}`;
-
-            const label = document.createElement('label');
-            label.htmlFor = radio.id;
-            label.textContent = ` ${ip.ip_address}`;
-            label.style.marginLeft = '10px';
-
-            item.append(radio, label);
-            return item;
-        }
-
-        function createNoIpMessage() {
-            const item = document.createElement('li');
-            item.textContent = '  Tidak ada IP tersedia';
-            item.classList.add('ip-address-option');
-            item.style.fontStyle = 'italic';
-            item.style.color = '#6c757d';
-            return item;
-        }
-
-        function hasVisibleChildren(element) {
-            let next = element.nextElementSibling;
-            while (next && next.classList.contains('ip-address-option')) {
-                if (next.style.display !== 'none') return true;
-                next = next.nextElementSibling;
+            function hasVisibleChildren(element) {
+                let next = element.nextElementSibling;
+                while (next && next.classList.contains('ip-address-option')) {
+                    if (next.style.display !== 'none') return true;
+                    next = next.nextElementSibling;
+                }
+                return false;
             }
-            return false;
         }
     });
-</script>   
-@endforeach
+</script>
+
