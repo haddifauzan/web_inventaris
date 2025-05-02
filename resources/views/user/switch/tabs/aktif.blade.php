@@ -259,35 +259,58 @@
                             <label class="form-label small">Node Terpakai</label>
                             <input type="number" name="node_terpakai" class="form-control form-control-sm node-terpakai" 
                                    value="{{ $maintenance->node_terpakai }}" 
-                                   min="0" max="{{ $maintenance->node_terpakai + $maintenance->node_bagus + $maintenance->node_rusak }}">
+                                   min="0" max="64" required>
                             <div class="invalid-feedback">
-                                Node terpakai tidak boleh lebih besar dari node bagus
+                                Node terpakai tidak boleh lebih besar dari node bagus atau rusak
                             </div>
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label small">Node Bagus</label>
                             <input type="number" name="node_bagus" class="form-control form-control-sm node-bagus" 
                                    value="{{ $maintenance->node_bagus }}" 
-                                   min="0" max="{{ $maintenance->node_terpakai + $maintenance->node_bagus + $maintenance->node_rusak }}">
+                                   min="0" max="64" required>
                         </div>
                         <div class="col-md-4 mb-2">
                             <label class="form-label small">Node Rusak</label>
-                            <input type="number" name="node_rusak" class="form-control form-control-sm" 
+                            <input type="number" name="node_rusak" class="form-control form-control-sm node-rusak" 
                                    value="{{ $maintenance->node_rusak }}" 
-                                   min="0" max="{{ $maintenance->node_terpakai + $maintenance->node_bagus + $maintenance->node_rusak }}">
+                                   min="0" max="64" required>
+                            <div class="invalid-feedback">
+                                Node rusak tidak boleh lebih besar dari node bagus
+                            </div>
                         </div>
                         <script>
-                            document.querySelectorAll('.node-terpakai, .node-bagus').forEach(input => {
+                            document.querySelectorAll('.node-terpakai, .node-bagus, .node-rusak').forEach(input => {
                                 input.addEventListener('input', function() {
-                                    const nodeBagus = parseInt(this.closest('.row').querySelector('.node-bagus').value) || 0;
-                                    const nodeTerpakai = parseInt(this.closest('.row').querySelector('.node-terpakai').value) || 0;
-                                    const nodeTerpakaiInput = this.closest('.row').querySelector('.node-terpakai');
+                                    const row = this.closest('.row');
+                                    const modal = this.closest('.modal');
+                                    const submitBtn = modal.querySelector('button[type="submit"]');
+                                    const nodeBagus = parseInt(row.querySelector('.node-bagus').value) || 0;
+                                    const nodeTerpakai = parseInt(row.querySelector('.node-terpakai').value) || 0;
+                                    const nodeRusak = parseInt(row.querySelector('.node-rusak').value) || 0;
+                                    const nodeTerpakaiInput = row.querySelector('.node-terpakai');
+                                    const nodeRusakInput = row.querySelector('.node-rusak');
                                     
-                                    if (nodeTerpakai > nodeBagus) {
+                                    let isValid = true;
+
+                                    // Check if node rusak > node bagus
+                                    if (nodeRusak > nodeBagus) {
+                                        nodeRusakInput.classList.add('is-invalid');
+                                        isValid = false;
+                                    } else {
+                                        nodeRusakInput.classList.remove('is-invalid');
+                                    }
+
+                                    // Check if node terpakai > (node bagus - node rusak)
+                                    if (nodeTerpakai > (nodeBagus - nodeRusak)) {
                                         nodeTerpakaiInput.classList.add('is-invalid');
+                                        isValid = false;
                                     } else {
                                         nodeTerpakaiInput.classList.remove('is-invalid');
                                     }
+
+                                    // Enable/disable submit button based on validation
+                                    submitBtn.disabled = !isValid;
                                 });
                             });
                         </script>
