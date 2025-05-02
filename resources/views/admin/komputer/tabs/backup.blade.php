@@ -296,22 +296,22 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        @foreach($data as $komputer)
+        @foreach($data as $tablet)
         setupSearchSelect(
-            'lokasi-search{{ $komputer->id_barang }}',
-            'lokasi-dropdown{{ $komputer->id_barang }}',
-            'lokasi-value{{ $komputer->id_barang }}',
-            'clear-lokasi-search{{ $komputer->id_barang }}'
+            'lokasi-search{{ $tablet->id_barang }}',
+            'lokasi-dropdown{{ $tablet->id_barang }}',
+            'lokasi-value{{ $tablet->id_barang }}',
+            'clear-lokasi-search{{ $tablet->id_barang }}'
         );
         
         setupSearchSelect(
-            'departemen-search{{ $komputer->id_barang }}',
-            'departemen-dropdown{{ $komputer->id_barang }}',
-            'departemen-value{{ $komputer->id_barang }}',
-            'clear-departemen-search{{ $komputer->id_barang }}'
+            'departemen-search{{ $tablet->id_barang }}',
+            'departemen-dropdown{{ $tablet->id_barang }}',
+            'departemen-value{{ $tablet->id_barang }}',
+            'clear-departemen-search{{ $tablet->id_barang }}'
         );
         
-        setupIpAddressHandler('{{ $komputer->id_barang }}');
+        setupIpAddressHandler('{{ $tablet->id_barang }}');
         @endforeach
         
         // Setup search select functionality
@@ -424,15 +424,15 @@
             if (form) {
                 form.addEventListener('submit', function(e) {
                     // Pastikan lokasi dan departemen dipilih sebelum form di-submit
-                    const lokasiValue = form.querySelector(input[name="id_lokasi"]);
-                    const depValue = form.querySelector(input[name="id_departemen"]);
+                    const lokasiValue = form.querySelector(`input[name="id_lokasi"]`);
+                    const depValue = form.querySelector(`input[name="id_departemen"]`);
                     
                     if (!lokasiValue.value || !depValue.value) {
                         e.preventDefault();
                         
                         if (!lokasiValue.value) {
                             // Highlight input lokasi
-                            const lokasiInput = form.querySelector(input[id^="lokasi-search"]);
+                            const lokasiInput = form.querySelector(`input[id^="lokasi-search"]`);
                             if (lokasiInput) {
                                 lokasiInput.classList.add('is-invalid');
                                 // Tambahkan pesan error jika belum ada
@@ -447,7 +447,7 @@
                         
                         if (!depValue.value) {
                             // Highlight input departemen
-                            const depInput = form.querySelector(input[id^="departemen-search"]);
+                            const depInput = form.querySelector(`input[id^="departemen-search"]`);
                             if (depInput) {
                                 depInput.classList.add('is-invalid');
                                 // Tambahkan pesan error jika belum ada
@@ -482,10 +482,10 @@
 
         // Setup IP address handling
         function setupIpAddressHandler(id) {
-            const lokasiValue = document.getElementById(lokasi-value${id});
-            const ipSearch = document.getElementById(ip-search-input${id});
-            const ipList = document.getElementById(ip-address-list${id});
-            const clearSearch = document.getElementById(clear-search${id});
+            const lokasiValue = document.getElementById(`lokasi-value${id}`);
+            const ipSearch = document.getElementById(`ip-search-input${id}`);
+            const ipList = document.getElementById(`ip-address-list${id}`);
+            const clearSearch = document.getElementById(`clear-search${id}`);
 
             if (!lokasiValue || !ipSearch || !ipList || !clearSearch) return;
 
@@ -508,7 +508,7 @@
             async function loadIpAddresses(lokasiId) {
                 try {
                     showNoResults('Memuat data IP...');
-                    const response = await fetch(/api/lokasi/${lokasiId}/ip-addresses);
+                    const response = await fetch(`/api/lokasi/${lokasiId}/ip-addresses`);
                     const data = await response.json();
                     
                     if (!data.ipHosts?.length) {
@@ -525,7 +525,7 @@
             }
 
             function showNoResults(message) {
-                ipList.innerHTML = <li class="no-results">${message}</li>;
+                ipList.innerHTML = `<li class="no-results">${message}</li>`;
             }
 
             function renderIpAddresses(ipHosts) {
@@ -588,7 +588,7 @@
             return header;
         }
 
-        function createIpOption(ip, computerId) {
+        function createIpOption(ip, tabletId) {
             const item = document.createElement('li');
             item.classList.add('ip-address-option');
             
@@ -596,7 +596,7 @@
             radio.type = 'radio';
             radio.name = 'ip_address';
             radio.value = ip.id_ip;
-            radio.id = ip-${ip.id_ip}-${computerId};
+            radio.id = `ip-${ip.id_ip}-${tabletId}`;
 
             const label = document.createElement('label');
             label.htmlFor = radio.id;
