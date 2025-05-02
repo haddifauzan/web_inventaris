@@ -74,7 +74,6 @@
                                 <th>No</th>
                                 <th>Lokasi</th>
                                 <th>Departemen</th>
-                                <th>User</th>
                                 <th>Waktu Mulai</th>
                                 <th>Waktu Selesai</th>
                                 <th>Status</th>
@@ -87,7 +86,6 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $history->lokasi->nama_lokasi }}</td>
                                 <td>{{ $history->departemen->nama_departemen }}</td>
-                                <td>{{ $history->user }}</td>
                                 <td>{{ $history->waktu_awal }}</td>
                                 <td>{{ $history->waktu_akhir ?? '-' }}</td>
                                 <td>
