@@ -48,7 +48,7 @@
             <hr class="dropdown-divider">
           </li>
           <li>
-            <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
+            <a class="dropdown-item d-flex align-items-center" href="{{route('user.tentang-aplikasi')}}">
               <i class="bi bi-question-circle"></i> 
               <span>Tentang Aplikasi</span>
             </a>
